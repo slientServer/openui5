@@ -1,13 +1,11 @@
-
-/* ============================================= */
-/* CSS for control sap.m/FlexBox.control         */
-/* ============================================= */
-
-.sapUiSizeCondensed .sapUiTableCell > .sapMFlexBox {
-	box-sizing: border-box;
-	padding: 0 0.5rem;
-	vertical-align: middle;
-}
+/* ============================== */
+/* CSS for control sap.m/FlexBox  */
+/* BlueCrystal theme              */
+/* ============================== */
 
 /* mixin call for creating container content padding classes (arguments: rootContainer, contentSelector) */
 .sapUiContainerContentPadding(~".sapMFlexItem", ~"");
+
+.sapMFlexBoxBGTranslucent {
+	background-color: fade(@sapUiGroupContentBackground, 80);
+}

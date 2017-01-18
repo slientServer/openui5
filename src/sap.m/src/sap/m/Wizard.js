@@ -16,11 +16,32 @@ sap.ui.define([
 		 * @param {object} [mSettings] Initial settings for the new control
 		 *
 		 * @class
-		 * The Wizard control enables users to accomplish a single goal
-		 * which consists of multiple dependable sub-tasks.
-		 * Each sub-task is provided in the form of a WizardStep.
+		 * Enables users to accomplish a single goal which consists of multiple dependable sub-tasks.
+		 * <h3>Overview</h3>
+		 * The sap.m.Wizard helps users complete a complex and unfamiliar task by dividing it into sections and guiding the user through it.
+		 * The wizard has two main areas - a navigation area at the top showing the step sequence and a content area below it.
+		 * <h3>Structure</h3>
+		 * <h4>Navigation Area</h4>
+		 * The top most area of the wizard is occupied by the navigation area. It shows the sequence of {@link sap.m.WizardStep wizard steps}.
+		 * <ul>
+		 * <li>The minimum number of steps is 3 and the maximum is 8 and are stored in the <code>steps</code> aggregation.</li>
+		 * <li>Steps can be branching depending on choices the user made in their input - this is set by the <code>enableBranching</code> property. </li>
+		 * <li>Steps can have different visual representations - numbers or icons. You can add labels for better readability </li>
+		 * </ul>
+		 * <h4>Content</h4>
+		 * The content occupies the main part of the page. It can hold any type of input controls. The content is kept in {@link sap.m.WizardStep wizard steps}.
+		 * <h4>Next Step Button</h4>
+		 * The next step button is displayed below the content. It can be hidden by setting <code>showNextButton</code> to <code>false</code> and displayed, for example,
+		 * only after the user has filled all mandatory fields.
+		 * <h3>Usage</h3>
+		 * <h4>When to use:</h4>
+		 * When the user has to accomplish a long or unfamiliar task.
+		 * <h4>When not to use:</h4>
+		 * When the user has to accomplish a routine task that is clear and familiar.
+		 * When the task has only two steps or less.
+		 * <h3>Responsive Behavior</h3>
+		 * On mobile devices the steps in the StepNavigator are grouped together and overlap. Tapping on them will show a popover to select the step to navigate to.
 		 * @extends sap.ui.core.Control
-		 *
 		 * @author SAP SE
 		 * @version ${version}
 		 *
@@ -107,7 +128,6 @@ sap.ui.define([
 			MINIMUM_STEPS: 3,
 			MAXIMUM_STEPS: 8,
 			ANIMATION_TIME: 300,
-			LOCK_TIME: 450,
 			SCROLL_OFFSET: 65
 		};
 
@@ -237,30 +257,44 @@ sap.ui.define([
 		};
 
 		/**
-		 * Goes to the given step.
+		 * Goes to the given step. The step must already be activated and visible. You can't use this method on steps
+		 * that haven't been reached yet.
 		 * @param {sap.m.WizardStep} step The step to go to.
 		 * @param {boolean} focusFirstStepElement Defines whether the focus should be changed to the first element.
 		 * @returns {sap.m.Wizard} Pointer to the control instance for chaining.
 		 * @public
 		 */
 		Wizard.prototype.goToStep = function (step, focusFirstStepElement) {
-			this._scrollLocked = true;
-			this._scroller.scrollTo(0, this._getStepScrollOffset(step), Wizard.CONSTANTS.ANIMATION_TIME);
+			if (!this.getVisible() || this._stepPath.indexOf(step) < 0) {
+				return this;
+			}
 
-			jQuery.sap.delayedCall(Wizard.CONSTANTS.LOCK_TIME, this, function () {
-				var progressNavigator = this._getProgressNavigator();
+			var that = this,
+				scrollProps = {
+					scrollTop: this._getStepScrollOffset(step)
+				},
+				animProps = {
+					queue: false,
+					duration: Wizard.CONSTANTS.ANIMATION_TIME,
+					start: function () {
+						that._scrollLocked = true;
+					},
+					complete: function () {
+						that._scrollLocked = false;
+						var progressNavigator = that._getProgressNavigator();
 
-				if (!progressNavigator) {
-					this._scrollLocked = false;
-					return;
-				}
+						if (!progressNavigator) {
+							return;
+						}
 
-				progressNavigator._updateCurrentStep(this._stepPath.indexOf(step) + 1);
-				this._scrollLocked = false;
-				if (focusFirstStepElement || focusFirstStepElement === undefined) {
-					this._focusFirstStepElement(step);
-				}
-			});
+						progressNavigator._updateCurrentStep(that._stepPath.indexOf(step) + 1, undefined, true);
+						if (focusFirstStepElement || focusFirstStepElement === undefined) {
+							that._focusFirstStepElement(step);
+						}
+					}
+				};
+
+			this.$().find("#" + this.getId() + "-step-container").animate(scrollProps, animProps);
 
 			return this;
 		};
@@ -279,10 +313,10 @@ sap.ui.define([
 
 			if (index > progressAchieved || index <= 0) {
 				jQuery.sap.log.warning("The given step is either not yet reached, or is not present in the wizard control.");
-				return;
+				return this;
 			}
 
-			this._getProgressNavigator().discardProgress(index);
+			this._getProgressNavigator().discardProgress(index, true);
 
 			this._updateNextButtonState();
 			this._setNextButtonPosition();
@@ -383,7 +417,7 @@ sap.ui.define([
 
 		/**
 		 * Removes all steps from the Wizard.
-		 * @returns {sap.m.Control} Pointer to the Steps that were removed.
+		 * @returns {sap.m.WizardStep[]} Pointer to the Steps that were removed.
 		 * @public
 		 */
 		Wizard.prototype.removeAllSteps = function () {
@@ -560,14 +594,11 @@ sap.ui.define([
 		 * @private
 		 */
 		Wizard.prototype._handleStepChanged = function (event) {
-			if (this._scrollLocked) {
-				return;
-			}
-
 			var previousStepIndex = event.getParameter("current") - 2;
 			var previousStep = this._stepPath[previousStepIndex];
 			var subsequentStep = this._getNextStep(previousStep, previousStepIndex);
-			this.goToStep(subsequentStep, true);
+			var focusFirstElement = sap.ui.Device.system.desktop ? true : false;
+			this.goToStep(subsequentStep, focusFirstElement);
 		};
 
 		/**
@@ -854,17 +885,13 @@ sap.ui.define([
 				stepOffset = currentStepDOM.offsetTop,
 				stepChangeThreshold = 100;
 
-			this._scrollLocked = true;
-
 			if (scrollTop + stepChangeThreshold >= stepOffset + stepHeight) {
-				progressNavigator.nextStep();
+				progressNavigator.nextStep(true);
 			}
 
 			if (scrollTop + stepChangeThreshold <= stepOffset) {
-				progressNavigator.previousStep();
+				progressNavigator.previousStep(true);
 			}
-
-			this._scrollLocked = false;
 		};
 
 		Wizard.prototype._containsStep = function (step) {

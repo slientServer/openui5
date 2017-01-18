@@ -1,8 +1,6 @@
 sap.ui.define([
 		"sap/ui/demo/masterdetail/model/GroupSortState",
-		"sap/ui/model/json/JSONModel",
-		"sap/ui/thirdparty/sinon",
-		"sap/ui/thirdparty/sinon-qunit"
+		"sap/ui/model/json/JSONModel"
 	], function (GroupSortState, JSONModel) {
 	"use strict";
 
@@ -10,7 +8,7 @@ sap.ui.define([
 		beforeEach: function () {
 			this.oModel = new JSONModel({});
 			// System under test
-			this.oGroupSortState = new GroupSortState(this.oModel, function() {})
+			this.oGroupSortState = new GroupSortState(this.oModel, function() {});
 		}
 	});
 

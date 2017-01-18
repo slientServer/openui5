@@ -1,13 +1,18 @@
-.sap-phone, {
-  .sapMOTAPopover {
+/* ======================================================== */
+/* CSS for control sap.m/OverflowToolbarAssociativePopover  */
+/* High Contrast Black theme                                */
+/* ======================================================== */
 
-	&.sapMOTAPopoverNoShadowTop {
-	  box-shadow: 0 1rem 2.5rem 0.125rem fade(@sapHCStandardFG, 80%);
+html.sap-phone {
+	.sapMOTAPopover {
+
+		&.sapMOTAPopoverNoShadowTop {
+			box-shadow: 0 1rem 2.5rem 0.125rem fade(@sapUiContentShadowColor, 80);
+		}
+
+		&.sapMOTAPopoverNoShadowBottom {
+			box-shadow: 0 -1rem 2.5rem 0.125rem fade(@sapUiContentShadowColor, 80);
+		}
+
 	}
-
-	&.sapMOTAPopoverNoShadowBottom {
-	  box-shadow: 0 -1rem 2.5rem 0.125rem fade(@sapHCStandardFG, 80%);
-	}
-
-  }
 }

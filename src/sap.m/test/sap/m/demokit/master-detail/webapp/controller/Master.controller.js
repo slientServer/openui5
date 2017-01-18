@@ -33,7 +33,7 @@ sap.ui.define([
 					// taken care of by the master list itself.
 					iOriginalBusyDelay = oList.getBusyIndicatorDelay();
 
-				this._oGroupSortState = new GroupSortState(oViewModel, grouper.UnitNumber(this.getResourceBundle()));
+				this._oGroupSortState = new GroupSortState(oViewModel, grouper.groupUnitNumber(this.getResourceBundle()));
 
 				this._oList = oList;
 				// keeps the filter and search state
@@ -228,25 +228,12 @@ sap.ui.define([
 			},
 
 			/**
-			 * Navigates back in the browser history, if the entry was created by this app.
-			 * If not, it navigates to the Fiori Launchpad home page
-			 * @override
+			 * Event handler for navigating back.
+			 * We navigate back in the browser historz
 			 * @public
 			 */
-			onNavBack : function () {
-				var oHistory = sap.ui.core.routing.History.getInstance(),
-					sPreviousHash = oHistory.getPreviousHash(),
-					oCrossAppNavigator = sap.ushell.Container.getService("CrossApplicationNavigation");
-
-				if (sPreviousHash !== undefined) {
-					// The history contains a previous entry
-					history.go(-1);
-				} else {
-					// Navigate back to FLP home
-					oCrossAppNavigator.toExternal({
-						target : {shellHash: "#"}
-					});
-				}
+			onNavBack : function() {
+				history.go(-1);
 			},
 
 			/* =========================================================== */
@@ -305,7 +292,7 @@ sap.ui.define([
 
 			/**
 			 * Sets the item count on the master list header
-			 * @param {integer} iTotalItems the total number of items in the list
+			 * @param {int} iTotalItems the total number of items in the list
 			 * @private
 			 */
 			_updateListItemCount : function (iTotalItems) {
@@ -336,6 +323,7 @@ sap.ui.define([
 
 			/**
 			 * Internal helper method to apply both group and sort state together on the list binding
+			 * @param {sap.ui.model.Sorter[]} aSorters an array of sorters
 			 * @private
 			 */
 			_applyGroupSort : function (aSorters) {

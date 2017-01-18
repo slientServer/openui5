@@ -3,8 +3,8 @@
  */
 
 // Provides control sap.m.ObjectIdentifier.
-sap.ui.define(['jquery.sap.global', './library', 'sap/ui/core/Control', 'sap/ui/core/IconPool'],
-	function(jQuery, library, Control, IconPool) {
+sap.ui.define(['jquery.sap.global', './library', 'sap/ui/core/Control', 'sap/ui/core/IconPool', 'sap/ui/core/InvisibleText'],
+	function(jQuery, library, Control, IconPool, InvisibleText) {
 	"use strict";
 
 
@@ -29,6 +29,7 @@ sap.ui.define(['jquery.sap.global', './library', 'sap/ui/core/Control', 'sap/ui/
 	var ObjectIdentifier = Control.extend("sap.m.ObjectIdentifier", /** @lends sap.m.ObjectIdentifier.prototype */ { metadata : {
 
 		library : "sap.m",
+		designTime: true,
 		properties : {
 
 			/**
@@ -119,6 +120,21 @@ sap.ui.define(['jquery.sap.global', './library', 'sap/ui/core/Control', 'sap/ui/
 		}
 	}});
 
+
+	/**
+	 * Initializes the control
+	 *
+	 * @private
+	 */
+	ObjectIdentifier.prototype.init = function() {
+		var oLibraryResourceBundle = sap.ui.getCore().getLibraryResourceBundle("sap.m");
+
+		if (sap.ui.getCore().getConfiguration().getAccessibility()) {
+			ObjectIdentifier.OI_ARIA_ROLE = oLibraryResourceBundle.getText("OI_ARIA_ROLE");
+			this._createAriaInfoTextControl();
+		}
+	};
+
 	/**
 	 * Called when the control is destroyed.
 	 *
@@ -141,9 +157,9 @@ sap.ui.define(['jquery.sap.global', './library', 'sap/ui/core/Control', 'sap/ui/
 			this._notesIcon = null;
 		}
 
-		if (this._oAriaInfoTextControl) {
-			this._oAriaInfoTextControl.destroy();
-			this._oAriaInfoTextControl = null;
+		if (this._oAriaCustomRole) {
+			this._oAriaCustomRole.destroy();
+			this._oAriaCustomRole = null;
 		}
 	};
 
@@ -222,13 +238,12 @@ sap.ui.define(['jquery.sap.global', './library', 'sap/ui/core/Control', 'sap/ui/
 			bIsTitleActive;
 
 		if (!oTitleControl) {
-			this._createAriaInfoTextControl();
 			// Lazy initialization
 			if (this.getProperty("titleActive")) {
 				oTitleControl = new sap.m.Link({
 					text: this.getProperty("title"),
-					//Associate with the hidden sap.m.Text
-					ariaLabelledBy: this._oAriaInfoTextControl
+					//Add a custom hidden role "ObjectIdentifier" with hidden text
+					ariaLabelledBy: this._oAriaCustomRole
 				});
 			} else {
 				oTitleControl = new sap.m.Text({
@@ -244,8 +259,8 @@ sap.ui.define(['jquery.sap.global', './library', 'sap/ui/core/Control', 'sap/ui/
 				this.destroyAggregation("_titleControl", true);
 				oTitleControl = new sap.m.Link({
 					text: this.getProperty("title"),
-					//Associate with the hidden sap.m.Text
-					ariaLabelledBy: this._oAriaInfoTextControl
+					//Add a custom hidden role "ObjectIdentifier" with hidden text
+					ariaLabelledBy: this._oAriaCustomRole
 				});
 				this.setAggregation("_titleControl", oTitleControl);
 			} else if (!bIsTitleActive && oTitleControl instanceof sap.m.Link) {
@@ -272,9 +287,10 @@ sap.ui.define(['jquery.sap.global', './library', 'sap/ui/core/Control', 'sap/ui/
 		var oTextControl = this.getAggregation("_textControl");
 
 		if (!oTextControl) {
-			oTextControl = new sap.m.Text();
-			oTextControl.setProperty("text", this.getProperty("text"));
-			this.setAggregation("_textControl", oTextControl);
+			oTextControl = new sap.m.Text({
+				text: this.getProperty("text")
+			});
+			this.setAggregation("_textControl", oTextControl, true);
 		}
 
 		oTextControl.setTextDirection(this.getTextDirection());
@@ -372,6 +388,9 @@ sap.ui.define(['jquery.sap.global', './library', 'sap/ui/core/Control', 'sap/ui/
 			this.fireTitlePress({
 				domRef: oClickedItem
 			});
+
+			// mark the event that it is handled by the control
+			oEvent.setMarked();
 		}
 	};
 
@@ -406,38 +425,17 @@ sap.ui.define(['jquery.sap.global', './library', 'sap/ui/core/Control', 'sap/ui/
 	};
 
 	/**
-	 * Creates additional aria-labelledby info text to the control.
-	 * @returns {sap.m.Text}
+	 * Creates additional aria hidden text with the role of the control.
+	 * @returns {sap.ui.core.InvisibleText}
 	 * @private
 	 */
 	ObjectIdentifier.prototype._createAriaInfoTextControl = function () {
-		var oAriaInfoTextControl;
-		//Check if ObjectIdentifier has attached controls' ids to its ariaLabelledBy association
-		var aAriaLabelledAssociation = this.getAssociation("ariaLabelledBy");
-		if (aAriaLabelledAssociation && aAriaLabelledAssociation instanceof Array && aAriaLabelledAssociation.length > 0) {
-			var sResultIds = [];
-			var sResultTexts = [];
 
-			aAriaLabelledAssociation.forEach(function (sId) {
-				if (sId) {
-					sResultIds.push(sId);
-					var oControl = sap.ui.getCore().byId(sId);
-					var sControlText = oControl.getText();
-					if (sControlText) {
-						sResultTexts.push(sControlText);
-					}
-				}
-			});
-
-			oAriaInfoTextControl = new sap.m.Text(this.getId() + "-sapSRH", {text: "Object Identifier " + sResultTexts.join(" ")}).addStyleClass("sapUiInvisibleText");
-		} else {
-			oAriaInfoTextControl = new sap.m.Text(this.getId() + "-sapSRH", {text: "Object Identifier"}).addStyleClass("sapUiInvisibleText");
+		if (!this._oAriaCustomRole) {
+			this._oAriaCustomRole = new InvisibleText(this.getId() + "-oIHiddenText", { text: ObjectIdentifier.OI_ARIA_ROLE});
 		}
 
-		//Store it ot private property for later usage
-		this._oAriaInfoTextControl = oAriaInfoTextControl;
-
-		return oAriaInfoTextControl;
+		return this._oAriaCustomRole;
 	};
 
 

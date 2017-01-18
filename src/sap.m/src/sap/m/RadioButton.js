@@ -3,8 +3,8 @@
  */
 
 // Provides control sap.m.RadioButton.
-sap.ui.define(['jquery.sap.global', './library', 'sap/ui/core/Control', 'sap/ui/core/EnabledPropagator'],
-	function(jQuery, library, Control, EnabledPropagator) {
+sap.ui.define(['jquery.sap.global', './library', 'sap/ui/core/Control', 'sap/ui/core/EnabledPropagator', './RadioButtonGroup'],
+	function(jQuery, library, Control, EnabledPropagator, RadioButtonGroup) {
 	"use strict";
 
 
@@ -62,9 +62,18 @@ sap.ui.define(['jquery.sap.global', './library', 'sap/ui/core/Control', 'sap/ui/
 			textDirection : {type : "sap.ui.core.TextDirection", group : "Appearance", defaultValue : sap.ui.core.TextDirection.Inherit},
 
 			/**
-			 * Width of the Label
-			 */
+             * Width of the RadioButton or it's label depending on the useEntireWidth property.
+             * By Default width is set only for the label.
+             * @see {sap.m.RadioButton#useEntireWidth}
+             */
 			width : {type : "sap.ui.core.CSSSize", group : "Dimension", defaultValue : ''},
+
+			/**
+			 * Indicates if the given width will be applied for the whole RadioButton or only it's label.
+			 * By Default width is set only for the label.
+			 * @since 1.42
+			 */
+			useEntireWidth : {type : "boolean", group: "Appearance", defaultValue : false },
 
 			/**
 			 * This is a flag to switch on activeHandling. When it is switched off,
@@ -117,7 +126,8 @@ sap.ui.define(['jquery.sap.global', './library', 'sap/ui/core/Control', 'sap/ui/
 			 * Association to controls / IDs which label this control (see WAI-ARIA attribute aria-labelledby).
 			 */
 			ariaLabelledBy : {type : "sap.ui.core.Control", multiple : true, singularName : "ariaLabelledBy"}
-		}
+		},
+		designTime : true
 	}});
 
 
@@ -140,16 +150,34 @@ sap.ui.define(['jquery.sap.global', './library', 'sap/ui/core/Control', 'sap/ui/
 
 	RadioButton.prototype._groupNames = {};
 
+	// Keyboard navigation variants
+	var KH_NAVIGATION = {
+		HOME: "first",
+		END: "last",
+		NEXT: "next",
+		PREV: "prev"
+	};
+
 	/**
 	 * Function is called when radiobutton is tapped.
 	 *
 	 * @private
 	 */
-	RadioButton.prototype.ontap = function() {
+	RadioButton.prototype.ontap = function(oEvent) {
 
 		if (!this.getEnabled() || !this.getEditable()) {
 			return;
 		}
+
+		var oParent = this.getParent();
+
+		// check if the RadioButton is part of a RadioButtonGroup which is disabled/readonly
+		if (oParent instanceof RadioButtonGroup && (!oParent.getEnabled() || !oParent.getEditable())) {
+			return;
+		}
+
+		// mark the event that it is handled by the control
+		oEvent && oEvent.setMarked();
 
 		this.applyFocusInfo();
 
@@ -179,8 +207,129 @@ sap.ui.define(['jquery.sap.global', './library', 'sap/ui/core/Control', 'sap/ui/
 	};
 
 	RadioButton.prototype.ontouchend = function(oEvent) {
-
 		this.$().toggleClass("sapMRbBTouched", false);
+	};
+
+	RadioButton.prototype.onsapnext = function(oEvent) {
+		this._keyboardHandler(KH_NAVIGATION.NEXT, true);
+
+		// mark the event that it is handled by the control
+		oEvent.setMarked();
+
+		return this;
+	};
+
+	RadioButton.prototype.onsapnextmodifiers = function(oEvent) {
+		this._keyboardHandler(KH_NAVIGATION.NEXT, !oEvent.ctrlKey);
+
+		// mark the event that it is handled by the control
+		oEvent.setMarked();
+
+		return this;
+	};
+
+	RadioButton.prototype.onsapprevious = function(oEvent) {
+		this._keyboardHandler(KH_NAVIGATION.PREV, true);
+
+		// mark the event that it is handled by the control
+		oEvent.setMarked();
+
+		return this;
+	};
+
+	RadioButton.prototype.onsappreviousmodifiers = function(oEvent) {
+		this._keyboardHandler(KH_NAVIGATION.PREV, !oEvent.ctrlKey);
+
+		// mark the event that it is handled by the control
+		oEvent.setMarked();
+
+		return this;
+	};
+
+	RadioButton.prototype.onsaphome = function(oEvent) {
+		this._keyboardHandler(KH_NAVIGATION.HOME, true);
+
+		// mark the event that it is handled by the control
+		oEvent.setMarked();
+
+		return this;
+	};
+
+	RadioButton.prototype.onsaphomemodifiers = function(oEvent) {
+		this._keyboardHandler(KH_NAVIGATION.HOME, !oEvent.ctrlKey);
+
+		// mark the event that it is handled by the control
+		oEvent.setMarked();
+
+		return this;
+	};
+
+	RadioButton.prototype.onsapend = function(oEvent) {
+		this._keyboardHandler(KH_NAVIGATION.END, true);
+
+		// mark the event that it is handled by the control
+		oEvent.setMarked();
+
+		return this;
+	};
+
+	RadioButton.prototype.onsapendmodifiers = function(oEvent) {
+		this._keyboardHandler(KH_NAVIGATION.END, !oEvent.ctrlKey);
+
+		// mark the event that it is handled by the control
+		oEvent.setMarked();
+
+		return this;
+	};
+
+	/**
+	 * Determines which button becomes focused after an arrow key is pressed.
+	 * @param {string} sPosition Button to be focused
+	 * @param {boolean} bSelect Determines if the button should be selected
+	 * @private
+	 */
+	RadioButton.prototype._keyboardHandler = function(sPosition, bSelect) {
+		if (this.getParent() instanceof sap.m.RadioButtonGroup) {
+			return;
+		}
+
+		var oNextItem = this._getNextFocusItem(sPosition);
+		oNextItem.focus();
+		bSelect && oNextItem.setSelected(true);
+	};
+
+	/**
+	 * Determines next focusable item
+	 *
+ 	 * @param {enum} sNavigation any item from KH_NAVIGATION
+	 * @returns {RadioButton}
+	 * @private
+	 */
+	RadioButton.prototype._getNextFocusItem = function(sNavigation) {
+		var aVisibleBtnsGroup = this._groupNames[this.getGroupName()].filter(function (oRB) {
+			return (oRB.getDomRef() && oRB.getEnabled());
+		});
+
+		var iButtonIndex = aVisibleBtnsGroup.indexOf(this),
+			iIndex = iButtonIndex,
+			iVisibleBtnsLength = aVisibleBtnsGroup.length;
+
+		switch (sNavigation) {
+			case KH_NAVIGATION.NEXT:
+				iIndex = iButtonIndex === iVisibleBtnsLength - 1 ? iButtonIndex : iButtonIndex + 1;
+				break;
+			case KH_NAVIGATION.PREV:
+				iIndex = iButtonIndex === 0 ? 0 : iIndex - 1;
+				break;
+			case KH_NAVIGATION.HOME:
+				iIndex = 0;
+				break;
+			case KH_NAVIGATION.END:
+				iIndex = iVisibleBtnsLength - 1;
+				break;
+		}
+
+		return aVisibleBtnsGroup[iIndex] || this;
 	};
 
 	// #############################################################################
@@ -196,6 +345,14 @@ sap.ui.define(['jquery.sap.global', './library', 'sap/ui/core/Control', 'sap/ui/
 		oEvent.preventDefault();
 		this.ontap(oEvent);
 	};
+
+	RadioButton.prototype.setEnabled = function(bEnabled) {
+		this.setProperty("enabled", bEnabled, false);
+
+		return this;
+	};
+
+
 
 	// #############################################################################
 	// Overwritten methods that are also generated in RadioButton.API.js
@@ -213,11 +370,11 @@ sap.ui.define(['jquery.sap.global', './library', 'sap/ui/core/Control', 'sap/ui/
 			sGroupName = this.getGroupName(),
 			aControlsInGroup = this._groupNames[sGroupName],
 			iLength = aControlsInGroup && aControlsInGroup.length;
-			
+
 		this.setProperty("selected", bSelected, true); // No re-rendering
 		this._changeGroupName(this.getGroupName());
 
-		if (bSelected && sGroupName && sGroupName !== "") { // If this radio button is selected and groupName is set, explicitly deselect the other radio buttons of the same group
+		if (!!bSelected && sGroupName && sGroupName !== "") { // If this radio button is selected and groupName is set, explicitly deselect the other radio buttons of the same group
 			for (var i = 0; i < iLength; i++) {
 				oControl = aControlsInGroup[i];
 
@@ -228,7 +385,7 @@ sap.ui.define(['jquery.sap.global', './library', 'sap/ui/core/Control', 'sap/ui/
 			}
 		}
 
-		if ((bSelectedOld !== bSelected) && this.getDomRef()) {
+		if ((bSelectedOld !== !!bSelected) && this.getDomRef()) {
 			this.$().toggleClass("sapMRbSel", bSelected);
 
 			if (bSelected) {
@@ -252,7 +409,6 @@ sap.ui.define(['jquery.sap.global', './library', 'sap/ui/core/Control', 'sap/ui/
 	 * @public
 	 */
 	RadioButton.prototype.setText = function(sText) {
-
 		this.setProperty("text", sText, true);
 		if (this._oLabel) {
 			this._oLabel.setText(this.getText());
@@ -264,20 +420,31 @@ sap.ui.define(['jquery.sap.global', './library', 'sap/ui/core/Control', 'sap/ui/
 	};
 
 	/**
-	 * Sets the width for the RadioButton's label.
-	 * @param {string} sWidth - CSS size to be set as width of the label
-	 * @returns {sap.m.RadioButton} Reference to the control instance for chaining
-	 * @public
+	 * Depeding on useEntireWidth sets the width to the RadioButton's label or the whole RadioButton
+	 * @param {boolean} bUserEntireWidth - Determines if the width will be set to the label only or to the whole RadioButton
+	 * @private
 	 */
-	RadioButton.prototype.setWidth = function(sWidth) {
-
-		this.setProperty("width", sWidth, true);
-		if (this._oLabel) {
-			this._oLabel.setWidth(this.getWidth());
+	RadioButton.prototype._setWidth = function(bUserEntireWidth) {
+		if (!bUserEntireWidth) {
+			this._setLableWidth();
 		} else {
-			this._createLabel("width", this.getWidth());
+			this._setLableWidth("auto");
 		}
-		return this;
+	};
+
+	/**
+	 * Sets the width for the RadioButton's label.
+	 * @param {string} sWidth - CSS size to be set as width
+	 * @private
+	 */
+	RadioButton.prototype._setLableWidth = function(sWidth) {
+		sWidth = sWidth || this.getWidth();
+
+		if (this._oLabel) {
+			this._oLabel.setWidth(sWidth);
+		} else {
+			this._createLabel("width", sWidth);
+		}
 	};
 
 	/**
@@ -305,8 +472,13 @@ sap.ui.define(['jquery.sap.global', './library', 'sap/ui/core/Control', 'sap/ui/
 	 */
 	RadioButton.prototype.setGroupName = function(sGroupName) {
 		this._changeGroupName(sGroupName, this.getGroupName());
-
 		return this.setProperty("groupName", sGroupName, true);
+	};
+
+	RadioButton.prototype.onBeforeRendering = function() {
+		// Set the width before rendering as both width and useEntireWidth are dependent
+		this._setWidth(this.getUseEntireWidth());
+		return this._changeGroupName(this.getGroupName());
 	};
 
 	/**
@@ -323,7 +495,7 @@ sap.ui.define(['jquery.sap.global', './library', 'sap/ui/core/Control', 'sap/ui/
 			this._oLabel.destroy();
 		}
 
-		if (iGroupNameIndex && iGroupNameIndex !== -1) {
+		if (iGroupNameIndex >= -1) {
 			aControlsInGroup.splice(iGroupNameIndex, 1);
 		}
 	};
@@ -385,6 +557,10 @@ sap.ui.define(['jquery.sap.global', './library', 'sap/ui/core/Control', 'sap/ui/
 		var aNewGroup = this._groupNames[sNewGroupName],
 			aOldGroup = this._groupNames[sOldGroupName];
 
+		if (aOldGroup && aOldGroup.indexOf(this) !== -1) {
+			aOldGroup.splice(aOldGroup.indexOf(this), 1);
+		}
+
 		if (!aNewGroup) {
 			aNewGroup = this._groupNames[sNewGroupName] = [];
 		}
@@ -393,9 +569,6 @@ sap.ui.define(['jquery.sap.global', './library', 'sap/ui/core/Control', 'sap/ui/
 			aNewGroup.push(this);
 		}
 
-		if (aOldGroup && aOldGroup.indexOf(this) !== -1) {
-			aOldGroup.splice(aOldGroup.indexOf(this), 1);
-		}
 	};
 
 	return RadioButton;

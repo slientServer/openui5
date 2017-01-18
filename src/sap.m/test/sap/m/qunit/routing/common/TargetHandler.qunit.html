@@ -1,12 +1,12 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
 <title>qUnit Page for sap.m.routing.TargetHandler</title>
 
+<script src="../../../shared-config.js"></script>
 <script
 	src="../../../../../../resources/sap-ui-core.js"
-	data-sap-ui-theme="sap_bluecrystal"
 	data-sap-ui-libs="sap.m">
 </script>
 
@@ -120,7 +120,11 @@
 									view: oPage
 								},
 								oToSpy = this.spy(NavContainer.prototype, "to"),
-								oNavigateSpy = this.spy(TargetHandler.prototype, "navigate");
+								oNavigateSpy = this.spy(TargetHandler.prototype, "navigate"),
+								// stub the getDomRef to make the NavContainer pretend to be rendered
+								oStub = this.stub(oNavContainer, "getDomRef", function() {
+									return true;
+								});
 
 						//Act
 						this.oTargets.addNavigation(oNavigationParameters);
@@ -262,11 +266,15 @@
 									this.oStartPage
 								]
 							});
+							this.oStub = sinon.stub(this.oNavContainer, "getDomRef", function() {
+								return true;
+							});
 							this.oTargetHandler = new TargetHandler();
 						},
 						teardown: function () {
 							this.oNavContainer.destroy();
 							this.oTargetHandler.destroy();
+							this.oStub.restore();
 						}
 					});
 

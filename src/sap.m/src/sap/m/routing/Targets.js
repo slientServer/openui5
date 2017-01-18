@@ -6,10 +6,10 @@ sap.ui.define(['sap/ui/core/routing/Targets', './TargetHandler', './Target', './
 		"use strict";
 
 		/**
-		 * Provides a convenient way for placing views into the correct containers of your application
-		 * The mobile extension for targets that target the controls {@link sap.m.SplitContainer} or a {@link sap.m.NavContainer} and all controls extending these.
+		 * Provides a convenient way for placing views into the correct containers of your application.
+		 * The mobile extension of Targets also handles the triggering of page navigation when the target control is a {@link sap.m.SplitContainer}, a {@link sap.m.NavContainer} or a control which extends one of these.
 		 * Other controls are also allowed, but the extra parameters viewLevel, transition and transitionParameters are ignored and it will behave like {@link sap.ui.core.routing.Targets}.
-		 * When a target is displayed, dialogs will be closed. To Change this use {@link #getTargetHandler} and {@link sap.m.routing.TargetHandler#setCloseDialogs}.
+		 * When a target is displayed, dialogs will be closed. To change this use {@link #getTargetHandler} and {@link sap.m.routing.TargetHandler#setCloseDialogs}.
 		 *
 		 * @class
 		 * @extends sap.ui.core.routing.Targets
@@ -59,9 +59,10 @@ sap.ui.define(['sap/ui/core/routing/Targets', './TargetHandler', './Target', './
 		 * The id of the rootView - This should be the id of the view that contains the control with the controlId
 		 * since the control will be retrieved by calling the {@link sap.ui.core.mvc.View#byId} function of the rootView.
 		 * If you are using a component and add the routing.targets <b>do not set this parameter</b>,
-		 * since the component will set the rootView to the view created by the {@link sap.ui.core.UIComponent.html#createContent} function.
+		 * since the component will set the rootView to the view created by the {@link sap.ui.core.UIComponent#createContent} function.
 		 * If you specify the "parent" property of a target, the control will not be searched in the root view but in the view Created by the parent (see parent documentation).
-		 *
+		 * @param {boolean} [oOptions.config.async=false] @since 1.34 Whether the views which are created through this Targets are loaded asyncly. This option can be set only when the Targets
+		 * is used standalone without the involvement of a Router. Otherwise the async option is inherited from the Router.
 		 * @param {object} oOptions.targets One or multiple targets in a map.
 		 * @param {object} oOptions.targets.anyName a new target, the key severs as a name. An example:
 		 * <pre>
@@ -243,7 +244,7 @@ sap.ui.define(['sap/ui/core/routing/Targets', './TargetHandler', './Target', './
 		 * So a parent will always be created before the target referencing it.
 		 *
 		 *
-		 * @param {integer} [oOptions.targets.anyName.viewLevel]
+		 * @param {int} [oOptions.targets.anyName.viewLevel]
 		 * If you are having an application that has a logical order of views (eg: a create account process, first provide user data, then review and confirm them).
 		 * You always want to always show a backwards transition if a navigation from the confirm to the userData page takes place.
 		 * Therefore you may use the viewLevel. The viewLevel has to be an integer. The user data page should have a lower number than the confirm page.
@@ -360,6 +361,25 @@ sap.ui.define(['sap/ui/core/routing/Targets', './TargetHandler', './Target', './
 
 			_constructTarget : function (oOptions, oParent) {
 				return new Target(oOptions, this._oViews, oParent, this._oTargetHandler);
+			},
+
+			/**
+			 * Traverse up from the given target through the parent chain to find out the first target with a defined view level.
+			 * @param {sap.m.routing.Target} oTarget the target from which the traverse starts to find the first defined view level
+			 * @return {number} The view level
+			 * @private
+			 */
+			_getViewLevel : function (oTarget) {
+				var iViewLevel;
+				do {
+					iViewLevel = oTarget._oOptions.viewLevel;
+					if (iViewLevel !== undefined) {
+						return iViewLevel;
+					}
+					oTarget = oTarget._oParent;
+				} while (oTarget);
+
+				return iViewLevel;
 			}
 		});
 

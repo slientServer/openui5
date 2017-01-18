@@ -36,15 +36,21 @@
 			});
 		},
 		getResourceBundle: function () {
-			return sap.uxap.i18nModel.getResourceBundle();
+			return sap.ui.getCore().getLibraryResourceBundle("sap.m");
 		}
 	};
 
 	helpers = {
-		verifyFocusOnKeyDown: function (assert, iKeyCode, oItemToStartWith, oExpectedItemToBeFocused, sMessage ) {
+		verifyFocusOnKeyDown: function (assert, iKeyCode, oItemToStartWith, oExpectedItemToBeFocused, sMessage) {
 			oItemToStartWith.$().focus();
 			sap.ui.test.qunit.triggerKeydown(oItemToStartWith.getId(), iKeyCode);
 			assert.ok(oExpectedItemToBeFocused.jQuery().is(':focus'), sMessage);
+		},
+		waitForUIUpdates: function (){
+			core.applyChanges();
+		},
+		countChildren: function (oControl){
+			return oControl.$().children().length;
 		},
 		renderObject: function (oSapUiObject) {
 			oSapUiObject.placeAt("qunit-fixture");
@@ -55,15 +61,16 @@
 			var $object = $(sSelector);
 			return $object.length > 0;
 		},
+		controlIsInTheDom: function (oControl){
+			return !!oControl.getDomRef();
+		},
 		setMobile: function () {
-			jQuery("html").removeClass("sapUiMedia-Std-Desktop");
-			jQuery("html").addClass("sapUiMedia-Std-Phone");
+			jQuery("html").removeClass("sapUiMedia-Std-Desktop").addClass("sapUiMedia-Std-Phone");
 			sap.ui.Device.system.desktop = false;
 			sap.ui.Device.system.phone = true;
 		},
 		resetMobile: function () {
-			jQuery("html").addClass("sapUiMedia-Std-Desktop");
-			jQuery("html").removeClass("sapUiMedia-Std-Phone");
+			jQuery("html").addClass("sapUiMedia-Std-Desktop").removeClass("sapUiMedia-Std-Phone");
 			sap.ui.Device.system.desktop = true;
 			sap.ui.Device.system.phone = false;
 		},
@@ -90,40 +97,82 @@
 			iLinksCount = oStandardBreadCrumbsControl.getLinks().length;
 
 		assert.ok(oStandardBreadCrumbsControl, "is instantiated correctly");
-		assert.strictEqual(oStandardBreadCrumbsControl.getLinks().length, 4, "has " + 4 + " links");
+		assert.strictEqual(iLinksCount, 4, "has " + 4 + " links");
 	});
 
 	QUnit.test("Changing the control dynamically", function (assert) {
 		var oStandardBreadCrumbsControl = this.oStandardBreadCrumbsControl,
-			iLinksCount = oStandardBreadCrumbsControl.getLinks().length;
+			iExpectedLinkCount = oStandardBreadCrumbsControl.getLinks().length,
+			oRemovedLink,
+			oNewLink;
 
 		oStandardBreadCrumbsControl.addLink(oFactory.getLink());
-		assert.strictEqual(oStandardBreadCrumbsControl.getLinks().length, iLinksCount + 1,
+		iExpectedLinkCount++;
+
+		assert.strictEqual(oStandardBreadCrumbsControl.getLinks().length, iExpectedLinkCount,
 			"the link is correctly added to the control");
 
+		oNewLink = oFactory.getLink();
+		oStandardBreadCrumbsControl.insertLink(oNewLink, 2);
+		iExpectedLinkCount++;
+
+		assert.strictEqual(oStandardBreadCrumbsControl.getLinks().length, iExpectedLinkCount,
+			"the link is inserted correctly");
+
+		assert.strictEqual(oStandardBreadCrumbsControl.getLinks()[2], oNewLink,
+			"the link is correctly inserted at position 2");
+
+		oNewLink = oFactory.getLink();
+		oStandardBreadCrumbsControl.insertLink(oNewLink);
+		iExpectedLinkCount++;
+
+		assert.strictEqual(oStandardBreadCrumbsControl.getLinks().length, iExpectedLinkCount,
+			"the link is inserted correctly");
+
+		assert.strictEqual(oStandardBreadCrumbsControl.getLinks()[0], oNewLink,
+			"the link is correctly inserted at the beginning of the array");
+
 		oStandardBreadCrumbsControl.removeLink(oStandardBreadCrumbsControl.getLinks()[0]);
-		assert.strictEqual(oStandardBreadCrumbsControl.getLinks().length, iLinksCount,
+		iExpectedLinkCount--;
+		assert.strictEqual(oStandardBreadCrumbsControl.getLinks().length, iExpectedLinkCount,
 			"the link is correctly removed from the control");
+
+		oRemovedLink = oStandardBreadCrumbsControl.getLinks()[1];
+		oStandardBreadCrumbsControl.removeLink(1);
+		iExpectedLinkCount--;
+
+		assert.strictEqual(oStandardBreadCrumbsControl.getLinks().length, iExpectedLinkCount,
+			"the link is correctly removed from the control using its index");
+
+		assert.ok(oStandardBreadCrumbsControl.getLinks().indexOf(oRemovedLink) === -1,
+			"the link is correctly removed from the control using its index");
 
 		assert.throws(function () {
 			oStandardBreadCrumbsControl.addLink(oFactory.getText());
 		}, "an exception is thrown when trying to add an incorrect type to the links aggregation");
 	});
 
-/*There are some issuue with the sinon spy. Must be investigated.
-	QUnit.test("Changing breadcrumb item that affects control size", function (assert) {
-		var spy = this.spy(sap.m.Breadcrumbs.prototype, "_resetControl"),
-			oStandardBreadCrumbsControl = this.oStandardBreadCrumbsControl;
+	QUnit.test("Toggling the links' visibility", function (assert) {
+		var oBreadcrumbsControl = this.oStandardBreadCrumbsControl,
+			oSecondLink = oBreadcrumbsControl.getLinks()[1];
 
-		helpers.renderObject(oStandardBreadCrumbsControl);
+		helpers.renderObject(oBreadcrumbsControl);
 
-		oStandardBreadCrumbsControl.getLinks().forEach(function (oLink) {
-			oLink.setWidth("100px");
-			this.clock.tick(1000);
-		}, this);
+		assert.ok(helpers.objectIsInTheDom(oSecondLink), "Initially the link is visible and it's in the dom");
+		assert.strictEqual(helpers.countChildren(oBreadcrumbsControl), 5);
 
-		assert.ok(spy.callCount === 4, "Handler is called");
-	});*/
+		oSecondLink.setVisible(false);
+		helpers.waitForUIUpdates();
+
+		assert.ok(!helpers.controlIsInTheDom(oSecondLink), "The link is not visible and not in the dom");
+		assert.strictEqual(helpers.countChildren(oBreadcrumbsControl), 4);
+
+		oSecondLink.setVisible(true);
+		helpers.waitForUIUpdates();
+
+		assert.ok(helpers.objectIsInTheDom(oSecondLink), "The link is visible again and it's in the dom");
+		assert.strictEqual(helpers.countChildren(oBreadcrumbsControl), 5);
+	});
 
 	QUnit.test("Current location setter", function (assert) {
 		var oStandardBreadCrumbsControl = this.oStandardBreadCrumbsControl,
@@ -170,19 +219,25 @@
 		}
 	});
 
-	QUnit.test("Select on mobile contains all links", function (assert) {
+	QUnit.test("Select on mobile contains all links with no current location text", function (assert) {
+		var oStandardBreadCrumbsControl = this.oStandardBreadCrumbsControl;
+		oStandardBreadCrumbsControl.setCurrentLocationText("");
+		helpers.renderObject(oStandardBreadCrumbsControl);
+
+		var aSelectItems = oStandardBreadCrumbsControl._getSelect().getItems();
+
+		assert.ok(!oStandardBreadCrumbsControl.getCurrentLocationText(), "There's no current location text set");
+		assert.ok(aSelectItems.length === 4, "All links are in select, but no current location item");
+	});
+
+	QUnit.test("Select on mobile contains all links with current location text", function (assert) {
 		var oStandardBreadCrumbsControl = this.oStandardBreadCrumbsControl;
 		helpers.renderObject(oStandardBreadCrumbsControl);
 
 		var aSelectItems = oStandardBreadCrumbsControl._getSelect().getItems();
 
-		assert.ok(aSelectItems.length === 4, "All links are in select");
-	});
-
-	QUnit.test("Select has cancel button on mobile", function (assert) {
-		var oStandardBreadCrumbsControl = this.oStandardBreadCrumbsControl;
-
-		assert.ok(oStandardBreadCrumbsControl._getSelect().getButtons().length, "Has one button");
+		assert.ok(oStandardBreadCrumbsControl.getCurrentLocationText(), "There's current location text set");
+		assert.ok(aSelectItems.length === 5, "All links are in select along with the currrent location item");
 	});
 
 	/*------------------------------------------------------------------------------------*/
@@ -194,7 +249,7 @@
 
 	QUnit.test("Only links", function (assert) {
 		this.oStandardBreadCrumbsControl = oFactory.getBreadCrumbControlWithLinks(4);
-		helpers.renderObject(this.oStandardBreadCrumbsControl );
+		helpers.renderObject(this.oStandardBreadCrumbsControl);
 		assert.ok(!this.oStandardBreadCrumbsControl._getCurrentLocation().getDomRef(), "Current location has no dom ref");
 		var $lastSeparator = this.oStandardBreadCrumbsControl.$().find("li.sapMBreadcrumbsItem:last-child > span.sapMBreadcrumbsSeparator");
 
@@ -213,13 +268,13 @@
 
 	QUnit.test("Prevent dependency bug with select's popover", function (assert) {
 		var pickerAfterOpenSpy = this.spy(sap.m.Breadcrumbs.prototype, "_removeItemNavigation"),
-				pickerBeforeCloseSpy = this.spy(sap.m.Breadcrumbs.prototype, "_restoreItemNavigation");
+			pickerBeforeCloseSpy = this.spy(sap.m.Breadcrumbs.prototype, "_restoreItemNavigation");
 		this.oStandardBreadCrumbsControl = oFactory.getBreadCrumbControlWithLinks(15, "Current location text");
 
 		helpers.renderObject(this.oStandardBreadCrumbsControl);
 
-		this.oStandardBreadCrumbsControl._getSelect().open()
-		this.oStandardBreadCrumbsControl._getSelect().close()
+		this.oStandardBreadCrumbsControl._getSelect().open();
+		this.oStandardBreadCrumbsControl._getSelect().close();
 
 		assert.ok(pickerAfterOpenSpy.calledOnce, "Popover after open event is handled");
 		assert.ok(pickerBeforeCloseSpy.calledOnce, "Popover after before close event is handled");
@@ -252,7 +307,7 @@
 					control: {},
 					width: 100
 				}]
-			}
+			};
 		};
 		var aControlDistrib = this.oStandardBreadCrumbsControl._determineControlDistribution(300);
 		assert.ok(aControlDistrib.aControlsForBreadcrumbTrail.length === 3, "Trail has 3 items");
@@ -279,7 +334,7 @@
 					control: {},
 					width: 100
 				}]
-			}
+			};
 		};
 		var aControlDistrib = this.oStandardBreadCrumbsControl._determineControlDistribution(60);
 		assert.ok(aControlDistrib.aControlsForBreadcrumbTrail.length === 1, "There must be always one item in the trail");
@@ -310,10 +365,30 @@
 					control: {},
 					width: 100
 				}]
-			}
+			};
 		};
 		var aControlDistrib = this.oStandardBreadCrumbsControl._determineControlDistribution(250);
 		assert.ok(aControlDistrib.aControlsForBreadcrumbTrail.length === 2, "There are 2 items in the trail");
 		assert.ok(aControlDistrib.aControlsForSelect.length === 2, "There are 2 items in the breadcrumb");
 	});
+
+
+	/*------------------------------------------------------------------------------------*/
+	QUnit.module("Breadcrumbs - Accessibility", {
+		setup: function () {
+			this.oStandardBreadCrumbsControl = oFactory.getBreadCrumbControlWithLinks(4, oFactory.getText());
+		},
+		teardown: function () {
+			this.oStandardBreadCrumbsControl.destroy();
+		}
+	});
+
+	QUnit.test("Screen reader support", function (assert) {
+		var oStandardBreadCrumbsControl = this.oStandardBreadCrumbsControl,
+			sExpectedText = oFactory.getResourceBundle().getText("BREADCRUMB_LABEL");
+
+		helpers.renderObject(oStandardBreadCrumbsControl);
+		assert.strictEqual(oStandardBreadCrumbsControl.$().attr("aria-label"), sExpectedText, "has correct 'aria-label'");
+	});
+
 }(jQuery, QUnit, sinon, sap.m.Breadcrumbs));

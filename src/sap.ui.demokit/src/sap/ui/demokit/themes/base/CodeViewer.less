@@ -1,6 +1,11 @@
 pre.sapUiCodeViewer {
 	background-color:rgb(240,240,240);
-	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	font-family: "Courier New", Courier, monospace;
+	font-size: 0.9rem;
+	line-height: 1.2em;
+	font-weight: bold;
+	-moz-tab-size: 2;
+	tab-size: 2;
 	padding: 0.5em 2em;
 	border: 1px dotted #888;
 	overflow-x: auto;
@@ -25,6 +30,13 @@ pre.codeblock .emphasis {
 	background-color: #ffff00;
 }
 
+html.sap-combi .sapUiCodeViewerRO * {
+	-webkit-user-select: text;
+	-moz-user-select: text;
+	-ms-user-select: text;
+	user-select: all;
+}
+
 .sapUiCodeViewerRO ol {
 	position: relative;
 	z-index: 0;
@@ -36,7 +48,7 @@ pre.codeblock .emphasis {
 	color: #999999;
 	display: block;
 	position: relative;
-	left: 30px;
+	left: 2px;
 }
 
 .sapUiCodeViewerRO ol li:before {
@@ -46,12 +58,10 @@ pre.codeblock .emphasis {
 	// not select line numbers when copy the code
 	-webkit-touch-callout: none;
 	-webkit-user-select: none;
-	-khtml-user-select: none;
-	-o-user-select: none;
 	-moz-user-select: none;
 	-ms-user-select: none;
 	user-select: none;
-	margin: 0 40px 0 -30px;
+	margin: 0 16px 0 -28px;
 }
 
 .sapUiCodeViewerRO ol:before {
@@ -59,7 +69,7 @@ pre.codeblock .emphasis {
 	display: block;
 	position: absolute;
 	top: 0;
-	left: 0;
+	left: -28px;
 	bottom: 0;
 	width: 28px;
 	z-index: -1;

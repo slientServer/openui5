@@ -1,12 +1,14 @@
 /*!
  * @copyright@
  */
-sap.ui.define([], function() {
+
+sap.ui.define([],
+	function() {
 	"use strict";
 
 	/**
-	 * @class NumericContent renderer.
-	 * @static
+	 * NumericContent renderer.
+	 * @namespace
 	 */
 	var NumericContentRenderer = {};
 
@@ -16,17 +18,19 @@ sap.ui.define([], function() {
 	 * @param {sap.ui.core.RenderManager} oRm the RenderManager that can be used for writing to the render output buffer
 	 * @param {sap.ui.core.Control} oControl an object representation of the control that should be rendered
 	 */
-
 	NumericContentRenderer.render = function(oRm, oControl) {
-		var sSize = oControl.getSize();
 		var sValue = oControl.getValue();
 		var sIndicator = oControl.getIndicator();
 		var sScale = oControl.getScale();
 		var sState = oControl.getState();
 		var bIndicator = sap.m.DeviationIndicator.None !== sIndicator && sValue !== "";
-		var oIcon = oControl._oIcon;
 		var bWithMargin = oControl.getWithMargin();
-		var sWithoutMargin = bWithMargin ? "" : "WithoutMargin";
+		var sWithoutMargin;
+		if (bWithMargin) {
+			sWithoutMargin = "";
+		} else {
+			sWithoutMargin = "WithoutMargin";
+		}
 		if (oControl.getFormatterValue()) {
 			var oFormattedValue = oControl._parseFormattedValue(sValue);
 			sScale = oFormattedValue.scale;
@@ -39,10 +43,11 @@ sap.ui.define([], function() {
 		if (typeof sTooltip !== "string") {
 			sTooltip = "";
 		}
-		oRm.writeAttributeEscaped("title", sTooltip);
-		oRm.writeAttribute("role", "presentation");
-		oRm.writeAttributeEscaped("aria-label", oControl.getAltText().replace(/\s/g, " ") + (sap.ui.Device.browser.firefox ? "" : " " + sTooltip));
-		if (sState == "Failed" || sState == "Loading") {
+
+		oRm.writeAttributeEscaped("aria-label", sTooltip);
+		oRm.writeAttribute("role", "image");
+
+		if (sState == sap.m.LoadState.Failed || sState == sap.m.LoadState.Loading) {
 			oRm.writeAttribute("aria-disabled", "true");
 		}
 		if (oControl.getAnimateTextChange()) {
@@ -52,7 +57,6 @@ sap.ui.define([], function() {
 			oRm.addStyle("width", oControl.getWidth());
 		}
 		oRm.writeStyles();
-		oRm.addClass(sSize);
 		oRm.addClass("sapMNC");
 		oRm.addClass(sWithoutMargin);
 		if (oControl.hasListeners("press")) {
@@ -61,93 +65,150 @@ sap.ui.define([], function() {
 		}
 		oRm.writeClasses();
 		oRm.write(">");
+
 		oRm.write("<div");
 		oRm.addClass("sapMNCInner");
 		oRm.addClass(sWithoutMargin);
-		oRm.addClass(sSize);
 		oRm.writeClasses();
 		oRm.write(">");
 		if (bWithMargin) {
-			this.renderScaleInd(oRm, oControl, bIndicator, bScale, sWithoutMargin, sSize, sIndicator, sScale);
-			if (oIcon) {
-				oRm.renderControl(oIcon);
-			}
-			this.renderValue(oRm, oControl, sWithoutMargin, sSize, sValue);
+			this._renderScaleAndIndicator(oRm, oControl, bIndicator, bScale, sWithoutMargin, sIndicator, sScale);
+			this._renderValue(oRm, oControl, sWithoutMargin, sValue);
 		} else {
-			if (oIcon) {
-				oRm.renderControl(oIcon);
-			}
-			this.renderValue(oRm, oControl, sWithoutMargin, sSize, sValue);
-			this.renderScaleInd(oRm, oControl, bIndicator, bScale, sWithoutMargin, sSize, sIndicator, sScale);
+			this._renderValue(oRm, oControl, sWithoutMargin, sValue);
+			this._renderScaleAndIndicator(oRm, oControl, bIndicator, bScale, sWithoutMargin, sIndicator, sScale);
 		}
 		oRm.write("</div>");
+
 		oRm.write("</div>");
 	};
 
-	NumericContentRenderer.renderScaleInd = function(oRm, oControl, bIndicator, bScale, sWithoutMargin, sSize, sIndicator, sScale) {
-		if (bIndicator || bScale) {
+	/**
+	 * Adds missing style attributes to the icon due to a different property initialization order in Internet Explorer
+	 * in comparison to Chrome.
+	 *
+	 * @param {sap.ui.core.RenderManager} oRm the RenderManager that can be used for writing to the render output buffer
+	 * @param {sap.ui.core.Control} oControl an object representation of the control that should be rendered
+	 * @param {sap.ui.core.Icon} oIcon the icon inside the control
+	 * @private
+	 */
+	NumericContentRenderer._prepareAndRenderIcon = function(oRm, oControl, oIcon) {
+		if (oIcon) {
+			var sState,
+			oLoadState = sap.m.LoadState,
+			sCurrentState = oControl.getState();
+
+			//remove state classes from icon and only add the current state's class
+			for (sState in oLoadState) {
+				if (oLoadState.hasOwnProperty(sState) && sState !== sCurrentState) {
+					oIcon.removeStyleClass(sState);
+				} else if (oLoadState.hasOwnProperty(sState) && sState === sCurrentState) {
+					oIcon.addStyleClass(sState);
+				}
+			}
+
+			oIcon.addStyleClass("sapMNCIconImage");
+			oRm.renderControl(oIcon);
+		}
+	};
+
+	/**
+	 * Renders the HTML for the ScaleInd of the given control, using the provided {@link sap.ui.core.RenderManager}.
+	 *
+	 * @private
+	 * @param {sap.ui.core.RenderManager} oRm the RenderManager that can be used for writing to the render output buffer
+	 * @param {sap.ui.core.Control} oControl an object representation of the control whose title should be rendered
+	 * @param {boolean} isIndicator
+	 * @param {boolean} isScale
+	 * @param {String} withoutMargin
+	 * @param {String} textIndicator
+	 * @param {String} textScale
+	 */
+	NumericContentRenderer._renderScaleAndIndicator = function(oRm, oControl, isIndicator, isScale, withoutMargin, textIndicator, textScale) {
+		if (isIndicator || isScale) {
 			var sState = oControl.getState();
 			var sColor = oControl.getValueColor();
 			oRm.write("<div");
 			oRm.addClass("sapMNCIndScale");
-			oRm.addClass(sWithoutMargin);
-			oRm.addClass(sSize);
+			oRm.addClass(withoutMargin);
 			oRm.addClass(sState);
 			oRm.writeClasses();
 			oRm.write(">");
+
 			oRm.write("<div");
 			oRm.writeAttribute("id", oControl.getId() + "-indicator");
 			oRm.addClass("sapMNCIndicator");
-			oRm.addClass(sSize);
-			oRm.addClass(sIndicator);
+			oRm.addClass(textIndicator);
 			oRm.addClass(sState);
 			oRm.addClass(sColor);
 			oRm.writeClasses();
-			oRm.write("></div>");
-			if (bScale) {
+			oRm.write("/>");
+
+			if (isScale) {
 				oRm.write("<div");
 				oRm.writeAttribute("id", oControl.getId() + "-scale");
 				oRm.addClass("sapMNCScale");
-				oRm.addClass(sSize);
 				oRm.addClass(sState);
 				oRm.addClass(sColor);
 				oRm.writeClasses();
 				oRm.write(">");
-				oRm.writeEscaped(sScale.substring(0, 3));
+				oRm.writeEscaped(textScale.substring(0, 3));
 				oRm.write("</div>");
 			}
+
 			oRm.write("</div>");
 		}
 	};
 
-	NumericContentRenderer.renderValue = function(oRm, oControl, sWithoutMargin, sSize, sValue) {
-		var sEmptyValue = oControl.getNullifyValue() ? "0" : "";
+	/**
+	 * Renders the HTML for the ScaleInd of the given control, using the provided {@link sap.ui.core.RenderManager}.
+	 *
+	 * @private
+	 * @param {sap.ui.core.RenderManager} oRm the RenderManager that can be used for writing to the render output buffer
+	 * @param {sap.ui.core.Control} oControl an object representation of the control whose title should be rendered
+	 * @param {String} withoutMargin
+	 * @param {String} value
+	 */
+	NumericContentRenderer._renderValue = function(oRm, oControl, withoutMargin, value) {
+		var sEmptyValue;
+		if (oControl.getNullifyValue()) {
+			sEmptyValue = "0";
+		} else {
+			sEmptyValue = "";
+		}
 		oRm.write("<div");
 		oRm.writeAttribute("id", oControl.getId() + "-value");
 		oRm.addClass("sapMNCValue");
-		oRm.addClass(sWithoutMargin);
+		oRm.addClass(withoutMargin);
 		oRm.addClass(oControl.getValueColor());
-		oRm.addClass(sSize);
 		oRm.addClass(oControl.getState());
 		oRm.writeClasses();
 		oRm.write(">");
+
 		oRm.write("<div");
 		oRm.writeAttribute("id", oControl.getId() + "-value-scr");
 		oRm.addClass("sapMNCValueScr");
-		oRm.addClass(sWithoutMargin);
-		oRm.addClass(sSize);
+		oRm.addClass(withoutMargin);
 		oRm.writeClasses();
 		oRm.write(">");
+
+		this._prepareAndRenderIcon(oRm, oControl, oControl._oIcon);
+
 		var iChar = oControl.getTruncateValueTo();
 		//Control shows only iChar characters. If the last shown character is decimal separator - show only first N-1 characters. So "144.5" is shown like "144" and not like "144.".
-		if (sValue.length >= iChar && (sValue[iChar - 1] === "." || sValue[iChar - 1] === ",")) {
-			oRm.writeEscaped(sValue.substring(0, iChar - 1));
+		if (value.length >= iChar && (value[iChar - 1] === "." || value[iChar - 1] === ",")) {
+			oRm.writeEscaped(value.substring(0, iChar - 1));
 		} else {
-			oRm.writeEscaped(sValue ? sValue.substring(0, iChar) : sEmptyValue);
+			if (value) {
+				oRm.writeEscaped(value.substring(0, iChar));
+			} else {
+				oRm.writeEscaped(sEmptyValue);
+			}
 		}
+
 		oRm.write("</div>");
 		oRm.write("</div>");
 	};
-return NumericContentRenderer;
 
+	return NumericContentRenderer;
 }, /* bExport= */true);

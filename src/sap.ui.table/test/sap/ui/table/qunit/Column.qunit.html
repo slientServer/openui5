@@ -2,21 +2,24 @@
 <html>
 
 <head>
-	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
-	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta charset="utf-8">
 
 	<title>qUnit Page for sap.ui.table.Column</title>
 
-	<script src="../../../../../resources/sap-ui-core.js">
+	<script src="../shared-config.js"></script>
+	<script src="../../../../../resources/sap-ui-core.js"
+			data-sap-ui-libs="sap.m,sap.ui.core,sap.ui.commons,sap.ui.table">
 	</script>
+	
+	<link rel="stylesheet" href="../../../../../resources/sap/ui/thirdparty/qunit.css" type="text/css" media="screen">
+	<script src="../../../../../resources/sap/ui/thirdparty/qunit.js"></script>
+	<script src="../../../../../resources/sap/ui/qunit/qunit-junit.js"></script>
+	<script src="../../../../../resources/sap/ui/qunit/qunit-coverage.js" data-sap-ui-cover-only="sap/ui/table"></script>
 
 	<script>
 		(function () {
 			"use strict";
-			jQuery.sap.require("sap.ui.qunit.qunit-css");
-			jQuery.sap.require("sap.ui.thirdparty.qunit");
-			jQuery.sap.require("sap.ui.qunit.qunit-junit");
-			jQuery.sap.require("sap.ui.qunit.qunit-coverage");
 			jQuery.sap.require("sap.ui.thirdparty.sinon");
 			jQuery.sap.require("sap.ui.thirdparty.sinon-qunit");
 			sinon.config.useFakeTimers = true;
@@ -137,6 +140,74 @@
 						"enableGrouping: " + this._oTable.getEnableGrouping());
 			});
 
+			QUnit.module("Column Menu", {
+				setup: function() {
+					var oModel = new sap.ui.model.json.JSONModel();
+					oModel.setData([{myProp: "someValue", myOtherProp: "someOtherValue"}]);
+					this._oTable = new Table();
+					this._oTable.bindRows("/");
+					this._oTable.setModel(oModel);
+					this._oColumnWithColumnMenu = new Column({
+						filterProperty: "myProp",
+						showFilterMenuEntry: true
+					});
+
+					this._oColumnWithUnifiedMenu = new Column({
+						filterProperty: "myOtherProp",
+						showFilterMenuEntry: true,
+						menu: new sap.ui.unified.Menu()
+					});
+
+					this._oTable.addColumn(this._oColumnWithColumnMenu);
+					this._oTable.addColumn(this._oColumnWithUnifiedMenu);
+
+					this._oTable.placeAt("qunit-fixture");
+					sap.ui.getCore().applyChanges();
+				},
+				teardown: function() {
+					this._oColumnWithColumnMenu.destroy();
+					this._oColumnWithUnifiedMenu.destroy();
+					this._oTable.destroy();
+				}
+			});
+
+			QUnit.test("Filter on Column with ColumnMenu and UnifiedMenu", function(assert) {
+				var oColumnMenu = this._oColumnWithColumnMenu.getMenu();
+				var oSpyColumnMenu = this.spy(oColumnMenu, "_setFilterValue");
+				this._oColumnWithColumnMenu.filter("filterValue");
+				this._oColumnWithColumnMenu._openMenu();
+
+				var oFilterField = sap.ui.getCore().byId(oColumnMenu.getId() + "-filter");
+				assert.equal(oFilterField.getValue(), "filterValue", "Filter value set on ColumnMenu");
+				assert.ok(oSpyColumnMenu.called, "_setFilterValue called on ColumnMenu");
+
+				var oUnifiedMenu = this._oColumnWithUnifiedMenu.getMenu();
+				// implement a dummy function to allow usage of sinon.spy
+				oUnifiedMenu._setFilterValue = function() {};
+				var oSpyUnifiedMenu = this.spy(oUnifiedMenu, "_setFilterValue");
+
+				// if filter is called on a column, the filter state of the other columns must be updated as well
+				var oSpyColumnMenuFilterState = this.spy(oColumnMenu, "_setFilterState");
+				this._oColumnWithUnifiedMenu.filter("filterValue");
+				assert.ok(!oSpyUnifiedMenu.called, "_setFilterValue not called on UnifiedMenu");
+				assert.ok(oSpyColumnMenuFilterState.calledOnce, "_setFilterState called on ColumnMenu");
+			});
+
+			QUnit.test("Localization and Invalidation", function(assert) {
+				var oColumnMenu = this._oColumnWithColumnMenu.getMenu();
+				var oSpyColumnMenu = this.spy(oColumnMenu, "_updateResourceBundle");
+				this._oColumnWithColumnMenu._openMenu();
+				
+				assert.ok(!oColumnMenu._bInvalidated, "ColumnMenu not invalidated");
+				this._oTable._invalidateColumnMenus(true);
+				assert.ok(oSpyColumnMenu.calledOnce, "Bundle updated");
+				assert.ok(oColumnMenu._bInvalidated, "ColumnMenu invalidated");
+				this._oColumnWithColumnMenu._openMenu();
+				assert.ok(!oColumnMenu._bInvalidated, "ColumnMenu not invalidated");
+				this._oTable._invalidateColumnMenus();
+				assert.ok(oSpyColumnMenu.calledOnce, "Bundle not updated");
+				assert.ok(oColumnMenu._bInvalidated, "ColumnMenu invalidated");
+			});
 		})();
 	</script>
 </head>

@@ -1,18 +1,21 @@
 /*!
  * ${copyright}
  */
-sap.ui.define(['sap/m/Column',
+sap.ui.define([
+		'sap/m/Button',
+		'sap/m/Column',
 		'sap/m/ColumnListItem',
 		'sap/m/MessageBox',
+		'sap/m/PlacementType',
 		'sap/m/Popover',
 		'sap/m/Table',
 		'sap/m/Text',
 		'sap/ui/commons/ValueHelpField'
-	], function(Column, ColumnListItem, MessageBox, Popover, Table, Text, ValueHelpField) {
+	], function(Button, Column, ColumnListItem, MessageBox, PlacementType, Popover, Table, Text,
+		ValueHelpField) {
 	"use strict";
 
-	return ValueHelpField.extend(
-		"sap.ui.core.sample.ViewTemplate.valuelist.ValueHelp", {
+	var ValueHelp = ValueHelpField.extend("sap.ui.core.sample.ViewTemplate.valuelist.ValueHelp", {
 			metadata : {
 				properties : {
 					qualifier : {type : "string", defaultValue : ""}, //value list qualifier
@@ -65,8 +68,8 @@ sap.ui.define(['sap/m/Column',
 				}, function (oError) {
 					//TODO errors cannot seriously be handled per _instance_ of a control
 					MessageBox.alert(oError.message, {
-						icon: MessageBox.Icon.ERROR,
-						title: "Error"});
+						icon : MessageBox.Icon.ERROR,
+						title : "Error"});
 				});
 			},
 
@@ -82,24 +85,22 @@ sap.ui.define(['sap/m/Column',
 			},
 
 			_onValueHelp : function (oEvent) {
-				var oButton = new sap.m.Button({text : "Close"}),
+				var oButton = new Button({text : "Close"}),
 					oColumnListItem = new ColumnListItem(),
 					oControl = oEvent.getSource(),
-					oPopover = new Popover({endButton: oButton,
-						placement : sap.m.PlacementType.Auto, modal : true}),
-					oTable = new Table(),
-					aVHTitle = [];
+					oPopover = new Popover({endButton : oButton,
+						placement : PlacementType.Auto, modal : true}),
+					oTable = new Table();
 
 				function createTextOrValueHelp(sPropertyPath, bAsColumnHeader) {
 					var oMetaModel = oControl.getModel().getMetaModel(),
 						oEntityType = oMetaModel.getODataEntityType(oMetaModel.getODataEntitySet(
 							oControl._collectionPath).entityType);
 					if (bAsColumnHeader) {
-						return new Text({text: oMetaModel.getODataProperty(oEntityType,
+						return new Text({text : oMetaModel.getODataProperty(oEntityType,
 							sPropertyPath)["sap:label"]});
 					}
-						return new sap.ui.core.sample.ViewTemplate.valuelist.ValueHelp(
-							{value: "{" + sPropertyPath + "}"});
+						return new ValueHelp({value : "{" + sPropertyPath + "}"});
 				}
 
 				function onClose() {
@@ -114,7 +115,7 @@ sap.ui.define(['sap/m/Column',
 				});
 				oControl._parameters.forEach(function (sParameterPath) {
 					oTable.addColumn(new Column(
-						{header: createTextOrValueHelp(sParameterPath, true)}
+						{header : createTextOrValueHelp(sParameterPath, true)}
 					));
 					oColumnListItem.addCell(createTextOrValueHelp(sParameterPath));
 				});
@@ -122,5 +123,7 @@ sap.ui.define(['sap/m/Column',
 				oPopover.addContent(oTable);
 				oPopover.openBy(oControl);
 			}
-	});
+		});
+
+	return ValueHelp;
 });

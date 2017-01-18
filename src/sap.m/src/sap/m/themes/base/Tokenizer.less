@@ -1,6 +1,7 @@
-/* ============================================= */
-/* CSS for control sap.m/Tokenizer.control */
-/* ============================================= */
+/* ================================ */
+/* CSS for control sap.m/Tokenizer  */
+/* Base theme                       */
+/* ================================ */
 
 .sapMTokenizer {
 	position: relative;
@@ -9,15 +10,22 @@
 	overflow: hidden;
 }
 
-.sapMTokenizer .sapMToken{
+.sapMTokenizer .sapMToken {
 	margin-top: 0.375rem;
-	margin-bottom: 0.375rem;
+	margin-bottom: 0.125rem;
 	margin-right: 0.375rem;
 	line-height: normal;
-	padding-top: 0;
-	padding-bottom: 0;
-	height: 1.625rem;
-	display: inline-block;
+	max-width: calc(~"100% - 0.375rem");
+}
+
+.sapMTokenizer.sapMTokenizerReadonly {
+	.sapMToken {
+		padding: 0 0.375rem;
+	}
+
+	.sapMTokenIcon {
+		display: none;
+	}
 }
 
 .sapMTokenizerClip {
@@ -49,7 +57,7 @@
 
 .sapMTokenTruncate > .sapMTokenIcon {
 	position: absolute;
-	right: 0rem;
+	right: 0;
 }
 
 .sapMTokenTruncate > .sapMTokenText {
@@ -58,32 +66,12 @@
 	width: calc(~"100% - 2rem");
 }
 
-.sap-phone .sapMTokenizerMultiLine {
-	padding-left: 1rem;
-	padding-right: 1rem;
-}
-
-.sap-phone .sapMTokenizerMultiLine > .sapMTokenizerScrollContainer > .sapMToken {
-	display: table;
-}
-
-.sapMMultiInputMultiModeBorder .sapMTokenizer{
-	white-space: normal;
-}
-
-.sapMMultiInputMultiModeBorder .sapMTokenizer .sapMToken{
-	margin-bottom: 0;
-}
-
-.sapUiSizeCompact .sapMTokenizer .sapMToken{
-	height: 1.25rem;	
+.sapUiSizeCompact .sapMTokenizer .sapMToken {
+	height: 1.25rem;
 	margin-top: 0.125rem;
 	margin-bottom: 0.125rem;
-	margin-right: 0.125rem;
-}
-
-.sapUiSizeCompact .sapMMultiInputMultiModeBorder .sapMTokenizer .sapMToken{
-	margin-bottom: -0.125rem;
+	margin-right: 0.25rem;
+	max-width: calc(~"100% - 0.25rem");
 }
 
 .sapUiSizeCompact .sapMTokenTruncate > .sapMTokenText {
@@ -91,18 +79,27 @@
 	width: calc(~"100% - 1.25rem");
 }
 
-.sapMTokenizer:focus{
-	outline: none;
-}
-
-.sapMTokenizerScrollContainer{
+.sapMTokenizerScrollContainer {
+	width: 100%;
 	display: inline-block;
-	-moz-user-select: none; 
-	-webkit-user-select: none; 
+	-moz-user-select: none;
+	-webkit-user-select: none;
 	-ms-user-select: none;
 }
 
-.sapMMultiInputMultiModeBorder .sapMTokenizerEmpty {
-	height: 0;
-	display: block;
+html[data-sap-ui-browser^="ie"].sap-desktop,
+html[data-sap-ui-browser^="ed"].sap-desktop {
+	.sapMTokenizer:focus {
+		outline: none;
+
+		&:before {
+			position: absolute;
+			top: 2px;
+			left: 2px;
+			right: 2px;
+			bottom: 2px;
+			content: "";
+			pointer-events: none;
+		}
+	}
 }

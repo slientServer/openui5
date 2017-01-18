@@ -17,12 +17,12 @@
 			<Toolbar>
 				<Title text="{i18n>invoiceListTitle}"/>
 				<ToolbarSpacer/>
-				<SearchField width="50%" search="onFilterInvoices"/>
+				<SearchField width="50%" search="onFilterInvoices" selectOnFocus="false"/>
 			</Toolbar>
 		</headerToolbar>
 		<columns>
 			<Column
-				hAlign="Right"
+				hAlign="End"
 				minScreenWidth="Small"
 				demandPopin="true"
 				width="4em">
@@ -42,7 +42,7 @@
 				<Text text="{i18n>columnSupplier}"/>
 			</Column>
 			<Column
-				hAlign="Right">
+				hAlign="End">
 				<Text text="{i18n>columnPrice}"/>
 			</Column>
 		</columns>

@@ -1,30 +1,34 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
 
 <title>Test Page for sap.m.P13nDialog</title>
-<script id="sap-ui-bootstrap" data-sap-ui-theme="sap_bluecrystal"
-	type="text/javascript" data-sap-ui-noConflict="true"
-	data-sap-ui-libs="sap.m" src="../../../../resources/sap-ui-core.js">
+<script src="../shared-config.js"></script>
+<script id="sap-ui-bootstrap" data-sap-ui-noConflict="true"
+	data-sap-ui-libs="sap.m" src="../../../../resources/sap-ui-core.js"
+	data-sap-ui-resourceroots='{ "resourceroot": "./" }'>
 	
 </script>
 
 <link rel="stylesheet"
 	href="../../../../resources/sap/ui/thirdparty/qunit.css"
 	type="text/css" media="screen" />
-<script type="text/javascript"
+<script
 	src="../../../../resources/sap/ui/thirdparty/qunit.js"></script>
-<script type="text/javascript"
+<script
 	src="../../../../resources/sap/ui/qunit/qunit-junit.js"></script>
-<script type="text/javascript"
+<script
+	src="../../../../resources/sap/ui/qunit/qunit-coverage.js"></script>
+<script
 	src="../../../../resources/sap/ui/qunit/QUnitUtils.js"></script>
-<script type="text/javascript"
+<script
 	src="../../../../resources/sap/ui/thirdparty/sinon.js"></script>
-<script type="text/javascript"
+<script
 	src="../../../../resources/sap/ui/thirdparty/sinon-qunit.js"></script>
 
-<script type="text/javascript">
+<script>
+
 	(function() {
 		jQuery.sap.require("sap.m.P13nDialog");
 		jQuery.sap.require("sap.m.P13nPanel");
@@ -53,9 +57,9 @@
 			strictEqual(oP13nDialog.getVisiblePanel(), null, "no panel is shown");
 			if (sap.ui.Device.system.phone) {
 				strictEqual(oP13nDialog.getVerticalScrolling(), false, "getVerticalScrolling is false");
-				ok(oP13nDialog.getBeginButton(), "OK button");
-				ok(oP13nDialog.getEndButton(), "Cancel button");
-				ok(!oP13nDialog.getButtons()[2], "Reset button is not defined");
+				ok(oP13nDialog.getButtons()[0], "OK button");
+				ok(oP13nDialog.getButtons()[1], "Cancel button");
+				ok(oP13nDialog.getButtons()[2], "Reset button");
 				strictEqual(oP13nDialog.getCustomHeader().getContentMiddle()[0].getText(), sap.ui.getCore().getLibraryResourceBundle("sap.m").getText("P13NDIALOG_VIEW_SETTINGS"), "default title");
 			} else {
 				strictEqual(oP13nDialog.getVerticalScrolling(), true, "getVerticalScrolling is true");
@@ -82,7 +86,7 @@
 
 		/*test("destroy", function() {
 
-			// system under test			
+			// system under test
 			var oP13nDialog = new sap.m.P13nDialog({
 				panels : [new sap.m.P13nPanel({
 					title : "filter",
@@ -104,7 +108,7 @@
 			strictEqual(oP13nDialog.getSubHeader(), null);
 			strictEqual(oP13nDialog.getButtons(), []);
 			strictEqual(oP13nDialog._oResetButton, null);
-			//strictEqual(oP13nDialog.getContent(), []);			
+			//strictEqual(oP13nDialog.getContent(), []);
 
 			// cleanup
 
@@ -122,11 +126,7 @@
 			sap.ui.getCore().applyChanges();
 
 			// assertions
-			if (sap.ui.Device.system.phone) {
-				ok(!oP13nDialog.getButtons()[2], true, "Reset button is not created");
-			} else {
-				strictEqual(oP13nDialog.getButtons()[2].getVisible(), true, "Reset button is visible");
-			}
+			strictEqual(oP13nDialog.getButtons()[2].getVisible(), true, "Reset button is visible");
 
 			// cleanup
 			oP13nDialog.destroy();
@@ -355,6 +355,271 @@
 			//strictEqual(oP13nDialog._getNavigationControl().getSelectedButton(), oP13nDialog._getButtonByPanel(oPanelF).getId(), "selected button belongs to switched panel");
 
 			// cleanup
+			oP13nDialog.destroy();
+		});
+
+		test("binding of 'title'", function() {
+			// system under test
+			var oP13nPanelF, oP13nPanelS, oP13nPanelD;
+			sap.ui.getCore().setModel(new sap.ui.model.resource.ResourceModel({
+				bundleName: "resourceroot.data.i18n.i18n"
+			}), "i18n");
+
+			// act
+			var oP13nDialog = new sap.m.P13nDialog({
+				panels: [
+					oP13nPanelD = new sap.m.P13nPanel({
+						title: "Without Binding",
+						type: sap.m.P13nPanelType.dimeasure
+					}), oP13nPanelF = new sap.m.P13nPanel({
+						title: "{i18n>FilterTab}",
+						type: sap.m.P13nPanelType.filter
+					}), oP13nPanelS = new sap.m.P13nPanel({
+						title: "{i18n>SortTab}",
+						type: sap.m.P13nPanelType.sort
+					})
+				]
+			});
+
+			// arrange
+			oP13nDialog.placeAt("content");
+			sap.ui.getCore().applyChanges();
+
+			// assertions
+			strictEqual(oP13nPanelF.getTitle(), "Filter Settings");
+			strictEqual(oP13nPanelS.getTitle(), "Sort Settings");
+			strictEqual(oP13nPanelD.getTitle(), "Without Binding");
+
+			strictEqual(oP13nDialog._getNavigationItemByPanel(oP13nPanelF).getText(), "Filter Settings");
+			strictEqual(oP13nDialog._getNavigationItemByPanel(oP13nPanelS).getText(), "Sort Settings");
+			strictEqual(oP13nDialog._getNavigationItemByPanel(oP13nPanelD).getText(), "Without Binding");
+
+			// cleanup
+			oP13nDialog.destroy();
+		});
+
+		/*test("_showValidationDialog: show bullet point for move then one messages", function() {
+			// system under test
+			var oPanelC = new sap.m.P13nPanel({
+				title: "Columns",
+				type: sap.m.P13nPanelType.culumns
+			});
+			var oPanelG = new sap.m.P13nPanel({
+				title: "Group",
+				type: sap.m.P13nPanelType.group
+			});
+			var oP13nDialog = new sap.m.P13nDialog({
+				panels: [
+					oPanelC, oPanelG
+				]
+			});
+
+			// arrange
+			oP13nDialog.placeAt("content");
+			sap.ui.getCore().applyChanges();
+
+			// act
+			oP13nDialog._showValidationDialog(function() {
+			}, [], [
+				{
+					columnKey: "columnKey1",
+					panelTypes: [
+						"group", "columns"
+					],
+					messageType: "Warning",
+					messageText: "Dummy Warning 1..."
+				}, {
+					columnKey: "columnKey2",
+					panelTypes: [
+						"group", "columns"
+					],
+					messageType: "Warning",
+					messageText: "Dummy Warning 2..."
+				}
+			]);
+			var $Dialog = jQuery.find(".sapMMessageBoxWarning");
+			var oDialog = jQuery($Dialog).control(0);
+
+			// assertions
+			ok(oDialog);
+			strictEqual(oDialog.getContent()[0].getText(), "• Dummy Warning 2...\n• Dummy Warning 1...\n");
+
+			// cleanup
+			oDialog.destroy();
+			oP13nDialog.destroy();
+		});*/
+
+		test("_showValidationDialog: show no bullet point for one message", function() {
+			// system under test
+			var oP13nDialog = new sap.m.P13nDialog({
+				panels: [
+					new sap.m.P13nPanel({
+						title: "Columns",
+						type: sap.m.P13nPanelType.culumns
+					}), new sap.m.P13nPanel({
+						title: "Group",
+						type: sap.m.P13nPanelType.group
+					})
+				]
+			});
+
+			// arrange
+			oP13nDialog.placeAt("content");
+			sap.ui.getCore().applyChanges();
+
+			// act
+			oP13nDialog._showValidationDialog(function() {
+			}, [], [
+				{
+					columnKey: "columnKey1",
+					messageType: "Warning",
+					messageText: "Dummy Warning..."
+				}
+			]);
+			var $Dialog = jQuery.find(".sapMMessageBoxWarning");
+			var oDialog = jQuery($Dialog).control(0);
+
+			// assertions
+			ok(oDialog);
+			strictEqual(oDialog.getContent()[0].getText(), "Dummy Warning..." + "\n" + sap.ui.getCore().getLibraryResourceBundle("sap.m").getText("P13NDIALOG_VALIDATION_MESSAGE_QUESTION"));
+
+			// cleanup
+			oDialog.destroy();
+			oP13nDialog.destroy();
+		});
+
+		// BCP 1670188253
+		test("_showValidationDialog: show only one message of many equal messages", function() {
+			// system under test
+			var oP13nDialog = new sap.m.P13nDialog({
+				panels: [
+					new sap.m.P13nPanel({
+						title: "Columns",
+						type: sap.m.P13nPanelType.culumns
+					}), new sap.m.P13nPanel({
+						title: "Group",
+						type: sap.m.P13nPanelType.group
+					})
+				]
+			});
+
+			// arrange
+			oP13nDialog.placeAt("content");
+			sap.ui.getCore().applyChanges();
+
+			// act
+			oP13nDialog._showValidationDialog(function() {
+			}, [], [
+				{
+					columnKey: "columnKey1",
+					messageType: "Warning",
+					messageText: "Dummy Warning..."
+				}, {
+					columnKey: "columnKey2",
+					messageType: "Warning",
+					messageText: "Dummy Warning..."
+				}
+			]);
+			var $Dialog = jQuery.find(".sapMMessageBoxWarning");
+			var oDialog = jQuery($Dialog).control(0);
+
+			// assertions
+			ok(oDialog);
+			strictEqual(oDialog.getContent()[0].getText(), "Dummy Warning..." + "\n" + sap.ui.getCore().getLibraryResourceBundle("sap.m").getText("P13NDIALOG_VALIDATION_MESSAGE_QUESTION"));
+
+			// cleanup
+			oDialog.destroy();
+			oP13nDialog.destroy();
+		});
+
+		test("_showValidationDialog: show no dialog if no messages exist", function() {
+			// system under test
+			var oP13nDialog = new sap.m.P13nDialog({
+				panels: [
+					new sap.m.P13nPanel({
+						title: "Columns",
+						type: sap.m.P13nPanelType.culumns
+					}), new sap.m.P13nPanel({
+						title: "Group",
+						type: sap.m.P13nPanelType.group
+					})
+				]
+			});
+
+			// arrange
+			oP13nDialog.placeAt("content");
+			sap.ui.getCore().applyChanges();
+
+			// act
+			oP13nDialog._showValidationDialog(function() {
+			}, [], []);
+			var $Dialog = jQuery.find(".sapMMessageBoxWarning");
+			var oDialog = jQuery($Dialog).control(0);
+
+			// assertions
+			ok(!oDialog);
+
+			// cleanup			
+			oP13nDialog.destroy();
+		});
+
+		test("_prepareMessages", function() {
+			// system under test
+			var oP13nDialog = new sap.m.P13nDialog({
+				panels: [
+					new sap.m.P13nPanel({
+						title: "Columns",
+						type: sap.m.P13nPanelType.culumns
+					}), new sap.m.P13nPanel({
+						title: "Group",
+						type: sap.m.P13nPanelType.group
+					})
+				]
+			});
+
+			// arrange
+			oP13nDialog.placeAt("content");
+			sap.ui.getCore().applyChanges();
+			var aWarnings = [], aErrors = [];
+
+			// act
+			oP13nDialog._prepareMessages([], [
+				{
+					columnKey: "columnKey1",
+					messageType: "Error",
+					messageText: "A"
+				}, {
+					columnKey: "columnKey2",
+					messageType: "Warning",
+					messageText: "B"
+				}, {
+					columnKey: "columnKey3",
+					messageType: "Error",
+					messageText: "B"
+				}, {
+					columnKey: "columnKey4",
+					messageType: "Warning",
+					messageText: "A"
+				}
+			], aWarnings, aErrors);
+
+			// assertions
+			deepEqual(aWarnings, [
+				{
+					columnKey: "columnKey4",
+					messageType: "Warning",
+					messageText: "A"
+				}
+			]);
+			deepEqual(aErrors, [
+				{
+					columnKey: "columnKey3",
+					messageType: "Error",
+					messageText: "B"
+				}
+			]);
+
+			// cleanup			
 			oP13nDialog.destroy();
 		});
 

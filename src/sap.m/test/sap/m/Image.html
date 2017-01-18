@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
 		<title>Image - sap.m</title>
 		<!--  Do not use this test page as copy&paste template, as it is rather a web page than an App;
 		      better make use of either the App control or jQuery.sap.initMobile() to set up the viewport etc. meta tags. -->
@@ -11,15 +11,15 @@
 		<meta name="apple-mobile-web-app-capable" content="yes">
 		<!-- Set the status bar style on Apple devices -->
 		<meta name="apple-mobile-web-app-status-bar-style" content="default">
+		<script src="shared-config.js"></script>
 		<script src="../../../resources/sap-ui-core.js"
-			type="text/javascript"
 			id="sap-ui-bootstrap"
-			data-sap-ui-libs="sap.m"
-			data-sap-ui-theme="sap_bluecrystal">
+			data-sap-ui-libs="sap.m">
 		</script>
 
-		<script type="text/javascript">
+		<script>
 			var oImage = new sap.m.Image({
+				id: "image_not_decorative",
 				src: "images/SAPLogo.jpg",
 				alt: "test image",
 				decorative: false
@@ -50,6 +50,7 @@
 			oImage1.addStyleClass("img1");
 
 			var oImageButton = new sap.m.Image({
+				id: "image_button",
 				src: "images/action.png",
 				activeSrc: "images/action_pressed.png",
 				decorative: false,

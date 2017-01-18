@@ -2,31 +2,29 @@
 
 <!--
   Tested class: jquery.sap.promise
-  Author: d046314
 -->
 
 <html>
 <head>
-	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<title>Test Page for jquery.sap.promise</title>
 	<script>
 		//Ensure that custom API is populated to global namespace for testimng purposes
 		window.sap = {__ui5PublishPromisePolyfill : true};
 	</script>
+	<script src="../shared-config.js"></script>
 	<script id="sap-ui-bootstrap"
-		type="text/javascript"
 		src="../../../../../resources/sap-ui-core.js"
-		data-sap-ui-theme="sap_bluecrystal"
 		data-sap-ui-noConflict="true">
 	</script>
-	<link rel="stylesheet" href="../../../../../resources/sap/ui/thirdparty/qunit.css" type="text/css" media="screen" />
-	<script type="text/javascript" src="../../../../../resources/sap/ui/thirdparty/qunit.js"></script>
-	<script type="text/javascript" src="../../../../../resources/sap/ui/qunit/qunit-junit.js"></script>
+	<link rel="stylesheet" href="../../../../../resources/sap/ui/thirdparty/qunit.css" type="text/css" media="screen">
+	<script src="../../../../../resources/sap/ui/thirdparty/qunit.js"></script>
+	<script src="../../../../../resources/sap/ui/qunit/qunit-junit.js"></script>
 
-	<script type="text/javascript" src="../../../../../resources/sap/ui/qunit/QUnitUtils.js"></script>
+	<script src="../../../../../resources/sap/ui/qunit/QUnitUtils.js"></script>
 
 	<!-- Initialization -->
-	<script language="javascript">
+	<script>
 
 	/**
 	* Returns true if the browser has native Promise support according to our knowledge.
@@ -37,8 +35,8 @@
 			sap.ui.Device.browser.firefox && sap.ui.Device.browser.version > 28 ||
 			sap.ui.Device.browser.chrome  && sap.ui.Device.browser.version > 32 ||
 			sap.ui.Device.browser.safari  && sap.ui.Device.browser.version >= 7.1 ||
-			sap.ui.Device.os.ios          && sap.ui.Device.browser.safari && sap.ui.Device.os.version >= 8 ||
-			sap.ui.Device.browser.edge
+			sap.ui.Device.os.ios          && sap.ui.Device.browser.safari && sap.ui.Device.os.version >= 8
+			// || sap.ui.Device.browser.edge // For edge we currently replace the native promise with the polyfill due to timing issues (setTimeout vs Promise.resolve)
 		);
 	}
 
@@ -53,7 +51,7 @@
 	</script>
 
 	<!-- Test functions -->
-	<script language="javascript">
+	<script>
 
 	function testPromise(P, sTestPrefix) {
 
@@ -182,10 +180,10 @@
 				});
 			}, 40);
 		});
-		
+
 		asyncTest(sTestPrefix + "Promise then always asynchronous", function() {
 			expect(4);
-			
+
 			var iCounter = 0;
 
 			var pResolvedDirectly = P.resolve();
@@ -193,7 +191,7 @@
 			var pResolvedLater = new Promise(function(fnResolve /*, fnReject */) {
 				fnResolveSecondPromise = fnResolve;
 			});
-			
+
 			equal(iCounter++, 0, "Synchronous Before");
 
 			pResolvedDirectly.then(function() {
@@ -204,9 +202,9 @@
 				equal(iCounter++, 3, "Second promise.then() - Resolved after first promise.then()");
 				start();
 			});
-			
+
 			fnResolveSecondPromise();
-			
+
 			equal(iCounter++, 1, "Synchronous After - befor promise.then()");
 		});
 

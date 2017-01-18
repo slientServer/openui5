@@ -3,8 +3,8 @@
  */
 
 // Provides default renderer for control sap.m.TimePicker
-sap.ui.define(['jquery.sap.global', 'sap/ui/core/Renderer', './InputBaseRenderer', 'sap/ui/core/ValueStateSupport' ],
-	function(jQuery, Renderer, InputBaseRenderer, ValueStateSupport) {
+sap.ui.define(['jquery.sap.global', 'sap/ui/core/Renderer', './InputBaseRenderer', 'sap/ui/core/ValueStateSupport', 'sap/ui/core/LabelEnablement' ],
+	function(jQuery, Renderer, InputBaseRenderer, ValueStateSupport, LabelEnablement) {
 		"use strict";
 
 		/**
@@ -18,7 +18,6 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/core/Renderer', './InputBaseRenderer
 		TimePickerRenderer.CSS_CLASS = "sapMTimePicker";
 
 		var INPUT_WITH_VALUE_HELP_CLASS = "sapMInputVH",
-			INPUT_IE9_CLASS = "sapMInputIE9",
 			VALUE_HELP_ICON_INNER_CLASS = "sapMInputValHelpInner",
 			VALUE_HELP_ICON_CLASS = "sapMInputValHelp";
 
@@ -31,10 +30,8 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/core/Renderer', './InputBaseRenderer
 		 */
 		TimePickerRenderer.addOuterClasses = function(oRm, oControl) {
 			oRm.addClass(TimePickerRenderer.CSS_CLASS);
-			oRm.addClass(INPUT_WITH_VALUE_HELP_CLASS); // just reuse styling of value help icon
-
-			if (sap.ui.Device.browser.internet_explorer && sap.ui.Device.browser.version < 11) {
-				oRm.addClass(INPUT_IE9_CLASS);
+			if (oControl.getEnabled() && oControl.getEditable()) {
+				oRm.addClass(INPUT_WITH_VALUE_HELP_CLASS); // just reuse styling of value help icon
 			}
 		};
 
@@ -50,7 +47,7 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/core/Renderer', './InputBaseRenderer
 			var aClasses,
 				mAttributes,
 				oRb,
-				sText,
+				sText = "",
 				sTooltip;
 
 			if (oControl.getEnabled() && oControl.getEditable()) {
@@ -66,7 +63,14 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/core/Renderer', './InputBaseRenderer
 			}
 
 			oRb = oControl._oResourceBundle;
-			sText = oRb.getText("TIMEPICKER_SCREENREADER_TAG"); //that's the only thing that differs it from a regular input
+
+			if (!oControl.getProperty("placeholder") && this._hasLabelReferencing(oControl)) {
+				/* Default (timeformat) placeholder in conjunction with timepicker labelled by other control -
+				 add the time format to the aria-desc text, because the placeholder won't be read */
+				sText = oRb.getText("TIMEPICKER_WITH_PH_SCREENREADER_TAG", oControl._getFormat());
+			} else {
+				sText = oRb.getText("TIMEPICKER_SCREENREADER_TAG");
+			}
 
 			sTooltip = ValueStateSupport.enrichTooltip(oControl, oControl.getTooltip_AsString());
 			if (sTooltip) {
@@ -93,21 +97,6 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/core/Renderer', './InputBaseRenderer
 		};
 
 		/**
-		 * Adds extra attributes for the input element.
-		 *
-		 * See {@link sap.m.InputBaseRenderer#writeInnerAttributes}.
-		 * @override
-		 * @param oRm {sap.ui.core.RenderManager} The RenderManager that can be used for writing to the render output buffer
-		 * @param oControl {sap.m.TimePicker} An object representation of the control that should be rendered
-		 */
-		TimePickerRenderer.writeInnerAttributes = function(oRm, oControl) {
-			if (sap.ui.Device.browser.mobile) {
-				// prevent keyboard in mobile devices
-				oRm.writeAttribute("readonly", "readonly");
-			}
-		};
-
-		/**
 		 * Writes the accessibility properties for the control.
 		 *
 		 * See {@link sap.m.InputBase#writeAccessibilityState}.
@@ -115,25 +104,57 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/core/Renderer', './InputBaseRenderer
 		 * @param oRm {sap.ui.core.RenderManager} The RenderManager that can be used for writing to the render output buffer
 		 * @param oControl {sap.m.TimePicker} An object representation of the control that should be rendered
 		 */
-		TimePickerRenderer.writeAccessibilityState = function(oRm, oControl) {
-			var mProps = {
-				role: "combobox",
-				multiline: false,
-				autocomplete: "none",
-				expanded: false,
-				haspopup: true,
-				owns: oControl.getId() + "-sliders",
-				describedby: {
-					value: oControl.getId() + "-descr",
+		TimePickerRenderer.writeAccessibilityState = function (oRm, oControl) {
+			var sAriaLabelledBy = this.getAriaLabelledBy(oControl),
+				mProps = {
+					role: "combobox",
+					multiline: false,
+					autocomplete: "none",
+					expanded: false,
+					haspopup: true,
+					owns: oControl.getId() + "-sliders",
+					describedby: {
+						value: oControl.getId() + "-descr",
+						append: true
+					}
+				};
+
+			//When time picker is labelled, the placeholder is not read by AT, so connect additional hidden element
+			if (sAriaLabelledBy && this._hasLabelReferencing(oControl) && oControl.getProperty("placeholder")) {
+				mProps.labelledby = {
+					value: sAriaLabelledBy.trim(),
 					append: true
-				}
-			};
+				};
+			}
 
 			if (oControl.getValueState() == sap.ui.core.ValueState.Error) {
 				mProps.invalid = true;
 			}
 
 			oRm.writeAccessibilityState(oControl, mProps);
+		};
+
+		/**
+		 * Overrides rendering of aria-labelledby.
+		 *
+		 * @param {sap.ui.core.RenderManager} oRm The RenderManager that can be used for writing to the render output buffer.
+		 * @param {sap.ui.core.Control} oControl An object representation of the control that should be rendered.
+		 */
+		TimePickerRenderer.renderAriaLabelledBy = function (oRm, oControl) {
+			//When time picker is labelled, the placeholder is not read by AT, so render additional hidden element
+			if (this._hasLabelReferencing(oControl) && oControl.getProperty("placeholder")) {
+				InputBaseRenderer.renderAriaLabelledBy(oRm, oControl);
+			}
+		};
+
+		/**
+		 * Determines if the given control is labelled by another
+		 * @param oControl the control to check
+		 * @returns {boolean} true if there is at least one other control that labels <code>oControl</control>, false otherwise
+		 * @private
+		 */
+		TimePickerRenderer._hasLabelReferencing = function(oControl) {
+			return LabelEnablement.getReferencingLabels(oControl).length > 0;
 		};
 
 		return TimePickerRenderer;

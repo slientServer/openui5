@@ -20,7 +20,7 @@
 			"tablet" : true
 		},
 		"supportedThemes" : [
-			"sap_bluecrystal",
+			"sap_belize",
 			"sap_hcb"
 		],
 		"technology" : "UI5"
@@ -37,7 +37,9 @@
 					"Facets.fragment.xml",
 					"Field.fragment.xml",
 					"FormFacet.fragment.xml",
+					"Helper.js",
 					"Identification.fragment.xml",
+					"LabeledField.fragment.xml",
 					"Main.controller.js",
 					"Main.view.xml",
 					"ODataMetaModel.json",

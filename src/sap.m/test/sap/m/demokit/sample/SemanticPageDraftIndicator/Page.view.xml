@@ -16,30 +16,12 @@
 					<semantic:addAction>
 						<semantic:AddAction press="onSemanticButtonPress"/>
 					</semantic:addAction>
-					<semantic:editAction>
-						<semantic:EditAction press="onSemanticButtonPress"/>
-					</semantic:editAction>
 					<semantic:flagAction>
 						<semantic:FlagAction press="onSemanticButtonPress"/>
 					</semantic:flagAction>
 					<semantic:favoriteAction>
 						<semantic:FavoriteAction press="onSemanticButtonPress"/>
 					</semantic:favoriteAction>
-					<semantic:sendEmailAction>
-						<semantic:SendEmailAction press="onSemanticButtonPress"/>
-					</semantic:sendEmailAction>
-					<semantic:sendMessageAction>
-						<semantic:SendMessageAction press="onSemanticButtonPress"/>
-					</semantic:sendMessageAction>
-					<semantic:discussInJamAction>
-						<semantic:DiscussInJamAction press="onSemanticButtonPress"/>
-					</semantic:discussInJamAction>
-					<semantic:shareInJamAction>
-						<semantic:ShareInJamAction press="onSemanticButtonPress"/>
-					</semantic:shareInJamAction>
-					<semantic:printAction>
-						<semantic:PrintAction press="onSemanticButtonPress"/>
-					</semantic:printAction>
 					<semantic:messagesIndicator>
 						<semantic:MessagesIndicator press="onMessagesButtonPress"/>
 					</semantic:messagesIndicator>
@@ -48,7 +30,7 @@
 					</semantic:draftIndicator>
 
 					<semantic:content>
-						<ObjectHeader title="Type something in the field, the Draft Indicator will be displayed in the footer" 
+						<ObjectHeader title="Type something in the field, the Draft Indicator will be displayed in the footer"
 							intro="this is just a simulation of how the DraftIndicator will work"
 							responsive="true"/>
 						<form:SimpleForm editable="true">

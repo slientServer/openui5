@@ -10,7 +10,7 @@ sap.ui.define([
 
 	/**
 	 * Constructor for a new CutPaste.
-	 * 
+	 *
 	 * @param {string} [sId] id for the new object, generated automatically if no id is given
 	 * @param {object} [mSettings] initial settings for the new object
 	 * @class The CutPaste enables Cut & Paste functionality for the overlays based on aggregation types
@@ -41,10 +41,7 @@ sap.ui.define([
 					type: "sap.ui.dt.plugin.ElementMover"
 				}
 			},
-			associations: {},
-			events: {
-				elementMoved: {}
-			}
+			associations: {}
 		}
 	});
 
@@ -57,6 +54,7 @@ sap.ui.define([
 	 */
 	CutPaste.prototype.registerElementOverlay = function(oOverlay) {
 		var oElement = oOverlay.getElementInstance();
+		//Register key down so that ESC is possible on all overlays
 		oOverlay.attachBrowserEvent("keydown", this._onKeyDown, this);
 		if (this.getElementMover().isMovableType(oElement) && this.getElementMover().checkMovable(oOverlay)) {
 			oOverlay.setMovable(true);
@@ -105,11 +103,14 @@ sap.ui.define([
 	CutPaste.prototype._onKeyDown = function(oEvent) {
 		var oOverlay = sap.ui.getCore().byId(oEvent.currentTarget.id);
 
-		if ((oEvent.keyCode === jQuery.sap.KeyCodes.X) && (oEvent.shiftKey === false) && (oEvent.altKey === false) && (oEvent.ctrlKey === true)) {
+		// on macintosh os cmd-key is used instead of ctrl-key
+		var bCtrlKey = sap.ui.Device.os.macintosh ? oEvent.metaKey : oEvent.ctrlKey;
+
+		if ((oEvent.keyCode === jQuery.sap.KeyCodes.X) && (oEvent.shiftKey === false) && (oEvent.altKey === false) && (bCtrlKey === true)) {
 			// CTRL+X
 			this.cut(oOverlay);
 			oEvent.stopPropagation();
-		} else if ((oEvent.keyCode === jQuery.sap.KeyCodes.V) && (oEvent.shiftKey === false) && (oEvent.altKey === false) && (oEvent.ctrlKey === true)) {
+		} else if ((oEvent.keyCode === jQuery.sap.KeyCodes.V) && (oEvent.shiftKey === false) && (oEvent.altKey === false) && (bCtrlKey === true)) {
 			// CTRL+V
 			this.paste(oOverlay);
 			oEvent.stopPropagation();
@@ -123,8 +124,7 @@ sap.ui.define([
 	CutPaste.prototype.cut = function(oOverlay) {
 		this.stopCutAndPaste();
 
-		var bMovable = this.getElementMover().isMovableType(oOverlay.getElementInstance());
-		if (bMovable) {
+		if (oOverlay.isMovable()) {
 			this.getElementMover().setMovedOverlay(oOverlay);
 			oOverlay.addStyleClass("sapUiDtOverlayCutted");
 
@@ -132,33 +132,53 @@ sap.ui.define([
 		}
 	};
 
-	CutPaste.prototype.paste = function(oTargetOverlay) {
+	/**
+	 * The actual execution of paste. This method is additionally defined because
+	 * there might be steps between the execution and finalization (stopCutAndPaste) of
+	 * paste (for example in the RTA plugin that extends this one).
+	 * @param  {sap.ui.dt.Overlay} oTargetOverlay The Overlay where the element will be pasted
+	 * @return {boolean} Return true if paste was successfully executed
+	 */
+	CutPaste.prototype._executePaste = function(oTargetOverlay) {
 		var oCutOverlay = this.getElementMover().getMovedOverlay();
 		if (!oCutOverlay) {
-			return;
+			return false;
 		}
 		if (!this._isForSameElement(oCutOverlay, oTargetOverlay)) {
 
 			var oTargetZoneAggregation = this._getTargetZoneAggregation(oTargetOverlay);
 			if (oTargetZoneAggregation) {
 				this.getElementMover().insertInto(oCutOverlay, oTargetZoneAggregation);
+				return true;
+			} else if (OverlayUtil.isInTargetZoneAggregation(oTargetOverlay)) {
+				this.getElementMover().repositionOn(oCutOverlay, oTargetOverlay);
+				return true;
 			} else {
-				if (OverlayUtil.isInTargetZoneAggregation(oTargetOverlay)) {
-					this.getElementMover().repositionOn(oCutOverlay, oTargetOverlay);
-				} else {
-					return;
-				}
+				return false;
 			}
-
-			var oMoveEvent = this.getElementMover().buildMoveEvent();
-			this.fireElementMoved({
-				data: oMoveEvent
-			});
 		}
-		oCutOverlay.focus();
-		this.stopCutAndPaste();
+
+		// focus get invalidated, see BCP 1580061207
+		setTimeout(function(){
+			oCutOverlay.focus();
+		},0);
 	};
 
+	/**
+	 * Paste the element into the target overlay
+	 * @param  {sap.ui.dt.Overlay} oTargetOverlay The Overlay where the element will be pasted
+	 */
+	CutPaste.prototype.paste = function(oTargetOverlay) {
+		var bPasteExecuted = this._executePaste(oTargetOverlay);
+
+		if (bPasteExecuted === true){
+			this.stopCutAndPaste();
+		}
+	};
+
+	/**
+	 * Finalize cut&paste operation + cleanup
+	 */
 	CutPaste.prototype.stopCutAndPaste = function() {
 		var oCutOverlay = this.getElementMover().getMovedOverlay();
 		if (oCutOverlay) {

@@ -69,6 +69,13 @@ sap.ui.define(['jquery.sap.global', './library', 'sap/ui/core/Control', 'sap/ui/
 			 * Sets the horizontal alignment of the number and unit.
 			 */
 			textAlign : {type : "sap.ui.core.TextAlign", group : "Appearance", defaultValue : sap.ui.core.TextAlign.Begin}
+		},
+		associations : {
+
+			/**
+			 * Association to controls / ids which describe this control (see WAI-ARIA attribute aria-describedby).
+			 */
+			ariaDescribedBy: {type: "sap.ui.core.Control", multiple: true, singularName: "ariaDescribedBy"}
 		}
 	}});
 
@@ -86,7 +93,7 @@ sap.ui.define(['jquery.sap.global', './library', 'sap/ui/core/Control', 'sap/ui/
 	 * @override
 	 * @public
 	 * @param {sap.ui.core.ValueState} sState The state to be set to
-	 * @returns {ObjectNumber} this pointer for chaining
+	 * @returns {sap.m.ObjectNumber} this pointer for chaining
 	 */
 	ObjectNumber.prototype.setState = function(sState) {
 		//remove the current value state css class
@@ -107,6 +114,7 @@ sap.ui.define(['jquery.sap.global', './library', 'sap/ui/core/Control', 'sap/ui/
 	 * @override
 	 * @public
 	 * @param {sap.ui.core.TextAlign} sAlign The new value
+	 * @returns {sap.m.ObjectNumber} <code>this</code> pointer for chaining
 	 */
 	ObjectNumber.prototype.setTextAlign = function(sAlign) {
 		var sAlignVal = Renderer.getTextAlign(sAlign, this.getTextDirection());
@@ -116,6 +124,7 @@ sap.ui.define(['jquery.sap.global', './library', 'sap/ui/core/Control', 'sap/ui/
 
 		sAlignVal = sAlignVal || sAlign;
 		this.$().css("text-align", sAlign);
+		return this;
 	};
 
 	return ObjectNumber;

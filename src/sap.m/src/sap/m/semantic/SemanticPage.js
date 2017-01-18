@@ -44,6 +44,8 @@ function (jQuery, SegmentedContainer, SemanticConfiguration, Button, Title, Acti
 	var SemanticPage = sap.ui.core.Control.extend("sap.m.semantic.SemanticPage", /** @lends sap.m.semantic.SemanticPage.prototype */ {
 		metadata: {
 
+			library: "sap.m",
+
 			properties: {
 
 				/**
@@ -98,6 +100,27 @@ function (jQuery, SegmentedContainer, SemanticConfiguration, Button, Title, Acti
 					type: "boolean",
 					group: "Appearance",
 					defaultValue: true
+				},
+
+				/**
+				 * Determines whether the floating footer behavior is enabled.
+				 * If set to <code>true</code>, the content is visible when it's underneath the footer.
+				 * @since 1.40.1
+				 */
+				floatingFooter: {
+					type: "boolean",
+					group:"Appearance",
+					defaultValue: false
+				},
+
+				/**
+				 * Declares the type of semantic ruleset that will govern the styling and positioning of semantic content.
+				 * @since 1.44
+				 */
+				semanticRuleSet: {
+					type: "sap.m.semantic.SemanticRuleSetType",
+					group: "Misc",
+					defaultValue: sap.m.semantic.SemanticRuleSetType.Classic
 				}
 			},
 			defaultAggregation: "content",
@@ -138,6 +161,13 @@ function (jQuery, SegmentedContainer, SemanticConfiguration, Button, Title, Acti
 				},
 
 				/**
+				 * Accessible landmark settings to be applied to the containers of the <code>sap.m.Page</code> control.
+				 *
+				 * If not set, no landmarks will be written.
+				 */
+				landmarkInfo : {type : "sap.m.PageAccessibleLandmarkInfo", multiple : false},
+
+				/**
 				 * Wrapped instance of {@link sap.m.Page}
 				 */
 				_page: {
@@ -153,7 +183,8 @@ function (jQuery, SegmentedContainer, SemanticConfiguration, Button, Title, Acti
 				 * See {@link sap.m.Page#navButtonPress}
 				 */
 				navButtonPress: {}
-			}
+			},
+			designTime : true
 		}
 	});
 
@@ -163,7 +194,14 @@ function (jQuery, SegmentedContainer, SemanticConfiguration, Button, Title, Acti
 		this._getPage().setCustomHeader(this._getInternalHeader());
 		this._getPage().setFooter(new OverflowToolbar(this.getId() + "-footer"));
 		this._getPage().setLandmarkInfo(new PageAccessibleLandmarkInfo());
+		this._getPage().setShowHeader(false);
+
+		var oHeader = this._getInternalHeader();
+		oHeader._attachModifyAggregation("contentLeft", null, this._updateHeaderVisibility, this);
+		oHeader._attachModifyAggregation("contentMiddle", null, this._updateHeaderVisibility, this);
+		oHeader._attachModifyAggregation("contentRight", null, this._updateHeaderVisibility, this);
 	};
+
 
 	/**
 	 * Function is called when exiting the control.
@@ -180,6 +218,16 @@ function (jQuery, SegmentedContainer, SemanticConfiguration, Button, Title, Acti
 		if (this._oWrappedFooter) {
 			this._oWrappedFooter.destroy();
 			this._oWrappedFooter = null;
+		}
+
+		if (this._oTitle) {
+			this._oTitle.destroy();
+			this._oTitle = null;
+		}
+
+		if (this._oNavButton) {
+			this._oNavButton.destroy();
+			this._oNavButton = null;
 		}
 
 		this._oPositionsMap = null;
@@ -205,6 +253,23 @@ function (jQuery, SegmentedContainer, SemanticConfiguration, Button, Title, Acti
 
 	SemanticPage.prototype.setShowSubHeader = function (bShowSubHeader, bSuppressInvalidate) {
 		this._getPage().setShowSubHeader(bShowSubHeader, bSuppressInvalidate);
+		this.setProperty("showSubHeader", bShowSubHeader, true);
+		return this;
+	};
+
+	SemanticPage.prototype.getShowFooter = function () {
+		return this._getPage().getShowFooter();
+	};
+
+	SemanticPage.prototype.setShowFooter = function (bShowFooter, bSuppressInvalidate) {
+		this._getPage().setShowFooter(bShowFooter, bSuppressInvalidate);
+		this.setProperty("showFooter", bShowFooter, true);
+		return this;
+	};
+
+	SemanticPage.prototype.setFloatingFooter = function (bFloatingFooter, bSuppressInvalidate) {
+		this._getPage().setFloatingFooter(bFloatingFooter, bSuppressInvalidate);
+		this.setProperty("floatingFooter", bFloatingFooter, true);
 		return this;
 	};
 
@@ -282,6 +347,18 @@ function (jQuery, SegmentedContainer, SemanticConfiguration, Button, Title, Acti
 		this._getPage().setEnableScrolling(bEnable);
 		this.setProperty("enableScrolling", bEnable, true);
 		return this;
+	};
+
+	SemanticPage.prototype.setLandmarkInfo = function (oLandmarkInfo) {
+		return this._getPage().setLandmarkInfo(oLandmarkInfo);
+	};
+
+	SemanticPage.prototype.getLandmarkInfo = function () {
+		return this._getPage().getLandmarkInfo();
+	};
+
+	SemanticPage.prototype.destroyLandmarkInfo = function () {
+		return this._getPage().destroyLandmarkInfo();
 	};
 
 	/*
@@ -424,6 +501,7 @@ function (jQuery, SegmentedContainer, SemanticConfiguration, Button, Title, Acti
 						SemanticConfiguration.getSequenceOrderIndex(sType),
 						bSuppressInvalidate);
 			}
+			return ManagedObject.prototype.setAggregation.call(this, sAggregationName, oObject, true);// no need to invalidate entire page since the change only affects custom footer/header of page
 		}
 
 		return ManagedObject.prototype.setAggregation.call(this, sAggregationName, oObject, bSuppressInvalidate);
@@ -444,6 +522,14 @@ function (jQuery, SegmentedContainer, SemanticConfiguration, Button, Title, Acti
 		}
 
 		return ManagedObject.prototype.destroyAggregation.call(this, sAggregationName, oObject, bSuppressInvalidate);
+	};
+
+	SemanticPage.prototype._updateHeaderVisibility = function () {
+		var oHeader = this._getInternalHeader();
+		var bEmpty = (oHeader.getContentLeft().length === 0)
+			&& (oHeader.getContentMiddle().length === 0)
+			&& (oHeader.getContentRight().length === 0);
+		this._getPage().setShowHeader(!bEmpty);
 	};
 
 	SemanticPage.prototype._getTitle = function () {

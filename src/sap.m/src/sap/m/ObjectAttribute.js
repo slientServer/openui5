@@ -164,18 +164,21 @@ sap.ui.define(['jquery.sap.global', './library', 'sap/ui/core/Control'],
 	/**
 	 * @private
 	 */
-	sap.m.ObjectAttribute.prototype.onsapenter = function(oEvent) {
+	ObjectAttribute.prototype.onsapenter = function(oEvent) {
 		if (this._isSimulatedLink()) {
 			this.firePress({
 				domRef : this.getDomRef()
 			});
+
+			// mark the event that it is handled by the control
+			oEvent.setMarked();
 		}
 	};
 
 	/**
 	 * @private
 	 */
-	sap.m.ObjectAttribute.prototype.onsapspace = function(oEvent) {
+	ObjectAttribute.prototype.onsapspace = function(oEvent) {
 		this.onsapenter(oEvent);
 	};
 

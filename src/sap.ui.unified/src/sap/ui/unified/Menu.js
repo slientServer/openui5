@@ -3,8 +3,8 @@
  */
 
 // Provides control sap.ui.unified.Menu.
-sap.ui.define(['jquery.sap.global', 'sap/ui/core/Control', 'sap/ui/core/Popup', './MenuItemBase', './library', 'jquery.sap.script'],
-	function(jQuery, Control, Popup, MenuItemBase, library/* , jQuerySap */) {
+sap.ui.define(['jquery.sap.global', 'sap/ui/core/Control', 'sap/ui/Device', 'sap/ui/core/Popup', './MenuItemBase', './library', 'jquery.sap.script'],
+	function(jQuery, Control, Device, Popup, MenuItemBase, library/* , jQuerySap */) {
 	"use strict";
 
 
@@ -17,7 +17,7 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/core/Control', 'sap/ui/core/Popup', 
 	 *
 	 * @class
 	 * A menu is an interactive element which provides a choice of different actions to the user. These actions (items) can also be organized in submenus.
-	 * Like other dialog-like controls, the menu is not rendered within the control hierarchy. Instead it can be opened at a specified position via a function call. 
+	 * Like other dialog-like controls, the menu is not rendered within the control hierarchy. Instead it can be opened at a specified position via a function call.
 	 * @extends sap.ui.core.Control
 	 *
 	 * @author SAP SE
@@ -106,6 +106,8 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/core/Control', 'sap/ui/core/Popup', 
 	(function(window) {
 
 	Menu.prototype.bCozySupported = true;
+	Menu._DELAY_SUBMENU_TIMER = 300;
+	Menu._DELAY_SUBMENU_TIMER_EXT = 400;
 
 	Menu.prototype.init = function(){
 		var that = this;
@@ -178,7 +180,7 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/core/Control', 'sap/ui/core/Popup', 
 			this.close();
 			this.$().remove();
 		}
-		
+
 		var aItems = this.getItems();
 
 		for (var i = 0; i < aItems.length; i++) {
@@ -250,6 +252,7 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/core/Control', 'sap/ui/core/Popup', 
 			return;
 		}
 		this._resetDelayedRerenderItems();
+		this._discardOpenSubMenuDelayed();
 
 		this._itemRerenderTimer = jQuery.sap.delayedCall(0, this, function(){
 			var oDomRef = this.getDomRef();
@@ -278,10 +281,10 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/core/Control', 'sap/ui/core/Popup', 
 
 	/**
 	 * Opens the menu at the specified position.
-	 * 
+	 *
 	 * The position of the menu is defined relative to an element in the visible DOM by specifying
-	 * the docking location of the menu and of the related element. 
-	 * 
+	 * the docking location of the menu and of the related element.
+	 *
 	 * See {@link sap.ui.core.Popup#open Popup#open} for further details about popup positioning.
 	 *
 	 * @param {boolean} bWithKeyboard Indicates whether or not the first item shall be highlighted when the menu is opened (keyboard case)
@@ -291,7 +294,7 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/core/Control', 'sap/ui/core/Popup', 
 	 * @param {sap.ui.core.Element|DOMRef} oOf The menu is positioned relatively to this element based on the given dock locations
 	 * @param {string} [sOffset] The offset relative to the docking point, specified as a string with space-separated pixel values (e.g. "0 10" to move the popup 10 pixels to the right)
 	 * @param {sap.ui.core.Collision} [sCollision] The collision defines how the position of the menu should be adjusted in case it overflows the window in some direction
-	 * 
+	 *
 	 * @type void
 	 * @public
 	 * @ui5-metamodel This method will also be described in the UI5 (legacy) design time meta model
@@ -303,14 +306,14 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/core/Control', 'sap/ui/core/Popup', 
 
 		setItemToggleState(this, true);
 
-		
+
 		this.oOpenerRef = oOpenerRef;
 		this.bIgnoreOpenerDOMRef = false;
 
 		// Open the sap.ui.core.Popup
 		this.getPopup().open(0, my, at, of, offset || "0 0", collision || "_sapUiCommonsMenuFlip _sapUiCommonsMenuFlip", true);
 		this.bOpen = true;
-		
+
 		// Set the tab index of the menu and focus
 		var oDomRef = this.getDomRef();
 		jQuery(oDomRef).attr("tabIndex", 0).focus();
@@ -339,6 +342,8 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/core/Control', 'sap/ui/core/Popup', 
 		if (!this.bOpen || Menu._dbg /*Avoid closing for debugging purposes*/) {
 			return;
 		}
+
+		this._discardOpenSubMenuDelayed();
 
 		setItemToggleState(this, false);
 
@@ -550,14 +555,38 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/core/Control', 'sap/ui/core/Popup', 
 
 		this.setHoveredItem(oItem);
 
-		this.closeSubmenu(true);
-
 		if (jQuery.sap.checkMouseEnterOrLeave(oEvent, this.getDomRef())) {
-			this.getDomRef().focus();
+			if (!Device.browser.msie && !Device.browser.edge) { //for IE & Edge skip it, otherwise it will move the focus out of the hovered item set before
+				this.getDomRef().focus();
+			}
 		}
 
-		if (this.checkEnabled(oItem)) {
-			this.openSubmenu(oItem, false, true);
+		this._openSubMenuDelayed(oItem);
+
+	};
+
+	Menu.prototype._openSubMenuDelayed = function(oItem){
+		if (!oItem) {
+			return;
+		}
+		this._discardOpenSubMenuDelayed();
+		this._delayedSubMenuTimer = jQuery.sap.delayedCall(
+			oItem.getSubmenu() && this.checkEnabled(oItem) ? Menu._DELAY_SUBMENU_TIMER : Menu._DELAY_SUBMENU_TIMER_EXT,
+			this,
+			function(){
+				this.closeSubmenu();
+				if (!oItem.getSubmenu() || !this.checkEnabled(oItem)) {
+					return;
+				}
+				this.setHoveredItem(oItem);
+				this.openSubmenu(oItem, false, true);
+		});
+	};
+
+	Menu.prototype._discardOpenSubMenuDelayed = function(oItem){
+		if (this._delayedSubMenuTimer) {
+			jQuery.sap.clearDelayedCall(this._delayedSubMenuTimer);
+			this._delayedSubMenuTimer = null;
 		}
 	};
 
@@ -567,9 +596,10 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/core/Control', 'sap/ui/core/Popup', 
 		}
 
 		if (jQuery.sap.checkMouseEnterOrLeave(oEvent, this.getDomRef())) {
-			if (!this.oOpenedSubMenu || !this.oOpenedSubMenu.getParent() === this.oHoveredItem) {
+			if (!this.oOpenedSubMenu || !(this.oOpenedSubMenu.getParent() === this.oHoveredItem)) {
 				this.setHoveredItem(null);
 			}
+			this._discardOpenSubMenuDelayed();
 		}
 	};
 
@@ -595,6 +625,8 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/core/Control', 'sap/ui/core/Popup', 
 		//   (all needed further code locations for that change are marked with "TBD: standard popup autoclose")
 		var isInMenuHierarchy = false,
 			touchEnabled = this.getPopup().touchEnabled;
+
+		this.bIgnoreOpenerDOMRef = false;
 
 		if (oEvent.type == "mousedown" || oEvent.type == "touchstart") {
 			// Suppress the delayed mouse event from mobile browser
@@ -622,10 +654,12 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/core/Control', 'sap/ui/core/Popup', 
 					that = that.oOpenedSubMenu;
 				}
 			}
+			if (!isInMenuHierarchy) {
+				this.bIgnoreOpenerDOMRef = true;
+			}
 		}
 
 		if (!isInMenuHierarchy) {
-			this.bIgnoreOpenerDOMRef = true;
 			this.close();
 		}
 	};
@@ -730,10 +764,10 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/core/Control', 'sap/ui/core/Popup', 
 
 	/**
 	 * Opens the submenu of the given item (if any).
-	 * 
-	 * @param {boolean} bWithKeyboard Whether the submenu is opened via keyboard 
+	 *
+	 * @param {boolean} bWithKeyboard Whether the submenu is opened via keyboard
 	 * @param {boolean} bWithHover Whether the submenu is opened on hover or not (click)
-	 * 
+	 *
 	 * @private
 	 */
 	Menu.prototype.openSubmenu = function(oItem, bWithKeyboard, bWithHover){
@@ -763,13 +797,13 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/core/Control', 'sap/ui/core/Popup', 
 			oSubMenu.open(bWithKeyboard, this, eDock.BeginTop, eDock.EndTop, oItem, "0 0");
 		}
 	};
-	
+
 	/**
 	 * Closes an open submenu (if any) of this menu.
-	 * 
+	 *
 	 * @param {boolean} bIfNotFixedOnly If true, the submenu is only close if it is not fixed (opened via hover and not via click)
 	 * @param {boolean} bIgnoreOpenerDOMRef If true, the focus is not set back to the opener dom ref (item) of the submenu
-	 * 
+	 *
 	 * @private
 	 */
 	Menu.prototype.closeSubmenu = function(bIfNotFixedOnly, bIgnoreOpenerDOMRef){
@@ -902,36 +936,36 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/core/Control', 'sap/ui/core/Popup', 
 			this._setActiveDescendant(this.oHoveredItem);
 		}
 	};
-	
+
 	/**
 	 * Checks whether the Menu should run with cozy design.
 	 * This function must only be called on the root menu (getRootMenu) to get proper results.
-	 * 
+	 *
 	 * @private
 	 */
 	Menu.prototype.isCozy = function(){
 		if (!this.bCozySupported) {
 			return false;
 		}
-		
+
 		if (this.hasStyleClass("sapUiSizeCozy")) {
 			return true;
 		}
-		
+
 		if (checkCozyMode(this.oOpenerRef)) {
 			return true;
 		}
-		
+
 		if (checkCozyMode(this.getParent())) {
 			return true;
 		}
-		
+
 		return false;
 	};
 
 
 	///////////////////////////////////////// Hidden Functions /////////////////////////////////////////
-	
+
 	function checkCozyMode(oRef) {
 		if (!oRef) {
 			return false;

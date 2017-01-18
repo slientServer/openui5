@@ -1,108 +1,53 @@
-/* ==================================================== */
-/* CSS for control sap.m/ComboBoxBase.control HCB theme */
-/* ==================================================== */
+/* =================================== */
+/* CSS for control sap.m/ComboBoxBase  */
+/* High Contrast Black theme           */
+/* =================================== */
 
 /* ------------------------------ */
-/* ComboBox                       */
+/* text field                     */
 /* ------------------------------ */
-
-input.sapMComboBoxBaseInputInner:not(.sapMComboBoxBaseInputInnerReadonly) {
-	padding-right: 3rem;
-}
 
 /* note: do not optimize this selector, the sap.m.MulticomboBox DOM structure differ from sap.m.ComboBox */
 .sapMComboBoxBasePressed .sapMComboBoxBaseInputInner:not(.sapMInputBaseStateInner) {
-	border-color: @sapHCStandardFG;
+	border-color: @sapUiFieldActiveBorderColor;
 }
 
 /* ------------------------------ */
-/* ComboBox's Arrow               */
+/* arrow                          */
 /* ------------------------------ */
-
-.sapMComboBoxBaseArrow {
-	position: absolute;
-	text-align: center;
-	color: @sapHCStandardFG;
-	width: 2.5rem;
-	height: 2.375rem;
-	line-height: 2.375rem;
-	right: 0.0625rem;
-}
-
-.sapMComboBoxBaseArrow::before {
-	font-family: "SAP-icons";
-	speak: none;
-	content: "\e1ef";
-}
 
 /* hover */
-
-.sap-desktop .sapMComboBoxBaseArrow:not(.sapMComboBoxBasePressed):hover {
-	background: @sapHCHighlightBG;
-	border-left: 1px solid @sapHCStandardFG;
+html.sap-desktop .sapMComboBoxBaseArrow:not(.sapMComboBoxBasePressed):hover {
+	border-left: 1px solid @sapUiFieldHoverBorderColor;
 }
 
 /* pressed */
 /* note: do not optimize this selector, the sap.m.MulticomboBox DOM structure differ from sap.m.ComboBox */
 .sapMComboBoxBasePressed .sapMComboBoxBaseArrow,
-.sap-desktop .sapMComboBoxBasePressed .sapMComboBoxBaseArrow:hover {
-	background: @sapHCHighlightAltBG;
-	border-left: 1px solid @sapHCStandardFG;
-}
-
- /* note: do not optimize this selector, the sap.m.MulticomboBox DOM structure differ from sap.m.ComboBox */
-.sapMComboBoxBasePressed .sapMComboBoxBaseArrow::before {
-	color: @sapHCStandardFG;
-}
-
-/* Disabled */
-.sapMComboBoxBaseDisabled .sapMComboBoxBaseArrow,
-.sapMComboBoxBaseDisabled .sapMComboBoxBaseBar::before {
-	color: @sapHCReducedFG;
+html.sap-desktop .sapMComboBoxBasePressed .sapMComboBoxBaseArrow:hover {
+	border-left: 1px solid @sapUiFieldActiveBorderColor;
 }
 
 /* ------------------------------ */
-/* ComboBox's Picker              */
+/* list                           */
+/* ------------------------------ */
+
+.sapMComboBoxBaseList.sapUiLocalBusy {
+	min-height: 2rem;
+}
+
+/* ------------------------------ */
+/* picker                         */
 /* ------------------------------ */
 
 div.sapMComboBoxBasePicker {
-	box-shadow: 0 .25rem 1.875rem .125rem fade(@sapHCStandardFG, 80%);
+	box-shadow: 0 .25rem 1.875rem .125rem fade(@sapUiContentShadowColor, 80%);
 	border: none;
 }
 
-/* This is used to make border of the combobox's list not scrollable */
+/* make border of the combobox's list not scrollable */
 .sapMComboBoxBasePicker > div {
 	box-sizing: border-box;
-	border: solid @sapHCStandardFG;
+	border: solid @sapUiGroupContentBorderColor;
 	border-width: 1px 2px 2px;
-}
-
-/* ------------------------------ */
-/* ComboBox's Dialog              */
-/* ------------------------------ */
-
-div.sapMComboBoxBasePicker .sapMDialogScrollCont {
-	padding: 0;
-}
-
-/* ===================================================================== */
-/* CSS for control sap.m/ComboBox.control HCB theme compact size         */
-/* ===================================================================== */
-
-.sapUiSizeCompact input.sapMComboBoxBaseInputInner:not(.sapMComboBoxBaseInputInnerReadonly) {
-	padding-right: 2.5rem;
-}
-
-/* ------------------------------ */
-/* ComboBox Arrow                 */
-/* ------------------------------ */
-
-.sapUiSizeCompact .sapMComboBoxBaseArrow {
-	width: 2rem;
-	height: 1.5rem;
-	line-height: 1.5rem;
-}
-
-.sapUiSizeCondensed .sapMComboBoxBaseArrow {
-	right: 0;
 }

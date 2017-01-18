@@ -3,8 +3,8 @@
  */
 
 // Provides control sap.ui.commons.Dialog.
-sap.ui.define(['jquery.sap.global', './library', 'sap/ui/core/Control', 'sap/ui/core/Popup'],
-	function (jQuery, library, Control, Popup) {
+sap.ui.define(['jquery.sap.global', './library', 'sap/ui/core/Control', 'sap/ui/core/Popup', 'sap/ui/core/RenderManager'],
+	function (jQuery, library, Control, Popup, RenderManager) {
 		"use strict";
 
 
@@ -25,6 +25,7 @@ sap.ui.define(['jquery.sap.global', './library', 'sap/ui/core/Control', 'sap/ui/
 		 *
 		 * @constructor
 		 * @public
+		 * @deprecated Since version 1.38. Instead, use the <code>sap.m.Dialog</code> control.
 		 * @alias sap.ui.commons.Dialog
 		 * @ui5-metamodel This control/element also will be described in the UI5 (legacy) designtime metamodel
 		 */
@@ -284,8 +285,6 @@ sap.ui.define(['jquery.sap.global', './library', 'sap/ui/core/Control', 'sap/ui/
 		Dialog.prototype.init = function () {
 
 			this.oPopup = new Popup(this, true, true);
-			var eDock = Popup.Dock;
-			this.oPopup.setPosition(eDock.CenterCenter, eDock.CenterCenter, window);
 
 			// the technical minWidth, not the one set via API; will be calculated after rendering
 			this._minWidth = 64;
@@ -298,10 +297,11 @@ sap.ui.define(['jquery.sap.global', './library', 'sap/ui/core/Control', 'sap/ui/
 			this._mParameters.that = this;
 			this._mParameters.firstFocusable = this.getId() + "-fhfe";
 			this._mParameters.lastFocusable = this.getId() + "-fhee";
+			this._fnOnResizeRecenter = jQuery.proxy(this._onResize, this);
 		};
 
 		Dialog.prototype.setInitialFocus = function (sId) {
-			if (sId !== null && typeof sId != "string") {
+			if (sId && typeof sId != "string") {
 				sId = sId.getId();
 			}
 			this.oPopup.setInitialFocusId(sId);
@@ -320,7 +320,9 @@ sap.ui.define(['jquery.sap.global', './library', 'sap/ui/core/Control', 'sap/ui/
 				(sap.ui.Device.browser.version == 9 || sap.ui.Device.browser.version == 10);
 			var bIsRTLOn = sap.ui.getCore().getConfiguration().getRTL();
 
-			this._calculateMinSize();
+			var _minSize = this.getMinSize();
+			this._minWidth = _minSize.width;
+			this._minHeight = _minSize.height;
 
 			// if content has 100% width, but Dialog has no width, set content width to auto
 			if (!this._isSizeSet(this.getWidth()) && !this._isSizeSet(this.getMaxWidth())) {
@@ -370,27 +372,6 @@ sap.ui.define(['jquery.sap.global', './library', 'sap/ui/core/Control', 'sap/ui/
 					}
 				}
 			}
-
-		};
-
-		/**
-		 * Calcuates the minimum size of the dialog after rendering
-		 */
-		Dialog.prototype._calculateMinSize = function () {
-
-			if (this._sDelayedCall) {
-				jQuery.sap.clearDelayedCall(this._sDelayedCall);
-				return;
-			}
-
-			// Calculate min size and we need to do a delayedCall here because we do not have the size of the header and footer of the Dialog
-			this._sDelayedCall = jQuery.sap.delayedCall(0, this, function () {
-				var _minSize = this.getMinSize();
-				this._minWidth = _minSize.width;
-				this._minHeight = _minSize.height;
-				this._sDelayedCall = null;
-			});
-
 		};
 
 		/**
@@ -403,7 +384,7 @@ sap.ui.define(['jquery.sap.global', './library', 'sap/ui/core/Control', 'sap/ui/
 			var sCloseBtnId = this.getId() + "-close";
 			if (oEvent.target.id === sCloseBtnId) {
 				this.close();
-				oEvent.preventDefault(); // avoid onbeforeunload event which happens at least in IE9 because of the javascript:void(0); link target
+				oEvent.preventDefault(); // avoid onbeforeunload event which happens at least in IE9 because of the "#" link target
 			}
 			return false;
 		};
@@ -423,10 +404,13 @@ sap.ui.define(['jquery.sap.global', './library', 'sap/ui/core/Control', 'sap/ui/
 
 				this.oPopup.attachEvent("opened", this.handleOpened, this);
 				this.oPopup.attachEvent("closed", this.handleClosed, this);
+
 				this.oPopup.setModal(this.getModal());
 				this.oPopup.setAutoClose(this.getAutoClose());
 				this.oPopup.open(400);
+				this._onResize();
 				this._bOpen = true;
+				this._registerContentResizeHandler();
 			}
 		};
 
@@ -521,20 +505,24 @@ sap.ui.define(['jquery.sap.global', './library', 'sap/ui/core/Control', 'sap/ui/
 		 */
 		Dialog.prototype.handleClosed = function () {
 			this.oPopup.detachEvent("closed", this.handleClosed, this);
+			this._deregisterContentResizeHandler();
 
 			this.fireClosed(this._oRect);
 			this.close();
 
 			// Make sure the dom content is not shown any more (in the static area)
 
-			// This used to be this.$().hide() which keeps the current DOM in the static UIArea. This led to the
-			// problem that control DOM with the same ID exists in two places if the control is added to a different
-			// aggregation without the dialog being destroyed. In this special case the RichTextEditor renders a
-			// textarea-element and afterwards tells the TinyMCE component which ID to use for rendering; since there
-			// are two elements with the same ID at that point, it does not work.
-			// As the Dialog can only contain other controls, we can safely discard the DOM - we cannot do this inside
-			// the Popup, since it supports displaying arbitrary HTML content.
-			this.$().remove();
+			if (this.getDomRef()) {
+				// This used to be this.$().hide() which keeps the current DOM in the static UIArea. This led to the
+				// problem that control DOM with the same ID exists in two places if the control is added to a different
+				// aggregation without the dialog being destroyed. In this special case the RichTextEditor renders a
+				// textarea-element and afterwards tells the TinyMCE component which ID to use for rendering; since there
+				// are two elements with the same ID at that point, it does not work.
+				// As the Dialog can only contain other controls, we can safely discard the DOM - we cannot do this inside
+				// the Popup, since it supports displaying arbitrary HTML content.
+				RenderManager.preserveContent(this.getDomRef());
+				this.$().remove();
+			}
 		};
 
 		/**
@@ -549,8 +537,10 @@ sap.ui.define(['jquery.sap.global', './library', 'sap/ui/core/Control', 'sap/ui/
 
 
 		Dialog.prototype.setTitle = function (sText) {
+
 			this.setProperty("title", sText, true); // last parameter avoids invalidation
 			this.$("lbl").text(sText);
+
 			return this;
 		};
 
@@ -567,6 +557,7 @@ sap.ui.define(['jquery.sap.global', './library', 'sap/ui/core/Control', 'sap/ui/
 			// just to ensure that any attached event is being detached
 			this.oPopup.detachEvent("opened", this.handleOpened, this);
 			this.oPopup.detachEvent("closed", this.handleClosed, this);
+			this._deregisterContentResizeHandler();
 
 			this.oPopup.destroy();
 			if (bWasOpen) {
@@ -577,6 +568,7 @@ sap.ui.define(['jquery.sap.global', './library', 'sap/ui/core/Control', 'sap/ui/
 			jQuery.sap.clearDelayedCall(this._sDelayedCall);
 			this._sDelayedCall = null;
 			delete this._mParameters;
+			this._fnOnResizeRecenter = null;
 		};
 
 		/**
@@ -685,14 +677,16 @@ sap.ui.define(['jquery.sap.global', './library', 'sap/ui/core/Control', 'sap/ui/
 		 */
 		Dialog.prototype.getMinSize = function () {
 
+			var ADDITIONAL_HEIGHT_IF_NO_FOOTER = 36;
 			var $oDialog = jQuery.sap.byId(this.sId);
 			var	$oTitle = jQuery.sap.byId(this.sId + "-hdr");
 			var $oFooter = jQuery.sap.byId(this.sId + "-footer");
 			var oFooterBtns = $oFooter.children("DIV").get(0);
 			var widthFooter = oFooterBtns ? oFooterBtns.offsetWidth : 0;
+			var bFooterIsVisible = $oFooter.css('display') !== 'none';
 			var	addValue = 0;
-			var heightTitle,
-				heightFooter;
+			var heightTitle;
+			var	heightFooter;
 
 			// add border and padding of footer...not margin
 			addValue += $oFooter.outerWidth(false) - $oFooter.width();
@@ -715,7 +709,7 @@ sap.ui.define(['jquery.sap.global', './library', 'sap/ui/core/Control', 'sap/ui/
 
 			return {
 				width: widthFooter,
-				height: heightTitle + heightFooter + 36 /* min. height content */
+				height: heightTitle + heightFooter + (bFooterIsVisible ? ADDITIONAL_HEIGHT_IF_NO_FOOTER : 0) /* min. height content */
 			};
 		};
 
@@ -918,9 +912,9 @@ sap.ui.define(['jquery.sap.global', './library', 'sap/ui/core/Control', 'sap/ui/
 			}
 
 			event = event || window.event;
+			this._deregisterContentResizeHandler();
 
 			if (this.sDragMode == "resize") {
-
 				var deltaX = event.screenX - this.startDragX || 0;
 				var deltaY = event.screenY - this.startDragY || 0;
 
@@ -970,6 +964,7 @@ sap.ui.define(['jquery.sap.global', './library', 'sap/ui/core/Control', 'sap/ui/
 			}
 
 			event.cancelBubble = true;
+			this._registerContentResizeHandler();
 			return false;
 		};
 
@@ -1021,6 +1016,33 @@ sap.ui.define(['jquery.sap.global', './library', 'sap/ui/core/Control', 'sap/ui/
 			this.oPopup.getAutoClose();
 		};
 
+		/**
+		*
+		* @private
+		*/
+		Dialog.prototype._deregisterContentResizeHandler = function () {
+			if (this._sContentResizeListenerId) {
+				sap.ui.core.ResizeHandler.deregister(this._sContentResizeListenerId);
+				this._sContentResizeListenerId = null;
+			}
+		};
+
+		/**
+		 *
+		 * @private
+		 */
+		Dialog.prototype._registerContentResizeHandler = function() {
+			if (!this._sContentResizeListenerId) {
+				this._sContentResizeListenerId = sap.ui.core.ResizeHandler.register(this.getDomRef("cont"), this._fnOnResizeRecenter);
+			}
+		};
+
+		Dialog.prototype._onResize = function() {
+			var eDock = Popup.Dock;
+			if (this.oPopup) {
+				this.oPopup.setPosition(eDock.CenterCenter, eDock.CenterCenter, window);
+			}
+		};
 
 		return Dialog;
 

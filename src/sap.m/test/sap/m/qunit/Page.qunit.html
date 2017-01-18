@@ -3,25 +3,23 @@
 
 <!--
   Tested class: sap.m.Page
-  Author: d046011
 -->
 
 	<head>
-		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
 		<title>qUnit Page for sap.m.Page</title>
 
+		<script src="../shared-config.js"></script>
 		<script id="sap-ui-bootstrap"
-			type="text/javascript"
 			src="../../../../resources/sap-ui-core.js"
-			data-sap-ui-theme="sap_bluecrystal"
 			data-sap-ui-noConflict="true"
 			data-sap-ui-libs="sap.m">
 		</script>
 
-		<link rel="stylesheet" href="../../../../resources/sap/ui/thirdparty/qunit.css" type="text/css" media="screen" />
-		<script type="text/javascript" src="../../../../resources/sap/ui/thirdparty/qunit.js"></script>
-		<script type="text/javascript" src="../../../../resources/sap/ui/qunit/qunit-junit.js"></script>
-		<script type="text/javascript" src="../../../../resources/sap/ui/qunit/QUnitUtils.js"></script>
+		<link rel="stylesheet" href="../../../../resources/sap/ui/thirdparty/qunit.css" type="text/css" media="screen">
+		<script src="../../../../resources/sap/ui/thirdparty/qunit.js"></script>
+		<script src="../../../../resources/sap/ui/qunit/qunit-junit.js"></script>
+		<script src="../../../../resources/sap/ui/qunit/QUnitUtils.js"></script>
 
 		<style>
 			#bigButton {
@@ -32,7 +30,7 @@
 		<script>
 			jQuery.sap.require("sap.ui.thirdparty.sinon");
 			jQuery.sap.require("sap.ui.thirdparty.sinon-qunit");
-			sinon.config.useFakeTimers = true;
+			sinon.config.useFakeTimers = false;
 
 			var oHtml = new sap.ui.core.HTML({
 				content : '<h1 id="qunit-header">qUnit Page for sap.m.Page</h1><h2 id="qunit-banner"></h2><h2 id="qunit-userAgent"></h2><ol id="qunit-tests"></ol>'
@@ -105,7 +103,14 @@
 				ok(jQuery.sap.domById("qunit-header"), "Page content should be rendered");
 				ok(jQuery.sap.byId("myFirstPage-intHeader").is("header"), "header should be rendered as header tag");
 				ok(jQuery.sap.byId("myFooter").is("footer"), "footer should be rendered as footer tag");
-				equal (parseInt(jQuery.sap.byId("mySubHeader").position().top, 10), parseInt((jQuery.sap.byId("myFirstPage-intHeader").position().top + jQuery.sap.byId("myFirstPage-intHeader").outerHeight()), 10), "subHeader should be directly below header");
+
+ 				// The following qunit is removed because of
+ 				// BCP: 1670157998
+ 				// It checks visual appearance and such a test can be made in visual test
+ 				// because it causes issues with browser reporting distances + rounding
+ 				/*ok(parseInt(jQuery.sap.byId("mySubHeader").position().top, 10) >= parseInt(jQuery.sap.byId("myFirstPage-intHeader").position().top, 10) + parseInt(jQuery.sap.byId("myFirstPage-intHeader").outerHeight(), 10),
+							"subHeader should be directly below header");*/
+
 				ok(jQuery.sap.byId("myFirstPage-intHeader").hasClass("sapMHeader-CTX"), "header should contain header context");
 				ok(!jQuery.sap.byId("mySubHeader").hasClass("sapMHeader-CTX"), "subHeader should not contain header context");
 				ok(jQuery.sap.byId("myFooter").hasClass("sapMFooter-CTX"), "footer should contain footer context");
@@ -120,7 +125,9 @@
 				oPage.setBackgroundDesign("Transparent");
 				ok(jQuery.sap.byId("myFirstPage").hasClass("sapMPageBgTransparent"), "Page content should be transparent");
 
-				var transparentCssString = (sap.ui.Device.browser.firefox || sap.ui.Device.browser.internet_explorer) ? "transparent" : "rgba(0, 0, 0, 0)"
+				var transparentCssString = (sap.ui.Device.browser.firefox ||
+								sap.ui.Device.browser.internet_explorer ||
+								sap.ui.Device.browser.edge) ? "transparent" : "rgba(0, 0, 0, 0)"
 				equal(jQuery.sap.byId("myFirstPage-cont").css("background-color"), transparentCssString, "Page content should be transparent");
 			});
 
@@ -189,6 +196,27 @@
 				equal(iRenderCounter, 2, "Page should be rendered twice after another forced rerendering");
 
 				oRenderOncePage.destroy();
+			});
+
+			test("Page with footer and unescaped id", function () {
+				var oPage = new sap.m.Page("my.Page", {
+					footer: new sap.m.Bar({
+						contentMiddle: [
+							new sap.m.Button({text: "Footer Btn"})
+						]
+					}),
+					content: new sap.ui.core.HTML({
+						content: "<div id='p4content'>another test content</div>"
+					})
+				}).placeAt("content");
+				sap.ui.getCore().applyChanges();
+
+				ok(jQuery.sap.domById("my.Page"), "Page should be rendered");
+				ok(jQuery.sap.domById("p4content"), "Page content should be rendered");
+				equal(oPage._contentHasScroll(), false, "Content should be correctly checked for scroll");
+
+				oPage.destroy();
+				oPage = null;
 			});
 
 			module("Properties Check");
@@ -402,32 +430,40 @@
 						});
 			} // end of scrolling test "if" which filters out IE8
 
-			module("Busy Indication");
+			QUnit.module("Busy Indication", {
+				afterEach : function() {
+					oPage.setBusy(false);
+				}
+			});
 
-			test("Busy Indication within Page (only content area)", function(){
+			QUnit.asyncTest("Busy Indication within Page (only content area)", function(assert){
 				var sDesiredZIndex = "3";
 
 				oPage.setBusy(true);
 
-				this.clock.tick(1200);
-				var $busyIndicator = jQuery('.sapUiLocalBusyIndicator')[0];
-				var sZIndex = jQuery('.sapUiLocalBusyIndicator').css('z-index');
-				strictEqual(sZIndex, sDesiredZIndex, "z-index of the BusyIndicator is set correctly for Page with header/footer also covered");
-				oPage.setBusy(false);
+				jQuery.sap.delayedCall(1200, this, function() {
+					var $busyIndicator = jQuery('.sapUiLocalBusyIndicator')[0];
+					var sZIndex = jQuery('.sapUiLocalBusyIndicator').css('z-index');
+					assert.strictEqual(sZIndex, sDesiredZIndex, "z-index of the BusyIndicator is set correctly for Page with header/footer also covered");
+
+					start();
+				});
 			});
 
-			test("Busy Indication within Page (also covering header/footer)", function(){
+			QUnit.asyncTest("Busy Indication within Page (also covering header/footer)", function(assert){
 				var sDesiredZIndex = "auto";
 
 				oPage.setContentOnlyBusy(true);
 				oPage.setBusy(true);
 
-				this.clock.tick(1200);
-				var $busyIndicator = jQuery('.sapUiLocalBusyIndicator')[0];
+				jQuery.sap.delayedCall(2300, this, function() {
+					var $busyIndicator = jQuery('.sapUiLocalBusyIndicator').get(0);
+					var sZIndex = jQuery('.sapUiLocalBusyIndicator').css('z-index');
 
-				var sZIndex = jQuery('.sapUiLocalBusyIndicator').css('z-index');
-				strictEqual(sZIndex, sDesiredZIndex, "z-index of the BusyIndicator is set correctly for Page with only content covered");
-				oPage.setBusy(false);
+					assert.strictEqual(sZIndex, sDesiredZIndex, "z-index of the BusyIndicator is set correctly for Page with only content covered");
+
+					start();
+				});
 			});
 
 		</script>

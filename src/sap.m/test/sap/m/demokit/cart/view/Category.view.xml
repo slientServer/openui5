@@ -1,4 +1,4 @@
-<mvc:View controllerName="sap.ui.demo.cart.view.Category"
+<mvc:View controllerName="sap.ui.demo.cart.controller.Category"
 	xmlns="sap.m"
 	xmlns:core="sap.ui.core"
 	xmlns:mvc="sap.ui.core.mvc"
@@ -8,28 +8,29 @@
 		id="page"
 		title="{CategoryName}"
 		showNavButton="true"
-		navButtonPress="handleNavButtonPress"
+		navButtonPress="onNavButtonPress"
 		showFooter="{device>/isNoPhone}" >
 		<headerContent>
+			<ToggleButton
+				icon="sap-icon://complete"
+				tooltip="{i18n>CATEGORY_AVAILABILITY_FILTER_TOOLTIP}"
+				press="onAvailabilityFilterToggle"
+				pressed="{ui>/availabilityFilterOn}"/>
 			<Button
 				icon="sap-icon://cart"
 				tooltip="{i18n>TO_CART_BUTTON_TOOLTIP}"
-				press="handleCartButtonPress">
+				press="onCartButtonPress">
 			</Button>
 		</headerContent>
-		<footer>
-			<Toolbar>
-			</Toolbar>
-		</footer>
 		<content>
 			<List
 				id="productList"
 				mode="{device>/listMode}"
-				select="handleProductListSelect"
+				select="onProductListSelect"
 				noDataText="{i18n>CATEGORY_NO_DATA}"
 				busyIndicatorDelay="0"
 				items="{
-					path : '/Products',
+					path : 'Products',
 					sorter : {
 						path : 'Name',
 						descending : false
@@ -38,14 +39,17 @@
 				<items>
 					<ObjectListItem
 						type="{device>/listItemType}"
-						icon="{PictureUrl}"
+						icon="{
+							path : 'PictureUrl',
+							formatter : '.formatter.pictureUrl'
+						}"
 						title="{Name}"
 						number="{
 							path : 'Price',
 							formatter : '.formatter.price'
 						}"
-						numberUnit="EUR"
-						press="handleProductListItemPress"
+						numberUnit="{CurrencyCode}"
+						press="onProductListItemPress"
 						iconDensityAware="false" >
 						<attributes>
 							<ObjectAttribute text="{SupplierName}"/>
@@ -55,7 +59,7 @@
 								text="{
 									path : 'status',
 									formatter : '.formatter.statusText'
-								}" 
+								}"
 								state="{
 									path : 'status',
 									formatter : '.formatter.statusState'

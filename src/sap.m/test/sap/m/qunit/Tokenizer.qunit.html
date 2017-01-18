@@ -1,42 +1,51 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
 
 <title>Test Page for sap.m.Tokenizer</title>
-<script id="sap-ui-bootstrap" data-sap-ui-theme="sap_bluecrystal"
+<script src="../shared-config.js"></script>
+<script id="sap-ui-bootstrap"
 	data-sap-ui-noConflict="true" data-sap-ui-libs="sap.m"
 	src="../../../../resources/sap-ui-core.js">
-	
+
 </script>
 
-<link rel="stylesheet"
-	href="../../../../resources/sap/ui/thirdparty/qunit.css"
-	type="text/css" media="screen" />
-<script type="text/javascript"
-	src="../../../../resources/sap/ui/thirdparty/qunit.js"></script>
-<script type="text/javascript"
-	src="../../../../resources/sap/ui/qunit/qunit-junit.js"></script>
+<link rel="stylesheet" href="../../../../resources/sap/ui/thirdparty/qunit.css" type="text/css" media="screen" />
+<script	src="../../../../resources/sap/ui/thirdparty/qunit.js"></script>
+<script	src="../../../../resources/sap/ui/qunit/qunit-junit.js"></script>
 
-<script type="text/javascript"
-	src="../../../../resources/sap/ui/qunit/QUnitUtils.js"></script>
+<script	src="../../../../resources/sap/ui/qunit/QUnitUtils.js"></script>
 <script src="../../../../resources/sap/ui/thirdparty/sinon.js"></script>
 <script src="../../../../resources/sap/ui/thirdparty/sinon-qunit.js"></script>
 
 <script>
-	var Tokenizer1;
+	var tokenizer;
+	var tokenizer1;
 	var key = "testKey";
 	var text = "testText";
 
-	var oTokenizer = new sap.m.Tokenizer("t1");
-	oTokenizer.placeAt("content");
+	module("Init", {
+		setup : function() {
+			tokenizer = new sap.m.Tokenizer();
+		},
+		teardown : function() {
+			tokenizer.destroy();
+		}
+	});
+
+	test("test scroll width", function() {
+		strictEqual(tokenizer.getScrollWidth(), 0, 'Scroll width should be 0 when control is not rendered');
+	});
 
 	module("Basic", {
 		setup : function() {
-			tokenizer1 = sap.ui.getCore().getControl("t1");
+			tokenizer1 = new sap.m.Tokenizer("t1");
+			tokenizer1.placeAt("content");
 		},
 		teardown : function() {
 			token1 = null;
+			tokenizer1.destroy();
 		}
 	});
 
@@ -67,6 +76,27 @@
 		equals(tokenizer1._aTokenValidators.length, 0, "No token validators available");
 	});
 
+	test("clone", function() {
+		//arrange
+		var token1 = new sap.m.Token(),
+			token2 = new sap.m.Token(),
+			token3 = new sap.m.Token(),
+			tokenizer2;
+
+		tokenizer1.addToken(token1);
+		tokenizer1.addToken(token2);
+		tokenizer1.addToken(token3);
+
+		//act
+		tokenizer2 = tokenizer1.clone();
+
+		//assert
+		equals(tokenizer2.getTokens().length, 3, "Clone has 3 tokens");
+
+		//clean-up
+		tokenizer2.destroy();
+	});
+
 	test("tokens aggregation", function() {
 		var token1 = new sap.m.Token();
 		var token2 = new sap.m.Token();
@@ -87,11 +117,6 @@
 		tokenizer1.addToken(token2);
 		tokenizer1.addToken(token3);
 		equals(tokenizer1.getTokens().length, 3, "Tokenizer contains 3 tokens");
-
-		token2.fireDelete({
-			token : token2
-		});
-		equals(tokenizer1.getTokens().length, 2, "Tokenizer contains 2 tokens");
 
 		tokenizer1.removeAllTokens();
 	});
@@ -217,22 +242,22 @@
 		tokenizer1.removeAllTokens();
 	});
 
-	test("tokens change event", function() {
-		var eventType;
-		tokenizer1.attachTokenChange(function(args) {
-			eventType = args.getParameter("type");
-		});
+    test("tokens change event", function() {
+        var eventType;
+        tokenizer1.attachTokenChange(function(args) {
+            eventType = args.getParameter("type");
+        });
 
-		var token1 = new sap.m.Token();
-		tokenizer1.addToken(token1);
-		equals(eventType, sap.m.Tokenizer.TokenChangeType.Added, "added event raised");
+        var token1 = new sap.m.Token();
+        tokenizer1.addToken(token1);
+        equals(eventType, sap.m.Tokenizer.TokenChangeType.Added, "added event raised");
 
-		tokenizer1.removeToken(token1);
-		equals(eventType, sap.m.Tokenizer.TokenChangeType.Removed, "removed event raised");
+        tokenizer1.removeToken(token1);
+        equals(eventType, sap.m.Tokenizer.TokenChangeType.Removed, "removed event raised");
 
-		tokenizer1.removeAllTokens();
-		equals(eventType, sap.m.Tokenizer.TokenChangeType.RemovedAll, "removedAll event raised");
-	});
+        tokenizer1.removeAllTokens();
+        equals(eventType, sap.m.Tokenizer.TokenChangeType.RemovedAll, "removedAll event raised");
+    });
 
 	test("getSelectedTokens", function() {
 		var token1 = new sap.m.Token({
@@ -253,45 +278,45 @@
 
 		tokenizer1.removeAllTokens();
 	});
-	
+
 	test("test keyboard select all", function() {
 		var token1 = new sap.m.Token();
 		var token2 = new sap.m.Token();
 		var token3 = new sap.m.Token();
-		oTokenizer.setTokens([token1, token2, token3]);
-		
-		oTokenizer.onkeydown({ctrlKey: true, which: jQuery.sap.KeyCodes.A, preventDefault: function(){}});
+		tokenizer.setTokens([token1, token2, token3]);
+
+		tokenizer.onkeydown({ctrlKey: true, which: jQuery.sap.KeyCodes.A, preventDefault: function(){}});
 		equals(token1.getSelected(), true, "Token1 got selected using ctrl+a");
 		equals(token2.getSelected(), true, "Token2 got selected using ctrl+a");
 		equals(token3.getSelected(), true, "Token3 got selected using ctrl+a");
-		
+
 		token1.setSelected(false);
 		token2.setSelected(false);
 		token3.setSelected(false);
-		
-		oTokenizer.onkeydown({metaKey: true, which: jQuery.sap.KeyCodes.A, preventDefault: function(){}});
+
+		tokenizer.onkeydown({metaKey: true, which: jQuery.sap.KeyCodes.A, preventDefault: function(){}});
 		equals(token1.getSelected(), true, "Token1 got selected using metaKey+a");
 		equals(token2.getSelected(), true, "Token2 got selected using metaKey+a");
-		equals(token3.getSelected(), true, "Token3 got selected using metaKey+a");		
-		
-		oTokenizer.removeAllTokens();
+		equals(token3.getSelected(), true, "Token3 got selected using metaKey+a");
+
+		tokenizer.removeAllTokens();
 	});
 
 
 	test("token editable in tokenizer", function() {
-		
+
 		var oToken1 = new sap.m.Token({text:"Dente", editable: false});
 		var oToken2 = new sap.m.Token({text:"Friese", editable: false});
 		var oToken3 = new sap.m.Token({text:"Mann", editable: true});
 
 		tokenizer1.setTokens([oToken1, oToken2, oToken3]);
-		
+
 		sap.ui.getCore().applyChanges();
 
 		equals(oToken1.$().hasClass("sapMTokenReadOnly"), true, "token1 is not editable");
 		equals(oToken2.$().hasClass("sapMTokenReadOnly"), true, "token2 is not editable");
 		equals(oToken3.$().hasClass("sapMTokenReadOnly"), false, "token3 is editable");
-		
+
 		tokenizer1.removeAllTokens();
 	});
 
@@ -331,19 +356,43 @@
 	test("parsing for copy and paste", function() {
 		var text1 = "1\r\n2\r\n3";
 		var aTextArray1 = tokenizer1._parseString(text1);
-		
+
 		equals(aTextArray1[0], "1", "text separated");
 		equals(aTextArray1[1], "2", "text separated");
 		equals(aTextArray1[2], "3", "text separated");
-		
+
 		var text1 = "1 2\n2+4\r3)\t(/&%$)";
 		var aTextArray1 = tokenizer1._parseString(text1);
-		
+
 		equals(aTextArray1[0], "1 2", "text separated");
 		equals(aTextArray1[1], "2+4", "text separated");
 		equals(aTextArray1[2], "3)\t(/&%$)", "text separated");
 	});
-	
+
+	test("test setEditable=false Tokenizer with editable tokens", function() {
+		var aFirstToken,
+			aSecondToken;
+		//arrange
+		tokenizer1.addToken(new sap.m.Token({text: "Token 1", key: "0001"}));
+		tokenizer1.addToken(new sap.m.Token({text: "Token 2", key: "0002", editable: false}));
+
+		aFirstToken = tokenizer1.getTokens()[0];
+		aSecondToken = tokenizer1.getTokens()[1];
+		sap.ui.getCore().applyChanges();
+
+		//assert
+		equals(aFirstToken.$('icon').css('display'), 'inline-block', 'First token icon is visible');
+		ok(!aSecondToken.getDomRef('icon'), 'Second token icon does not exist');
+
+		//act
+		tokenizer1.setEditable(false);
+		sap.ui.getCore().applyChanges();
+
+		//assert
+		equals(aFirstToken.$('icon').css('display'), 'none', 'First token icon is invisible');
+		ok(!aSecondToken.getDomRef('icon'), 'Second token icon does not exist');
+	});
+
 	test("copy to clipboard", function() {
 		if (window.clipboardData) {
 			jQuery.sap.require("jquery.sap.script");
@@ -354,27 +403,27 @@
 				return;
 			}
 		}
-		
+
 		for (var i = 0; i < 4; i++) {
 			tokenizer1.addToken(new sap.m.Token({text: "Token " + i, key: "000" + i}));
 		}
-		
+
 		sap.ui.getCore().applyChanges();
-		
+
 		if (!sap.ui.Device.system.desktop && !sap.ui.Device.system.combi) {
 			ok(!tokenizer1._bCopyToClipboardSupport, "Copy to Clipboard support only on Desktop so far");
 			return;
 		} else {
 			ok(tokenizer1._bCopyToClipboardSupport, "Copy to Clipboard support only on Desktop so far");
 		}
-		
+
 		function testCopiedText(sText) {
 			equals(sText, "Token 0\r\nToken 1\r\nToken 2\r\nToken 3", "Copied text is correct");
 		}
-		
+
 		tokenizer1.focus();
 		tokenizer1.selectAllTokens(true);
-		
+
 		if (!sap.ui.Device.browser.phantomJS) {
 			try {
 				var oRange = window.getSelection().getRangeAt(0);
@@ -387,27 +436,27 @@
 			}
 		}
 
-		var oCopyEvent = jQuery.Event("copy");
-		oCopyEvent.originalEvent = {
+		var oCopyEvent = jQuery.Event({
+			type: "copy",
 			clipboardData : {
 				setData : function(sType, sSelectedText) {
 					testCopiedText(sSelectedText);
 					equals(sType, "text/plain", "Copied text type is correct");
 				}
 			}
-		};
+		});
 		tokenizer1.$("clip").trigger(oCopyEvent);
-		
+
 		if (window.clipboardData) {
 			testCopiedText(window.clipboardData.getData("text"));
-			
+
 			//Reset clipboad again
 			window.clipboardData.setData("text", "Hello");
 		}
 
 		tokenizer1.destroyTokens();
 	});
-	
+
 </script>
 
 </head>

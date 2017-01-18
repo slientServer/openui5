@@ -1,7 +1,7 @@
 /*!
  * ${copyright}
  */
-sap.ui.define([], function() {
+sap.ui.define(['jquery.sap.global'], function(jQuery) {
 	"use strict";
 
 	/**
@@ -15,18 +15,20 @@ sap.ui.define([], function() {
 		/**
 		 * @private
 		 */
-		display: function(vTargets, vData) {
-			this._display(vTargets, vData);
+		display: function(vTargets, vData, sTitleTarget) {
+			this._display(vTargets, vData, sTitleTarget);
 		},
 
 		/**
 		 * @private
 		 */
-		_display: function(vTargets, vData) {
+		_display: function(vTargets, vData, sTitleTarget) {
 			var that = this;
 
-			if (jQuery.isArray(vTargets)) {
-				jQuery.each(vTargets, function(i, sTarget) {
+			this._attachTitleChanged(vTargets, sTitleTarget);
+
+			if (Array.isArray(vTargets)) {
+				vTargets.forEach(function(sTarget) {
 					that._displaySingleTarget(sTarget, vData);
 				});
 			} else {

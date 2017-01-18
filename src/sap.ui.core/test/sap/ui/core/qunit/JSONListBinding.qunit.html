@@ -1,22 +1,22 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-<meta http-equiv="X-UA-Compatible" content="IE=edge" />
-<meta http-equiv="Content-Type" content="text/html;charset=UTF-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta charset="utf-8">
 
 <!-- Initialization -->
-<script id="sap-ui-bootstrap" type="text/javascript"
-	src="../../../../../resources/sap-ui-core.js"
-	data-sap-ui-theme="sap_bluecrystal" data-sap-ui-language="en_US">
+<script src="../shared-config.js"></script>
+<script id="sap-ui-bootstrap"
+	src="../../../../../resources/sap-ui-core.js" data-sap-ui-language="en_US">
 </script>
 
-<link rel="stylesheet" href="../../../../../resources/sap/ui/thirdparty/qunit.css" type="text/css" media="screen" />
-<script type="text/javascript" src="../../../../../resources/sap/ui/thirdparty/qunit.js"></script>
-<script type="text/javascript" src="../../../../../resources/sap/ui/qunit/qunit-junit.js"></script>
-<script type="text/javascript" src="../../../../../resources/sap/ui/qunit/QUnitUtils.js"></script>
+<link rel="stylesheet" href="../../../../../resources/sap/ui/thirdparty/qunit.css" type="text/css" media="screen">
+<script src="../../../../../resources/sap/ui/thirdparty/qunit.js"></script>
+<script src="../../../../../resources/sap/ui/qunit/qunit-junit.js"></script>
+<script src="../../../../../resources/sap/ui/qunit/QUnitUtils.js"></script>
 
 <!-- Test functions -->
-<script language="javascript" charset="utf-8"> // IE needs this :-/
+<script charset="utf-8"> // IE needs this :-/
 
 	var oModel;
 	var testData;
@@ -195,6 +195,33 @@
 
 		contexts = listBinding.getContexts(0,5);
 		equal(contexts.diff.length, 2, "Delta information is available");
+	});
+
+	test("extended change detection with grouping", function(){
+		var listBinding = bindings[0];
+		listBinding.sort([
+			new sap.ui.model.Sorter("gender", false, true),
+			new sap.ui.model.Sorter("lastName")
+		]);
+		listBinding.enableExtendedChangeDetection(false, "lastName");
+
+		var	contexts = listBinding.getContexts(),
+			newContexts;
+
+		equal(contexts.length, 7, "Current contexts should contain 7 items");
+
+		// Change the gender in a way that the sort order is not affected
+		testData.teamMembers[4].gender = null;
+		testData.teamMembers[6].firstName = "Paul";
+		listBinding.checkUpdate();
+
+		newContexts = listBinding.getContexts();
+		equal(newContexts.length, 7, "Current contexts should contain 7 items");
+		ok(jQuery.sap.equal(contexts, newContexts), "Old and new contexts array is equal");
+
+		// Although a key is used with extended change detection, the diff must contain
+		// an update, as grouping is enabled on this binding.
+		equal(newContexts.diff.length, 2, "Delta information is available");
 	});
 
 	module("Listbinding refresh", {
@@ -486,8 +513,7 @@
 		createListBinding("/teamMembers");
 
 		var listBinding = bindings[0];
-		var oSorter = new sap.ui.model.Sorter("firstName", false);
-		oSorter.fnCompare = function(a, b) {
+		var oSorter = new sap.ui.model.Sorter("firstName", false, false, function(a, b) {
 			a = a.substr(1);
 			b = b.substr(1);
 			if (a < b) {
@@ -497,7 +523,7 @@
 				return 1;
 			}
 			return 0;
-		};
+		});
 		listBinding.sort(oSorter);
 
 		var sortedContexts = listBinding.getContexts();
@@ -695,6 +721,13 @@
 		equal(filtered[1].firstName, "Marc", "ListBinding filter value");
 		equal(filtered[2].firstName, "Frank", "ListBinding filter value");
 
+		var oEmptyMultiFilterWithAND = new sap.ui.model.Filter([], true);
+		listBinding.filter(oEmptyMultiFilterWithAND);
+		equal(listBinding.getContexts().length, 7, "empty AND multifilter should match all entries");
+
+		var oEmptyMultiFilterWithOR = new sap.ui.model.Filter([], false);
+		listBinding.filter(oEmptyMultiFilterWithOR);
+		equal(listBinding.getContexts().length, 0, "empty OR multifilter should match no entry");
 	});
 
 	test("test function", function() {
@@ -916,7 +949,7 @@
 	});
 
 	test("setData delta", function() {
-		this.oListBinding.bUseExtendedChangeDetection = true;
+		this.oListBinding.enableExtendedChangeDetection();
 		var aContexts = this.oListBinding.getContexts(0, 10);
 		this.oModel.setData(testData.teamMembersNew);
 		aContexts = this.oListBinding.getContexts(0, 10);
@@ -929,7 +962,7 @@
 	});
 
 	test("setProperty delta", function() {
-		this.oListBinding.bUseExtendedChangeDetection = true;
+		this.oListBinding.enableExtendedChangeDetection();
 		var aContexts = this.oListBinding.getContexts(0, 10);
 		this.oModel.setProperty("/4/firstName", "Paul");
 		aContexts = this.oListBinding.getContexts(0, 10);
@@ -950,6 +983,110 @@
 		aContexts = this.oListBinding.getContexts(0, 10);
 		deepEqual(aContexts.diff, [], "Nothing changed");
 	});
+
+	test("setProperty delta with cyclic references", function() {
+		this.oListBinding.enableExtendedChangeDetection();
+		var aContexts = this.oListBinding.getContexts(0, 10);
+
+		var oCyclic = {};
+		oCyclic.a = oCyclic;
+
+		this.oModel.setProperty("/4/firstName", oCyclic);
+		aContexts = this.oListBinding.getContexts(0, 10);
+		equal(aContexts.diff, undefined, "No diff for data with cyclic references");
+		this.oModel.setProperty("/4/firstName", "Peter");
+	});
+
+	test("setProperty delta with key", function() {
+		this.oListBinding.enableExtendedChangeDetection(false, "lastName");
+		var aContexts = this.oListBinding.getContexts(0, 10);
+		this.oModel.setProperty("/4/firstName", "Paul");
+		aContexts = this.oListBinding.getContexts(0, 10);
+		deepEqual(aContexts.diff, [], "No diff detected, as key didn't change");
+		this.oModel.setProperty("/4", {
+			firstName : "Peter",
+			lastName : "Johnson",
+			gender : "male"
+		});
+		aContexts = this.oListBinding.getContexts(0, 10);
+		deepEqual(aContexts.diff, [
+			{ index : 4, type : "delete" },
+			{ index : 4, type : "insert" }
+		], "Replace whole entry");
+		aContexts = this.oListBinding.getContexts(0, 10);
+		deepEqual(aContexts.diff, [], "Nothing changed");
+	});
+
+
+	module("Listbinding suspend/resume", {
+		beforeEach: function() {
+			setup();
+			this.oData = testData.teamMembers.slice(0);
+			this.oModel = new sap.ui.model.json.JSONModel(this.oData);
+			this.oListBinding = this.oModel.bindList("/");
+			this.oListBinding.attachChange(function() {});
+		},
+		afterEach: function() {
+			this.oModel.destroy();
+			this.oListBinding.destroy();
+		}
+	});
+
+	test("suspend/resume", function() {
+		var oLB = this.oListBinding;
+		equal(oLB.getContexts().length, 7, "Binding has length 7 initially");
+		this.oData.push({firstName:"Peter", lastName:"Franklin", gender:"male"});
+		this.oModel.refresh();
+		equal(oLB.getContexts().length, 8, "Binding has length 8 after adding an entry");
+		oLB.suspend();
+		this.oData.push({firstName:"Michael", lastName:"Peterson", gender:"male"});
+		this.oModel.refresh();
+		equal(oLB.getContexts().length, 8, "Binding still has length 8 as it is suspended");
+		oLB.resume();
+		equal(oLB.getContexts().length, 9, "Binding has length 9 after calling resume");
+	});
+
+	test("suspend/resume with filter/sort", function() {
+		var oLB = this.oListBinding;
+		equal(oLB.getContexts().length, 7, "Binding has length 7 initially");
+		this.oData.push({firstName:"Peter", lastName:"Franklin", gender:"male"});
+		this.oModel.refresh();
+		equal(oLB.getContexts().length, 8, "Binding has length 8 after adding an entry");
+		oLB.suspend();
+		this.oData.push({firstName:"Michael", lastName:"Peterson", gender:"male"});
+		this.oModel.refresh();
+		equal(oLB.getContexts().length, 8, "Binding still has length 8 as it is suspended");
+		oLB.sort(new sap.ui.model.Sorter("firstName"));
+		equal(oLB.getContexts().length, 9, "Binding has length 9 after sorting");
+		this.oData.push({firstName:"Michael", lastName:"Bubble", gender:"male"});
+		this.oModel.refresh();
+		equal(oLB.getContexts().length, 9, "Binding still has length 9 as it is suspended");
+		oLB.filter([new sap.ui.model.Filter("firstName", "EQ", "Michael")]);
+		equal(oLB.getContexts().length, 3, "Binding has length 3 after filtering");
+		oLB.resume();
+		equal(oLB.getContexts().length, 3, "Binding still has length 3 after calling resume");
+	});
+
+	test("suspend/resume with refresh", function() {
+		var oLB = this.oListBinding;
+		equal(oLB.getContexts().length, 7, "Binding has length 7 initially");
+		this.oData.push({firstName:"Peter", lastName:"Franklin", gender:"male"});
+		this.oModel.refresh();
+		equal(oLB.getContexts().length, 8, "Binding has length 8 after adding an entry");
+		oLB.suspend();
+		this.oData.push({firstName:"Michael", lastName:"Peterson", gender:"male"});
+		this.oModel.refresh();
+		equal(oLB.getContexts().length, 8, "Binding still has length 8 as it is suspended");
+		this.oModel.refresh(true);
+		equal(oLB.getContexts().length, 9, "Binding has length 9 after force refresh");
+		this.oData.push({firstName:"Michael", lastName:"Peterson", gender:"male"});
+		this.oModel.refresh();
+		equal(oLB.getContexts().length, 9, "Binding still has length 9 as it is suspended");
+		oLB.resume();
+		equal(oLB.getContexts().length, 10, "Binding still has length 10 after calling resume");
+	});
+
+
 
 	</script>
 

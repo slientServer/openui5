@@ -22,7 +22,7 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/model/ClientModel', 'sap/ui/model/Co
 	 * @class
 	 * Model implementation for XML format
 	 *
-	 * @extends sap.ui.model.Model
+	 * @extends sap.ui.model.ClientModel
 	 *
 	 * @author SAP SE
 	 * @version ${version}
@@ -176,8 +176,8 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/model/ClientModel', 'sap/ui/model/Co
 	/**
 	 * @see sap.ui.model.Model.prototype.bindTree
 	 */
-	XMLModel.prototype.bindTree = function(sPath, oContext, aFilters, mParameters) {
-		var oBinding = new XMLTreeBinding(this, sPath, oContext, aFilters, mParameters);
+	XMLModel.prototype.bindTree = function(sPath, oContext, aFilters, mParameters, aSorters) {
+		var oBinding = new XMLTreeBinding(this, sPath, oContext, aFilters, mParameters, aSorters);
 		return oBinding;
 	};
 

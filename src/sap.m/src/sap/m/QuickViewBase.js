@@ -131,6 +131,13 @@ sap.ui.define([
 								 */
 								direction : {
 									type : "string"
+								},
+
+								/**
+								 * Determines which link initiated the navigation.
+								 */
+								navOrigin : {
+									type : "sap.ui.core.Control"
 								}
 							}
 						},
@@ -219,6 +226,13 @@ sap.ui.define([
 								 */
 								isTopPage: {
 									type: "boolean"
+								},
+
+								/**
+								 * Determines which link initiated the navigation.
+								 */
+								navOrigin : {
+									type : "sap.ui.core.Control"
 								}
 							}
 						}
@@ -232,6 +246,7 @@ sap.ui.define([
 		 */
 		QuickViewBase.prototype.navigateBack = function() {
 			if (!this._oNavContainer.currentPageIsTopPage()) {
+				this._setNavOrigin(null);
 				this._oNavContainer.back();
 			}
 		};
@@ -325,7 +340,15 @@ sap.ui.define([
 				oFromPage.addStyleClass('sapMNavItemOffset');
 			}
 
-			this.fireNavigate(oEvent.getParameters());
+			oFromPage.$().parents('.sapMPanelContent').scrollTop(0);
+
+			var mParams = oEvent.getParameters();
+
+			if (this._navOrigin) {
+				mParams.navOrigin = this._navOrigin;
+			}
+
+			this.fireNavigate(mParams);
 		};
 
 		/**
@@ -351,7 +374,14 @@ sap.ui.define([
 
 			var mParams = oEvent.getParameters();
 			mParams.isTopPage = this._oNavContainer.currentPageIsTopPage();
+
+			if (this._navOrigin) {
+				mParams.navOrigin = this._navOrigin;
+			}
+
 			this.fireAfterNavigate(mParams);
+
+			this._setLinkWidth();
 
 			// Just wait for the next tick to apply the focus
 			jQuery.sap.delayedCall(0, this, this._restoreFocus);
@@ -378,6 +408,17 @@ sap.ui.define([
 			}
 		};
 
+		/**
+		 * Hook for classes extending QuickViewBase.
+		 * @private
+		 */
+		QuickViewBase.prototype._setLinkWidth = function() {
+
+		};
+
+		QuickViewBase.prototype._setNavOrigin = function(oControl) {
+			this._navOrigin = oControl;
+		};
 
 		return QuickViewBase;
 

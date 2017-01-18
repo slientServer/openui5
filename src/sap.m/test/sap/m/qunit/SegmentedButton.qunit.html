@@ -1,12 +1,12 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
 <title>Segmented - sap.m - qUnit test</title>
 
-<script id="sap-ui-bootstrap" type="text/javascript"
-	src="../../../../resources/sap-ui-core.js"
-	data-sap-ui-theme="sap_bluecrystal" data-sap-ui-noConflict="true"
+<script src="../shared-config.js"></script>
+<script id="sap-ui-bootstrap"
+	src="../../../../resources/sap-ui-core.js" data-sap-ui-noConflict="true"
 	data-sap-ui-libs="sap.m">
 
 </script>
@@ -14,18 +14,19 @@
 <link rel="stylesheet"
 	href="../../../../resources/sap/ui/thirdparty/qunit.css"
 	type="text/css" media="screen" />
-<script type="text/javascript"
+<script
 	src="../../../../resources/sap/ui/thirdparty/qunit.js"></script>
-<script type="text/javascript"
+<script
 	src="../../../../resources/sap/ui/qunit/qunit-junit.js"></script>
 
-<script type="text/javascript"
+<script
 	src="../../../../resources/sap/ui/qunit/QUnitUtils.js"></script>
 <script src="../../../../resources/sap/ui/thirdparty/sinon.js"></script>
 <script src="../../../../resources/sap/ui/thirdparty/sinon-qunit.js"></script>
 
 <!-- use the sinon faketimers for this test -->
-<script type="text/javascript">
+<script>
+	jQuery.sap.require("sap.m.SegmentedButton");
 	sinon.config.useFakeTimers = true;
 </script>
 
@@ -67,9 +68,9 @@
 
 	test("Check if buttons are rendered", function() {
 		// Arrange
-		var oButton1 = new sap.m.Button();
-		var oButton2 = new sap.m.Button();
-		var oButton3 = new sap.m.Button();
+		var oButton1 = new sap.m.Button(),
+			oButton2 = new sap.m.Button(),
+			oButton3 = new sap.m.Button();
 
 		// Prerequisite for custom style class support
 		oButton3.addStyleClass("custom-style-class");
@@ -93,6 +94,9 @@
 
 		// Cleanup
 		oSegmentedButton.destroy();
+		oButton1.destroy();
+		oButton2.destroy();
+		oButton3.destroy();
 	});
 
 	test("SegmentedButton selection after rendering", function() {
@@ -211,7 +215,7 @@
 		sap.ui.getCore().applyChanges();
 
 		// Assert (should be Button1 after rendering)
-		strictEqual(oSegmentedButton.getSelectedButton(), oButton1.getId(), "The first button should be selected when passing nullto the association \"selectedButton\"");
+		strictEqual(oSegmentedButton.getSelectedButton(), oButton1.getId(), "The first button should be selected when passing null to the association \"selectedButton\"");
 
 		// Cleanup
 		oSegmentedButton.destroy();
@@ -329,7 +333,7 @@
 			type : sap.m.ButtonType.Default,
 			icon : "../images/settings_64.png",
 			text : "My Mixed Button 1"
-		})
+		});
 		var oButton2 = new sap.m.Button({
 			type : sap.m.ButtonType.Default,
 			icon : "sap-icon://task",
@@ -355,89 +359,51 @@
 		oSegmentedButton.destroy();
 	});
 
-	test("Add ghost button", function() {
-		// Arrange
-		var oButton1 = new sap.m.Button(),
-			oButton2 = new sap.m.Button();
-
-		// System under Test
-		var oSegmentedButton = new sap.m.SegmentedButton({
-			buttons : [oButton1, oButton2]
-		});
-		oSegmentedButton._addGhostButton();
-		sap.ui.getCore().applyChanges();
-
-		// Assert
-		ok(jQuery("#segMtBtn_calc").length > 0, "Ghost button should be rendered");
-
-		// Cleanup
-		oSegmentedButton.destroy();
-	});
-
-	test("Remove ghost button", function() {
-		// Arrange
-		var oButton1 = new sap.m.Button(),
-			oButton2 = new sap.m.Button();
-
-		// System under Test
-		var oSegmentedButton = new sap.m.SegmentedButton({
-			buttons : [oButton1, oButton2]
-		});
-		oSegmentedButton._addGhostButton();
-		sap.ui.getCore().applyChanges();
-
-		//Act
-		oSegmentedButton._removeGhostButton();
-
-		this.clock.tick(1100);
-
-		// Assert
-		ok(jQuery("#segMtBtn_calc").length === 0, "Ghost button should be removed");
-
-		// Cleanup
-		oSegmentedButton.destroy();
-	});
-
 	test("Check when in bar container with button width set in percent", function() {
 
+		var oButton1,
+			oButton2,
+			oSegmentedButton,
+			oBar,
+			elementWidth;
+
 		// Arrange
-		var oButton1 = new sap.m.Button('buttonInBar1', {
+		oButton1 = new sap.m.Button({
 			text: "hallo",
 			enabled: true,
 			width: "50%"
 		});
 
-		var oButton2 = new sap.m.Button('buttonInBar2', {
+		oButton2 = new sap.m.Button({
 			text: "hallo",
 			width: "50%",
 			enabled: true
 		});
 
 		// System under Test
-		var oSegmentedButton = new sap.m.SegmentedButton("buttonInBar", {
+		oSegmentedButton = new sap.m.SegmentedButton({
 			buttons: [oButton1, oButton2]
 		});
 
-		var oBar = new sap.m.Bar({contentMiddle: oSegmentedButton});
+		oBar = new sap.m.Bar({contentMiddle: oSegmentedButton});
 
 		oBar.placeAt("qunit-fixture");
 		sap.ui.getCore().applyChanges();
 
-		this.clock.tick();
-
-		var elementWidth = oSegmentedButton.$().width();
-		var expectedButtonOuterWidth = Math.floor((elementWidth / 2));
+		// Using native getBoundingClientRect() method because jQuery.width|outerWidth report rounded widths and
+		// the test becomes unstable.
+		elementWidth = oSegmentedButton.getDomRef().getBoundingClientRect().width;
 
 		// Assert
-		// + 1 are border compensations
-		equal(elementWidth, (expectedButtonOuterWidth * 2) + 1, "Control width should be " + ((expectedButtonOuterWidth * 2) + 1) + "px");
-		equal(oButton1.$().outerWidth(), expectedButtonOuterWidth, 'First button width should be ' + expectedButtonOuterWidth + 'px');
-		equal(oButton2.$().outerWidth(), expectedButtonOuterWidth + 1, 'Second button width should be ' + (expectedButtonOuterWidth + 1) + 'px');
-		equal(oButton1.$().width(), 33, 'First button width withouth padding shoud be 33px');
-		equal(oButton2.$().width(), 33, 'Second button width withouth padding shoud be 33px');
+		strictEqual(oButton1.getDomRef().getBoundingClientRect().width +
+					oButton2.getDomRef().getBoundingClientRect().width,
+					elementWidth, "Control outer width is the same as sum of all buttons width");
 
 		// Cleanup
 		oBar.destroy();
+		oButton1.destroy();
+		oButton2.destroy();
+		oSegmentedButton.destroy();
 
 	});
 
@@ -463,50 +429,101 @@
 		var oButtons = oSegmentedButton.getButtons();
 
 		// Assert
-		strictEqual(oButtons[0].$().attr("dir"), "rtl", "Button 1 dir attribute shoud be set to 'rtl'.");
-		strictEqual(oButtons[1].$().attr("dir"), "ltr", "Button 2 dir attribute shoud be set to 'ltr'.");
-		strictEqual(oButtons[2].$().attr("dir"), undefined, "Button 3 dir attribute shoud not be rendered.");
-		strictEqual(oButtons[3].$().attr("dir"), "rtl", "Button 4 dir attribute shoud be set to 'rtl' button created using the createButton method.");
-		strictEqual(oButtons[4].$().attr("dir"), "ltr", "Button 5 dir attribute shoud be set to 'ltr' button created using the createButton method.");
+		strictEqual(oButtons[0].$().attr("dir"), "rtl", "Button 1 dir attribute should be set to 'rtl'.");
+		strictEqual(oButtons[1].$().attr("dir"), "ltr", "Button 2 dir attribute should be set to 'ltr'.");
+		strictEqual(oButtons[2].$().attr("dir"), undefined, "Button 3 dir attribute should not be rendered.");
+		strictEqual(oButtons[3].$().attr("dir"), "rtl", "Button 4 dir attribute should be set to 'rtl' button created using the createButton method.");
+		strictEqual(oButtons[4].$().attr("dir"), "ltr", "Button 5 dir attribute should be set to 'ltr' button created using the createButton method.");
 
 		// Cleanup
 		oSegmentedButton.destroy();
 
 	});
 
-	if (sap.ui.Device.browser.name == "ie" && (sap.ui.Device.browser.versionStr == "9" || sap.ui.Device.browser.versionStr == "10")) {
-		// TODO: fix this - do not run this tests on IE9 & IE10 because of width reading problem
-	} else {
-		test("Mixed content buttons width calculation when in bar (all buttons should have the same width)", function() {
+	test("Button visible attribute", function() {
 
-			// Arrange
-			var oButton1 = new sap.m.Button({text: "All"});
-			var oButton2 = new sap.m.Button({text: "Text", icon: sap.ui.core.IconPool.getIconURI("attachment")});
-			var oButton3 = new sap.m.Button({text: "Text", icon: sap.ui.core.IconPool.getIconURI("attachment")});
-
-			var oSegmentedButton = new sap.m.SegmentedButton({
-				buttons: [oButton1, oButton2, oButton3]
-			});
-
-			var oBar = new sap.m.Bar({contentMiddle: oSegmentedButton});
-
-			// System under Test
-			oBar.placeAt("qunit-fixture");
-			sap.ui.getCore().applyChanges();
-
-			// Control width is the first button width
-			var controlWidth = oButton1.$().width();
-
-			// Assert
-			ok(controlWidth > 50, 'Control width should be greater than 50px');
-			strictEqual(oButton2.$().width(), controlWidth, 'Second button width should be equal to the control width');
-			strictEqual(oButton3.$().width(), controlWidth, 'Third button width should be equal to the control width');
-
-			// Cleanup
-			oBar.destroy();
-
+		// Arrange
+		var oSegmentedButton = new sap.m.SegmentedButton({
+			buttons: [
+				new sap.m.Button({
+					text: "Button 1"
+				}),
+				new sap.m.Button({
+					text: "Button 2"
+				}),
+				new sap.m.Button({
+					text: "Button 3"
+				}),
+				new sap.m.Button({
+					text: "Invisible Button",
+					visible: false
+				})
+			]
 		});
-	}
+
+		// System under Test
+		oSegmentedButton.placeAt("qunit-fixture");
+		sap.ui.getCore().applyChanges();
+
+		// Assert
+		strictEqual(oSegmentedButton.getButtons().length, 4, "Control should have 4 buttons from the button aggregation");
+		strictEqual(oSegmentedButton.$().find("li.sapMSegBBtn").length, 3, "Control should have 3 buttons visible");
+		strictEqual(oSegmentedButton.$().find("li.sapUiHiddenPlaceholder").length, 1, "Control should have 1 button invisible");
+
+		//Act
+		oSegmentedButton.getButtons()[3].setVisible(true);
+		sap.ui.getCore().applyChanges();
+
+		//Assert
+		strictEqual(oSegmentedButton.$().find("li.sapMSegBBtn").length, 4, "Control should have 4 buttons visible");
+		strictEqual(oSegmentedButton.$().find("li.sapUiHiddenPlaceholder").length, 0, "Control should have 0 button invisible");
+
+		// Cleanup
+		oSegmentedButton.destroy();
+
+	});
+
+	test("Mixed content buttons width calculation when in bar (all buttons should have the same width)", function() {
+
+		// Arrange
+		var oButton1 = new sap.m.Button({text: "All"}),
+			oButton2 = new sap.m.Button({text: "Text", icon: sap.ui.core.IconPool.getIconURI("attachment")}),
+			oButton3 = new sap.m.Button({text: "Text", icon: sap.ui.core.IconPool.getIconURI("attachment")}),
+			oSegmentedButton = new sap.m.SegmentedButton({
+				buttons: [oButton1, oButton2, oButton3]
+			}),
+			oBar = new sap.m.Bar({contentMiddle: oSegmentedButton}),
+			iButton1Width,
+			iButton2Width,
+			iButton3Width,
+			iControlWidth;
+
+		// System under Test
+		oBar.placeAt("qunit-fixture");
+		sap.ui.getCore().applyChanges();
+
+		// Using native getBoundingClientRect() method because jQuery.width|outerWidth report rounded widths and
+		// the test becomes unstable.
+		iControlWidth = oSegmentedButton.getDomRef().getBoundingClientRect().width;
+		iButton1Width = oButton1.getDomRef().getBoundingClientRect().width;
+		iButton2Width = oButton2.getDomRef().getBoundingClientRect().width;
+		iButton3Width = oButton3.getDomRef().getBoundingClientRect().width;
+
+		// Assert
+		strictEqual(Math.floor(iButton2Width), Math.floor(iButton1Width), 'Second button width should be equal to the ' +
+				'first button width (mind here we add 1px to the expected result because of the 2 borders of middle' +
+				'buttons)');
+
+		strictEqual(Math.floor(iButton3Width), Math.floor(iButton1Width), 'Third button width should be equal to the ' +
+				'first button width');
+
+		strictEqual(iControlWidth, Math.round(iButton1Width + iButton2Width + iButton3Width), "The sum of all buttons width " +
+				"should be the same as the control width");
+
+		// Cleanup
+		oBar.destroy();
+
+	});
 
 	test("Initialize with items aggregation", function() {
 
@@ -572,6 +589,91 @@
 
 	});
 
+	test("Items aggregation visible property", function() {
+
+		// Arrange
+		var oSegmentedButton = new sap.m.SegmentedButton({
+			items: [
+				new sap.m.SegmentedButtonItem({
+					text: "Button 1"
+				}),
+				new sap.m.SegmentedButtonItem({
+					text: "Button 2"
+				}),
+				new sap.m.SegmentedButtonItem({
+					text: "Button 3"
+				}),
+				new sap.m.SegmentedButtonItem({
+					text: "Invisible Button",
+					visible: false
+				})
+			]
+		});
+
+		// System under Test
+		oSegmentedButton.placeAt("qunit-fixture");
+		sap.ui.getCore().applyChanges();
+
+		// Assert
+		strictEqual(oSegmentedButton.getItems().length, 4, "Control should have 4 items");
+		strictEqual(oSegmentedButton.getButtons().length, 4, "Control should have 4 buttons from the button aggregation");
+		strictEqual(oSegmentedButton.$().find("li.sapMSegBBtn").length, 3, "Control should have 3 buttons visible");
+		strictEqual(oSegmentedButton.$().find("li.sapUiHiddenPlaceholder").length, 1, "Control should have 1 button invisible");
+
+		//Act
+		oSegmentedButton.getItems()[3].setVisible(true);
+		sap.ui.getCore().applyChanges();
+
+		//Assert
+		strictEqual(oSegmentedButton.$().find("li.sapMSegBBtn").length, 4, "Control should have 4 buttons visible");
+		strictEqual(oSegmentedButton.$().find("li.sapUiHiddenPlaceholder").length, 0, "Control should have 0 button invisible");
+
+		// Cleanup
+		oSegmentedButton.destroy();
+
+	});
+
+	test("selectedKey is set correctly for invisible items and removes the selection from other items", function() {
+
+		//Arrange
+		var oSegmentedButton = new sap.m.SegmentedButton({
+			items: [
+				new sap.m.SegmentedButtonItem({
+					key: "k1",
+					text: "item 1"
+				}),
+				new sap.m.SegmentedButtonItem({
+					key: "k2",
+					text: "item 2",
+					visible: false
+				}),
+				new sap.m.SegmentedButtonItem({
+					key: "k3",
+					text: "item 3"
+				})
+			],
+			selectedKey: "k1"
+		});
+
+		//System under Test
+		oSegmentedButton.placeAt("qunit-fixture");
+		sap.ui.getCore().applyChanges();
+
+		//Assert
+		strictEqual(oSegmentedButton.$().find("li.sapMSegBBtn.sapMSegBBtnSel").length, 1, "1 selected button is rendered");
+
+		//Act
+		oSegmentedButton.setSelectedKey("k2");
+
+		//Assert
+		strictEqual(oSegmentedButton.getSelectedButton(), oSegmentedButton.getButtons()[1].getId(), "The invisible button is selected");
+		strictEqual(oSegmentedButton.$().find("li.sapMSegBBtn.sapMSegBBtnSel").length, 0, "No selected buttons are rendered");
+
+		//Cleanup
+		oSegmentedButton.destroy();
+
+	});
+
 	test("Initialize with XML view", function() {
 
 		// Arrange
@@ -600,7 +702,7 @@
 		strictEqual(oSegmentedButton.getItems().length, 3, "Control should have 3 items");
 		strictEqual(oSegmentedButton.getButtons().length, 3, "Control should have 3 buttons from the button aggregation");
 		strictEqual(oSegmentedButton.$().find("li").length, 3, "Control should have 3 buttons rendered");
-		strictEqual(oSegmentedButton.getButtons()[0].getText(), "Btn 1", "Button text shoud be equal to xml view ListItem text");
+		strictEqual(oSegmentedButton.getButtons()[0].getText(), "Btn 1", "Button text should be equal to xml view ListItem text");
 		strictEqual(oSegmentedButton.getSelectedKey(), "b2", "selectedKey should be 'b2'");
 
 		// Cleanup
@@ -608,45 +710,113 @@
 
 	});
 
-	if (sap.ui.Device.browser.name == "ie" && (sap.ui.Device.browser.versionStr == "9" || sap.ui.Device.browser.versionStr == "10")) {
-		// TODO: fix this - do not run this tests on IE9 & IE10 because of width reading problem
-	} else {
-		test("All widths in %", function () {
+	test("ID's of internal elements properly set/rendered", function() {
 
-			// Arrange
-			var oSegmentedButton = new sap.m.SegmentedButton({
-				width: "100%",
-				buttons: [
-					new sap.m.Button({
-						width: "50%",
-						text: "50%"
-					}),
-					new sap.m.Button({
-						width: "50%",
-						text: "50%"
-					})
-				]
-			});
+		var sItemIdComponent = "segmentedButtonItem-",
+			aButtons,
+			oSegmentedButton,
+			getExpectedButtonId,
+			getExpectedImageId,
+			i = 0;
 
-			// System under Test
-			oSegmentedButton.placeAt("qunit-fixture");
-			sap.ui.getCore().applyChanges();
+		getExpectedButtonId = function (iIndex) {
+			return sItemIdComponent + iIndex + "-button";
+		};
 
-			// Act
-			var sBtn1Width = jQuery(oSegmentedButton.$().find("li")[0]).width();
-			var sBtn1Iwidth = jQuery(oSegmentedButton.$().find("li")[0]).innerWidth();
-			var sBtn2Width = jQuery(oSegmentedButton.$().find("li")[1]).width();
-			var sBtn2Iwidth = jQuery(oSegmentedButton.$().find("li")[1]).innerWidth();
+		getExpectedImageId = function (iIndex) {
+			return sItemIdComponent + iIndex + "-button-img";
+		};
 
-			// Assert
-			strictEqual(sBtn1Width, sBtn1Iwidth, "Button one inner and outer width must be the same");
-			strictEqual(sBtn2Width, sBtn2Iwidth, "Button two inner and outer width must be the same");
-
-			// Cleanup
-			oSegmentedButton.destroy();
-
+		// Arrange
+		oSegmentedButton = new sap.m.SegmentedButton("segmentedButton", {
+			items: [
+				new sap.m.SegmentedButtonItem(sItemIdComponent + 0, {
+					icon: "sap-icon://home",
+					text: "Button 1"
+				}),
+				new sap.m.SegmentedButtonItem(sItemIdComponent + 1, {
+					icon: "sap-icon://home",
+					text: "Button 2"
+				}),
+				new sap.m.SegmentedButtonItem(sItemIdComponent + 2, {
+					icon: "images/candy_star_46x46.png",
+					text: "Button 3"
+				})
+			]
 		});
-	}
+
+		// System under Test
+		oSegmentedButton.placeAt("qunit-fixture");
+		sap.ui.getCore().applyChanges();
+
+		aButtons = oSegmentedButton.getButtons();
+
+		// Assert
+		for (;i < aButtons.length;i++) {
+			// Buttons
+			strictEqual(aButtons[i].getId(), getExpectedButtonId(i),
+					"Internal button id should be equal to the expected id");
+
+			strictEqual(aButtons[i].$().attr("id"), getExpectedButtonId(i),
+					"Rendered button id should be equal to the expected id");
+
+			// Images|icons
+			strictEqual(aButtons[i].$().find(".sapMBtnIcon").attr("id"), getExpectedImageId(i),
+					"Rendered image id should be equal to the expected id");
+		}
+
+		// Cleanup
+		aButtons = null;
+		oSegmentedButton.destroy();
+
+	});
+
+	test("Using the .sapMSegmentedButtonNoAutoWidth CSS class", function () {
+
+		// Arrange
+		var oSB,
+			aButtons,
+			iBtn1Width,
+			iBtn2Width,
+			iBtn3Width,
+			iBtn4Width;
+
+		oSB = new sap.m.SegmentedButton({
+			items: [
+					new sap.m.SegmentedButtonItem({text: "All"}),
+					new sap.m.SegmentedButtonItem({text: "Some long text"}),
+					new sap.m.SegmentedButtonItem({text: "Other long text"}),
+					new sap.m.SegmentedButtonItem({text: "All"})
+			]
+		}).addStyleClass("sapMSegmentedButtonNoAutoWidth").placeAt("qunit-fixture");
+
+		sap.ui.getCore().applyChanges();
+
+		aButtons = oSB.getButtons();
+
+		iBtn1Width = aButtons[0].$().outerWidth();
+		iBtn2Width = aButtons[1].$().outerWidth();
+		iBtn3Width = aButtons[2].$().outerWidth();
+		iBtn4Width = aButtons[3].$().outerWidth();
+
+		// Assert
+		ok(iBtn1Width > 0, "The width of the first button is greater than zero");
+		strictEqual(iBtn1Width, iBtn4Width, "The width of the first button is equal to the width of the last button");
+		ok((iBtn1Width * 2) < iBtn2Width, "The width of the first button multiplied is greater than the second button");
+		ok((iBtn1Width * 2) < iBtn3Width, "The width of the first button multiplied is greater than the third button");
+		ok((iBtn4Width * 2) < iBtn2Width, "The width of the last button multiplied is greater than the second button");
+		ok((iBtn4Width * 2) < iBtn3Width, "The width of the last button multiplied is greater than the third button");
+
+		// Cleanup
+		aButtons = null;
+		iBtn1Width = null;
+		iBtn2Width = null;
+		iBtn3Width = null;
+		iBtn4Width = null;
+		oSB.destroy();
+		oSB = null;
+
+	});
 
 	/* =========================================================== */
 	/* Event module                                                */
@@ -722,22 +892,23 @@
 		teardown : function () { sinon.config.useFakeTimers = true; }
 	});
 
-	test("SegmentedButton in Dialog's header", function(assert) {
-		var done = assert.async();
+	asyncTest("SegmentedButton in Dialog's header", 3, function(assert) {
 		// Arrange
-		var oButton1 = new sap.m.Button();
-		var oButton2 = new sap.m.Button();
-		var oButton3 = new sap.m.Button();
+		var oButton1 = new sap.m.Button(),
+			oButton2 = new sap.m.Button(),
+			oButton3 = new sap.m.Button(),
+			oBar,
+			oDialog;
 
 		// System under Test
-		var oBar = new sap.m.Bar({
+		oBar = new sap.m.Bar({
 			contentMiddle : [new sap.m.SegmentedButton({
 				width : "100%",
 				buttons : [oButton1, oButton2, oButton3]
 			})]
 		});
 
-		var oDialog = new sap.m.Dialog({
+		oDialog = new sap.m.Dialog({
 			subHeader : oBar,
 			content : [new sap.m.Button({
 				text : "long button",
@@ -749,102 +920,28 @@
 
 		// Assert
 		oDialog.attachAfterOpen(function () {
-			setTimeout(function() {
-				oDialog.close();
-			}, 1000);
+			oDialog.close();
 		});
 
 		oDialog.attachBeforeClose(function () {
-			// the implementation of the SegmentedButton sets a timeout for IE browsers
-			// to re-calculate the button width(SegmentedButton.js, 121), so we need to do this in the test as well
-			setTimeout(function () {
-				// Compared to two because the element has border
-				ok(Math.abs(oButton1.$().width() - oButton2.$().width()) <= 2,
-						"Buttons in SegmentedButton should have identical width");
-				ok(Math.abs(oButton1.$().width() - oButton3.$().width()) <= 2,
-						"Buttons in SegmentedButton should have identical width");
-				ok(Math.abs(oBar.$().find(".sapMBarPH").width() - oButton1.$().outerWidth() - oButton2.$().outerWidth()
-						- oButton3.$().outerWidth()) <= 3, "SegmentedButton should occupy the whole width of dialog");
+			// Compared to two because the element has border
+			ok(Math.abs(oButton1.$().width() - oButton2.$().width()) <= 2,
+					"Buttons in SegmentedButton should have identical width");
+			ok(Math.abs(oButton1.$().width() - oButton3.$().width()) <= 2,
+					"Buttons in SegmentedButton should have identical width");
+			ok(Math.abs(oBar.$().find(".sapMBarPH").width() - oButton1.$().outerWidth() - oButton2.$().outerWidth()
+					- oButton3.$().outerWidth()) <= 5, "SegmentedButton should occupy the whole width of dialog");
 
-				// Cleanup
-				oDialog.destroy();
+			// Cleanup
+			oDialog.destroy();
 
-				done();
-			}, 0);
+			start();
 		});
 
 		// Act
 		oDialog.open();
 	});
 
-	test("SegmentedButton in Dialog's content when total buttons width is greater than the dialog's width", function(assert){
-		// Arrange
-		var done = assert.async();
-		var oButton1 = new sap.m.Button({text: "Button1 with very long text 1"}),
-				oButton2 = new sap.m.Button({text: "Button2 with very long text 22"}),
-				oButton3 = new sap.m.Button({text: "Button3 with very long text 3333"}),
-				iScreenWidth = 360,
-				iExpectedButtonWidth = 87, // 360/3 - 33 = 87(33=child button padding+border)
-				oOriginalFnWidth = jQuery.fn.width;
-
-		var	oStubWidth = sinon.stub(jQuery.fn, "width", function () {
-			if (this.get(0) === window) {
-
-				return iScreenWidth;
-			}
-			return oOriginalFnWidth.apply(this, arguments);
-		});
-
-		// System under Test
-		var oSegmentedButton = new sap.m.SegmentedButton("buttonInBar", {
-			buttons: [oButton1, oButton2, oButton3]
-		});
-		var oDialog = new sap.m.Dialog( { content: [oSegmentedButton]});
-		oDialog.open();
-		setTimeout(function() {
-			oSegmentedButton.getButtons().forEach(function(oButton){
-				equal(oButton.$().width(), iExpectedButtonWidth, "Check the width of the button " + oButton.getText());
-			});
-			oStubWidth.restore();
-			oDialog.destroy();
-			done();
-		},1000);
-	});
-
-	test("SegmentedButton in Bar in Dialog's content when total buttons width is greater than the dialog's width", function(assert){
-		// Arrange
-		var done = assert.async();
-		var oButton1 = new sap.m.Button({text: "Button1 with very long text 1"}),
-				oButton2 = new sap.m.Button({text: "Button2 with very long text 22"}),
-				oButton3 = new sap.m.Button({text: "Button3 with very long text 3333"}),
-				iScreenWidth = 360,
-				iExpectedButtonWidth = 83, // (360-10)/3 - 33 = 83(33=child button padding+border, 10=bar padding +  2px paddingFix)
-		oOriginalFnWidth = jQuery.fn.width;
-
-		var	oStubWidth = sinon.stub(jQuery.fn, "width", function () {
-			if (this.get(0) === window) {
-
-				return iScreenWidth;
-			}
-			return oOriginalFnWidth.apply(this, arguments);
-		});
-
-		// System under Test
-		var oSegmentedButton = new sap.m.SegmentedButton("buttonInBar", {
-			buttons: [oButton1, oButton2, oButton3]
-		});
-		var oBar = new sap.m.Bar( {contentMiddle: [oSegmentedButton]} );
-		var oDialog = new sap.m.Dialog( { content: [oBar]});
-		oDialog.open();
-		setTimeout(function() {
-			oSegmentedButton.getButtons().forEach(function(oButton){
-				equal(oButton.$().width(), iExpectedButtonWidth, "Check the width of the button " + oButton.getText());
-			});
-			oStubWidth.restore();
-			oDialog.destroy();
-			done();
-		},1000);
-	});
 	/* =========================================================== */
 	/* API module                                                  */
 	/* =========================================================== */
@@ -860,7 +957,7 @@
 			text : "second button"
 		}), oButton3 = new sap.m.Button({
 			text : "third button"
-		});
+		}), oThisForChaining;
 
 		// System under test
 		var oSegmentedButton = new sap.m.SegmentedButton({
@@ -876,11 +973,12 @@
 				"the first button's DOM element initially has style class \"sapMSegBBtnSel\"");
 
 		// Act
-		oSegmentedButton.setSelectedButton(oButton2);
+		oThisForChaining = oSegmentedButton.setSelectedButton(oButton2);
 
 		// Assert
 		strictEqual(oSegmentedButton.getSelectedButton(), oButton2.getId(), "now the second button is selected");
 		ok(oButton2.$().hasClass("sapMSegBBtnSel"), "the second button's DOM element has style class \"sapMSegBBtnSel\"");
+		ok(oThisForChaining instanceof sap.m.SegmentedButton, "the setter should return 'this' instance of the control itself to enable chaining");
 
 		// Act
 		oSegmentedButton.setSelectedButton(oButton3.getId());
@@ -924,7 +1022,7 @@
 		strictEqual(oSegmentedButton.getWidth(), "", "by default width property is empty string");
 		strictEqual(oSegmentedButton.getVisible(), true, "By default the SegmentedButton control is visible");
 		strictEqual(oSegmentedButton.getEnabled(), true, "By default the SegmentedButton control control is enabled");
-		strictEqual(oSegmentedButton.getSelectedKey(), "", "By default the selectedKey aggregation shoud be undefined when the segmented button is initialized with the buttons aggregation");
+		strictEqual(oSegmentedButton.getSelectedKey(), "", "By default the selectedKey aggregation should be undefined when the segmented button is initialized with the buttons aggregation");
 
 		// Cleanup
 		oSegmentedButton.destroy();
@@ -1012,7 +1110,7 @@
 		oSegmentedButton.destroy();
 	});
 
-	test("Disbale single button", function() {
+	test("Disable single button", function() {
 		// Arrange
 		var oButton1 = new sap.m.Button();
 		var oButton2 = new sap.m.Button();
@@ -1131,7 +1229,7 @@
 		sap.ui.getCore().applyChanges();
 
 		// Assert
-		strictEqual(oSegmentedButton.getButtons().length, 0, "There shoud be 0 buttons in the SegmentedButton");
+		strictEqual(oSegmentedButton.getButtons().length, 0, "There should be 0 buttons in the SegmentedButton");
 
 		// Cleanup
 		oSegmentedButton.destroy();
@@ -1170,6 +1268,35 @@
 
 	});
 
+	test("when using items & setSelectedKey() is called, setSelectedButton() is called too", function() {
+		// Arrange
+		var oItem1 = new sap.m.SegmentedButtonItem({
+			key: "b1",
+			text: "Button 1"
+		});
+		var oItem2 = new sap.m.SegmentedButtonItem({
+			key: "b2",
+			text: "Button 2"
+		});
+		var oItem3 = new sap.m.SegmentedButtonItem({
+			key: "b3",
+			text: "Button 3"
+		});
+
+		var oSetSelectedButtonSpy = this.spy(sap.m.SegmentedButton.prototype, 'setSelectedButton');
+
+		// System under Test
+		var oSegmentedButton = new sap.m.SegmentedButton({
+			items : [oItem1, oItem2, oItem3],
+			selectedKey : "b2"
+		});
+
+		equal(oSetSelectedButtonSpy.callCount, 1, "setSelectedButton is called");
+
+		// Cleanup
+		oSegmentedButton.destroy();
+	});
+
 	test("setSelectedKey()", function() {
 
 		// Arrange
@@ -1188,7 +1315,8 @@
 					text: "Button 3"
 				})
 			]
-		});
+		}),
+		oThisForChaining;
 
 		// System under Test
 		oSegmentedButton.placeAt("qunit-fixture");
@@ -1200,11 +1328,12 @@
 
 		// Act
 		// Change selectedKey to "b2"
-		oSegmentedButton.setSelectedKey("b2");
+		oThisForChaining = oSegmentedButton.setSelectedKey("b2");
 
 		// Assert
 		strictEqual(oSegmentedButton.getSelectedKey(), "b2", "selectedKey should be 'b2'");
 		strictEqual(oSegmentedButton.getProperty("selectedKey"), "b2", "selectedKey property should be 'b2'");
+		ok(oThisForChaining instanceof sap.m.SegmentedButton, "the setter should return 'this' instance of the control itself to enable chaining");
 
 		// Act
 		// Change selectedKey to non existing key
@@ -1296,12 +1425,280 @@
 		ok($LI.find(".sapMBtnIcon"), "Rendered li should contain a icon span");
 		strictEqual($LI.attr("dir"), "rtl", "Rendered li should have attribute dir equal to 'rtl'");
 		ok($LI.hasClass("sapMSegBBtnDis"), "Rendered li should have a disabled class");
-		strictEqual($LI.width(), 300, "Rendered li width must be equal the the new value");
+		strictEqual($LI.outerWidth(), 300, "Rendered li width must be equal the the new value");
 
 	});
 
 	/* =========================================================== */
 	/* API module                                                  */
+	/* =========================================================== */
+
+	/* =========================================================== */
+	/* Helper functionality module                                 */
+	/* =========================================================== */
+
+	module("Helper functions");
+
+	test("_getButtonWidth private method", function () {
+		// Arrange
+		var oSB = new sap.m.SegmentedButton(),
+			aButtons;
+
+		// Setting internal custom width marker so width calculations will pass
+		oSB._bCustomButtonWidth = true;
+
+		// Assert
+		aButtons = [
+			new sap.m.Button(),
+			new sap.m.Button({width: "300px"}),
+			new sap.m.Button()
+		];
+		strictEqual(oSB._getButtonWidth(aButtons), "calc(50% - 150px)", "Resulting css width should be calc(50% - 150px)");
+
+		aButtons = [
+			new sap.m.Button(),
+			new sap.m.Button({width: "300px"}),
+			new sap.m.Button({width: "300px"})
+		];
+		strictEqual(oSB._getButtonWidth(aButtons), "calc(100% - 600px)", "Resulting css width should be calc(100% - 600px)");
+
+		aButtons = [
+			new sap.m.Button(),
+			new sap.m.Button(),
+			new sap.m.Button({width: "60%"}),
+			new sap.m.Button({width: "300px"})
+		];
+		strictEqual(oSB._getButtonWidth(aButtons), "calc(20% - 150px)", "Resulting css width should be calc(20% - 150px)");
+
+		aButtons = [
+			new sap.m.Button(),
+			new sap.m.Button({width: "70%"}),
+			new sap.m.Button()
+		];
+		strictEqual(oSB._getButtonWidth(aButtons), "15%", "Resulting css width should be 15%");
+
+		aButtons = [
+			new sap.m.Button({width: "100px"}),
+			new sap.m.Button({width: "100px"}),
+			new sap.m.Button({width: "100px"})
+		];
+		strictEqual(oSB._getButtonWidth(aButtons), false, "Resulting css width should be false because there are no buttons" +
+				"without custom widths");
+
+		aButtons = [
+			new sap.m.Button({width: "50%"}),
+			new sap.m.Button({width: "50%"}),
+			new sap.m.Button()
+		];
+		strictEqual(oSB._getButtonWidth(aButtons), "0%", "Resulting css width should be 0% because the other buttons" +
+				" are occupying all the available width");
+
+		// Cleanup
+		oSB.destroy();
+		oSB = null;
+		aButtons = null;
+
+	});
+
+	test("_getRenderedButtonWidths private method", function () {
+		// Arrange
+		var oSB,
+			aButtons;
+
+		oSB = new sap.m.SegmentedButton({
+			buttons: [
+				new sap.m.Button({text: "Btn 1", width: "100px"}),
+				new sap.m.Button({text: "Btn 2 long", width: "100px"}),
+				new sap.m.Button({text: "Btn 3 again longer", width: "100px"})
+			]
+		});
+		aButtons = oSB.getButtons();
+
+		// Assert
+		deepEqual(oSB._getRenderedButtonWidths(aButtons), [null,null,null], "Before the control is rendered an array " +
+				"of empty widths is returned");
+
+		// Act
+		oSB.placeAt("qunit-fixture");
+		sap.ui.getCore().applyChanges();
+
+		// Assert
+		deepEqual(oSB._getRenderedButtonWidths(aButtons), [100,100,100], "Returned array of widths " +
+				"equals to predefined widths of the buttons");
+
+		// Cleanup
+		oSB.destroy();
+		oSB = null;
+		aButtons = null;
+	});
+
+	test("_clearAutoWidthAppliedToControl private method", function () {
+		// Arrange
+		var oSB,
+			aButtons,
+			i;
+
+		oSB = new sap.m.SegmentedButton({
+			items: [
+				new sap.m.SegmentedButtonItem({text: "Btn 1"}),
+				new sap.m.SegmentedButtonItem({text: "Btn 2", width: "20px"}),
+				new sap.m.SegmentedButtonItem({text: "Btn 3"})
+			]
+		}).placeAt("qunit-fixture");
+		sap.ui.getCore().applyChanges();
+
+		aButtons = oSB.getButtons();
+
+		// Assert
+		ok(oSB.$().attr("style").indexOf("width:") !== -1, "Auto width is applied to control");
+		for (i = 0;i < aButtons.length; i++) {
+			ok(aButtons[i].$().attr("style").indexOf("width:") !== -1, "Auto|predefined width is applied to internal " +
+					"button");
+		}
+
+		// Act
+		oSB._clearAutoWidthAppliedToControl();
+
+		// Assert
+		notOk(oSB.$().attr("style"), "Auto width is removed from control");
+		notOk(aButtons[0].$().attr("style"), "Auto width is removed from internal button");
+		ok(aButtons[1].$().attr("style").indexOf("20px") !== -1, "Predefined width is not removed from internal button");
+		notOk(aButtons[2].$().attr("style"), "Auto width is removed from internal button");
+
+		// Act
+		oSB.setWidth("200px");
+		aButtons[0].setWidth("10px");
+		sap.ui.getCore().applyChanges();
+		oSB._clearAutoWidthAppliedToControl();
+
+		// Assert
+		ok(oSB.$().attr("style").indexOf("200px") !== -1, "Control width is not cleared if predefined");
+		ok(aButtons[0].$().attr("style").indexOf("10px") !== -1, "First button width is not cleared if predefined");
+
+		// Cleanup
+		oSB.destroy();
+		oSB = null;
+		aButtons = null;
+	});
+
+	test("_handleContainerResize private method", function () {
+		// Arrange
+		var oSB = new sap.m.SegmentedButton({
+			items: [
+				new sap.m.SegmentedButtonItem({text: "Btn 1"}),
+				new sap.m.SegmentedButtonItem({text: "Btn 2"}),
+				new sap.m.SegmentedButtonItem({text: "Btn 3"})
+			]
+		});
+
+		this.spy(oSB, "_clearAutoWidthAppliedToControl");
+		this.spy(oSB, "_getRenderedButtonWidths");
+		this.spy(oSB, "_updateWidth");
+
+		// Act
+		oSB._handleContainerResize();
+
+		// Assert
+		ok(oSB._clearAutoWidthAppliedToControl.calledOnce, "Method _clearAutoWidthAppliedToControl called once");
+		ok(oSB._getRenderedButtonWidths.calledOnce, "Method _getRenderedButtonWidths called once");
+		ok(oSB._updateWidth.calledOnce, "Method _updateWidth called once");
+
+		// Cleanup
+		oSB.destroy();
+		oSB = null;
+	});
+
+	test("_updateWidth private method", function () {
+		// Arrange
+		var oSB,
+			aButtons,
+			i;
+
+		oSB = new sap.m.SegmentedButton({
+			items: [
+				new sap.m.SegmentedButtonItem({text: "Btn 1"}),
+				new sap.m.SegmentedButtonItem({text: "Btn 2"}),
+				new sap.m.SegmentedButtonItem({text: "Btn 3"}),
+				new sap.m.SegmentedButtonItem({text: "Btn 4"})
+			]
+		}).placeAt("qunit-fixture");
+
+		sap.ui.getCore().applyChanges();
+
+		aButtons = oSB.getButtons();
+
+		// Act
+		oSB._aWidths = [20, 20, 20, 20];
+		oSB._updateWidth();
+
+		// Assert
+		strictEqual(oSB.$().attr("style"), "width: 81px;", "Result should be sum of all 4 button widths which is 80 " +
+				"plus one pixel added for the border");
+
+		// Act
+		oSB.setWidth("400px");
+
+		// Assert
+		for (i = 0;i < aButtons.length;i++) {
+			strictEqual(aButtons[i].$().attr("style"), "width: 25%;", "Width of all buttons should be 25%");
+		}
+
+		// Act
+		oSB._aWidths = [0, 0, 0, 0];
+		oSB._updateWidth();
+
+		// Assert
+		notOk(oSB.$().css("width") === "1px", "Corner case when all reported inner buttons width is 0 applied width " +
+				"should not be 1px");
+
+		// Cleanup
+		aButtons = null;
+		oSB.destroy();
+		oSB = null;
+	});
+
+	test("_updateWidth - sum of buttons width is greater than parent element width", function () {
+		// Arrange
+		var that = this,
+			oSB = new sap.m.SegmentedButton({
+				items: [
+					new sap.m.SegmentedButtonItem({text: "Btn 1"}),
+					new sap.m.SegmentedButtonItem({text: "Btn 2"}),
+					new sap.m.SegmentedButtonItem({text: "Btn 3"}),
+					new sap.m.SegmentedButtonItem({text: "Btn 4"})
+				]
+			}).placeAt("qunit-fixture");
+
+		sap.ui.getCore().applyChanges();
+
+		// Act
+		// Here we replace the jQuery.innerWidth method to report stable width for the parent element if the parent
+		// element is the qunit-fixture itself
+		this._ojQueryInnerWidthMethod = jQuery.fn.innerWidth;
+		jQuery.fn.innerWidth = function (sWidth) {
+			if (!sWidth && this[0].id === "qunit-fixture") {
+				return 100;
+			}
+			return that._ojQueryInnerWidthMethod.apply(this, arguments);
+		};
+
+		oSB._aWidths = [100, 100, 100];
+		oSB._updateWidth();
+
+		// Assert
+		strictEqual(oSB.$().attr("style"), "width: 100%;", "a");
+
+		// Restore jQuery.innerWidth method
+		jQuery.fn.innerWidth = this._ojQueryInnerWidthMethod;
+
+		// Cleanup
+		oSB.destroy();
+		oSB = null;
+		this._ojQueryInnerWidthMethod = null;
+	});
+
+	/* =========================================================== */
+	/* Helper functionality module                                 */
 	/* =========================================================== */
 
 	module("Data binding");
@@ -1452,7 +1849,7 @@
 		mData.items[6].enabled = true;
 		mData.items[6].text = "sLabel";
 
-		// Update bingings with a change reason
+		// Update bindings with a change reason
 		oModel.updateBindings(sap.ui.model.ChangeReason.Change);
 
 		// Assert
@@ -1467,8 +1864,15 @@
 	});
 
 	test("Data binding items aggregation live model change", function() {
+		var mDataInitial,
+			mDataSecond,
+			oSegmentedButton,
+			aButtons,
+			oModel,
+			i;
+
 		// Arrange
-		var mDataInitial = {
+		mDataInitial = {
 			items: [
 				{key: "b1", text: "Initial btn 1"},
 				{key: "b2", text: "Initial btn 2"},
@@ -1476,7 +1880,7 @@
 			]
 		};
 
-		var mDataSecond = {
+		mDataSecond = {
 			selectedKey: "b7",
 			items: [
 				{key: "b1", text: "btn 1", icon: "sap-icon://attachment"},
@@ -1491,7 +1895,7 @@
 		};
 
 		// System under Test
-		var oSegmentedButton = new sap.m.SegmentedButton({
+		oSegmentedButton = new sap.m.SegmentedButton({
 			selectedKey: "{/selectedKey}",
 			items : {
 				path : "/items",
@@ -1505,7 +1909,7 @@
 			}
 		});
 
-		var oModel = new sap.ui.model.json.JSONModel();
+		oModel = new sap.ui.model.json.JSONModel();
 		oModel.setData(mDataInitial);
 
 		sap.ui.getCore().setModel(oModel);
@@ -1521,6 +1925,14 @@
 		strictEqual(oSegmentedButton.getItems()[0].getText(),
 				"Initial btn 1", "Button text should be equal to initial Model text");
 
+		// Get the buttons prior to changing the model of the control.
+		aButtons = oSegmentedButton.getButtons();
+
+		// Spy on destroy method of the internal buttons
+		for (i = 0;i < aButtons.length;i++) {
+			sinon.spy(aButtons[i], "destroy");
+		}
+
 		// Act
 		oModel.setData(mDataSecond);
 		sap.ui.getCore().applyChanges();
@@ -1529,7 +1941,7 @@
 		strictEqual(oSegmentedButton.getItems().length, 8, "Should have 8 items");
 		strictEqual(oSegmentedButton.getButtons().length, 8, "Should have 8 buttons");
 		strictEqual(oSegmentedButton.$().find("li").length, 8, "Should have 8 buttons rendered");
-		strictEqual(oSegmentedButton.getSelectedKey(), "b7", "selectedKey shoud be qual to the second model selectedKey");
+		strictEqual(oSegmentedButton.getSelectedKey(), "b7", "selectedKey should be equal to the second model selectedKey");
 		strictEqual(oSegmentedButton.getButtons()[0].getText(), "btn 1",
 				"Button text should be equal to second Model text");
 		strictEqual(oSegmentedButton.getButtons()[1].getEnabled(), false,
@@ -1541,7 +1953,13 @@
 		strictEqual(oSegmentedButton.getButtons()[3].getIcon(), "sap-icon://home",
 				"Button icon should be equal to second Model icon");
 
+		for (i = 0;i < aButtons.length;i++) {
+			ok(aButtons[i].destroy.calledOnce, "Internally created button with index " + i + " from the old model should be destroyed ");
+			aButtons[i].destroy.restore();
+		}
+
 		// Cleanup
+		aButtons = null;
 		oSegmentedButton.destroy();
 	});
 
@@ -1769,6 +2187,19 @@
 				}),
 				new sap.m.SegmentedButtonItem({
 					text: "button 3"
+				}),
+				new sap.m.SegmentedButtonItem({
+					text: "button 4",
+					tooltip: "tooltip 4"
+				}),
+				new sap.m.SegmentedButtonItem({
+					icon: "sap-icon://attachment",
+					tooltip: "tooltip 5"
+				}),
+				new sap.m.SegmentedButtonItem({
+					icon: "sap-icon://attachment",
+					text: "button 6",
+					tooltip: "tooltip 6"
 				})
 			]
 		});
@@ -1787,8 +2218,30 @@
 				sap.ui.core.IconPool.getIconInfo("sap-icon://attachment").name,
 				"Attribute aria-label on the second button should contain only the icon generic name");
 
+		strictEqual(aButtons[1].$().attr("title"),
+				sap.ui.core.IconPool.getIconInfo("sap-icon://attachment").name,
+				"Tooltip on the second button should contain only the icon generic name");
+
 		strictEqual(aButtons[2].$().attr("aria-label"), undefined,
 				"If we don't have a SAP Icon we don't need the aria-label attribute");
+
+		strictEqual(aButtons[3].$().attr("aria-label"), undefined,
+				"Don't put aria-label for text and tooltip");
+
+		strictEqual(aButtons[3].$().attr("title"), "tooltip 4",
+				"For text and tooltip use the later for title attr");
+
+		strictEqual(aButtons[4].$().attr("aria-label"), undefined,
+				"Don't use aria-label with icon + tooltip");
+
+		strictEqual(aButtons[4].$().attr("title"), "tooltip 5",
+				"Read the title attr when icon + tooltip are used");
+
+		strictEqual(aButtons[5].$().attr("aria-label"), undefined,
+				"Don't use aria-label with icon, tooltip and text");
+
+		strictEqual(aButtons[5].$().attr("title"), "tooltip 6",
+				"Read the title attr when icon, tooltip and text are used");
 
 		// Cleanup
 		oSegmentedButton.destroy();
@@ -1993,6 +2446,125 @@
 		oSegmentedButton.destroy();
 	});
 
+	test("_toSelectMode transfers only visible buttons into select items", function() {
+
+		// Arrange
+		var oSegmentedButton = new sap.m.SegmentedButton({
+			buttons: [
+				new sap.m.Button({
+					text: "Button 1"
+				}),
+				new sap.m.Button({
+					text: "Button 2",
+					visible: false
+				}),
+				new sap.m.Button({
+					text: "Button 3"
+				}),
+				new sap.m.Button({
+					text: "Invisible Button",
+					visible: false
+				})
+			]
+		});
+
+		// System under Test
+		oSegmentedButton.placeAt("qunit-fixture");
+		sap.ui.getCore().applyChanges();
+
+		//Act
+		oSegmentedButton._toSelectMode();
+
+		// Assert
+		strictEqual(oSegmentedButton.getButtons().length, 4, "Control should still have 4 buttons");
+		strictEqual(oSegmentedButton.getAggregation("_select").getItems().length, 2, "Select should have 2 items");
+
+		//Act
+		oSegmentedButton.getButtons()[1].setVisible(true);
+
+		// Assert
+		strictEqual(oSegmentedButton.getAggregation("_select").getItems().length, 3, "Select should have 3 items");
+
+		// Cleanup
+		oSegmentedButton.destroy();
+	});
+
+    test("Can work with special characters in the ID", function() {
+
+        // Arrange
+        var oSegmentedButton = new sap.m.SegmentedButton({
+            items: [
+                new sap.m.SegmentedButtonItem({
+                    id: "contains::colon",
+                    text: "Button 1"
+                }),
+                new sap.m.SegmentedButtonItem({
+                    text: "Button 2"
+                }),
+                new sap.m.SegmentedButtonItem({
+                    text: "Button 3"
+                })
+            ]
+        });
+
+        // System under Test
+        oSegmentedButton.placeAt("qunit-fixture");
+        sap.ui.getCore().applyChanges();
+
+        ok(oSegmentedButton.getDomRef(), "SegmentedButton should be rendered");
+
+        oSegmentedButton.destroy();
+    });
+
+    module("SegmentedButton in communicates changes in its aggregated items/buttons");
+
+    test("Changing the text property aggregated buttons", function () {
+        // Arrange
+        var oTestItem = new sap.m.Button({text: "Button 1"}),
+            oSegmentedButton = new sap.m.SegmentedButton({buttons: [oTestItem]}),
+            sNewText = "new Text",
+            bChangedHandlerCalled = false;
+
+        oSegmentedButton.placeAt("qunit-fixture");
+
+        oSegmentedButton.attachEvent("_change", function () {
+            bChangedHandlerCalled = true;
+        });
+
+        // Assert
+        ok(!bChangedHandlerCalled, "Initially the change event hasn't been fired");
+        oTestItem.setText(sNewText);
+        strictEqual(oTestItem.getText(), sNewText, "The internal button has changed its text");
+        ok(bChangedHandlerCalled, "The change event has been fired after the button's property has changed");
+
+        // Cleanup
+        oSegmentedButton.destroy();
+    });
+
+
+    test("Changing the text property aggregated items", function () {
+        // Arrange
+        var oTestItem = new sap.m.SegmentedButtonItem({text: "Button 1"}),
+            oSegmentedButton = new sap.m.SegmentedButton({items: [oTestItem]}),
+            sNewText = "new Text",
+            bChangedHandlerCalled = false;
+
+        oSegmentedButton.placeAt("qunit-fixture");
+        sap.ui.getCore().applyChanges();
+        oSegmentedButton.attachEvent("_change", function () {
+            bChangedHandlerCalled = true;
+        });
+
+        // Assert
+        ok(!bChangedHandlerCalled, "Initially the change event hasn't been fired");
+        oTestItem.setText(sNewText);
+        strictEqual(oTestItem.getText(), sNewText, "The internal button has changed its text");
+        ok(bChangedHandlerCalled, "The change event has been fired after the button's property has changed");
+
+        // Cleanup
+        oSegmentedButton.destroy();
+    });
+
 </script>
 </head>
 <body>
@@ -2001,7 +2573,6 @@
 	<h2 id="qunit-userAgent"></h2>
 	<div id="qunit-testrunner-toolbar"></div>
 	<ol id="qunit-tests"></ol>
-
 	<div id="qunit-fixture"></div>
 </body>
 </html>

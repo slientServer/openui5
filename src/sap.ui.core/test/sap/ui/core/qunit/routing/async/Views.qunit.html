@@ -2,12 +2,12 @@
 <html>
 
 <head>
-<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
 <title>qUnit Page for sap.ui.core.routing.Views</title>
 
-<script id="sap-ui-bootstrap" type="text/javascript"
+<script src="../../../shared-config.js"></script>
+<script id="sap-ui-bootstrap"
 	src="../../../../../../../resources/sap-ui-core.js"
-	data-sap-ui-theme="sap_bluecrystal"
 	data-sap-ui-libs="sap.ui.commons,sap.ui.ux3,sap.m"
 	data-sap-ui-resourceroots='{"qunit.routing":".", "qunit.view":"../../testdata/routing"}'>
 
@@ -188,6 +188,8 @@
 
 					oViews.setView("foo", oView1);
 					oViews.setView("bar", oView2);
+					// test whether destroy checks the null case of the view cache
+					oViews.setView("foo1", null);
 
 					//Act
 					oViews.destroy();

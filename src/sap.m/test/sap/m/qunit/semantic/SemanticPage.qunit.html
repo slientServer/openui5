@@ -2,17 +2,17 @@
 <html>
 <head>
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<meta charset="UTF-8">
+	<meta charset="utf-8">
 	<title>Test Page for sap.m.SemanticPage</title>
+	<script src="../../shared-config.js"></script>
 	<script id="sap-ui-bootstrap"
 			data-sap-ui-noConflict="true"
 			src="../../../../../resources/sap-ui-core.js"
-			data-sap-ui-libs="sap.m"
-			data-sap-ui-theme="sap_bluecrystal">
+			data-sap-ui-libs="sap.m">
 	</script>
-	<link rel="stylesheet" href="../../../../../resources/sap/ui/thirdparty/qunit.css" type="text/css" media="screen"/>
+	<link rel="stylesheet" href="../../../../../resources/sap/ui/thirdparty/qunit.css" type="text/css" media="screen">
 	<script src="../../../../../resources/sap/ui/thirdparty/qunit.js"></script>
-	<script type="text/javascript" src="../../../../../resources/sap/ui/qunit/qunit-junit.js"></script>
+	<script src="../../../../../resources/sap/ui/qunit/qunit-junit.js"></script>
 	<script src="../../../../../resources/sap/ui/thirdparty/sinon.js"></script>
 	<script src="../../../../../resources/sap/ui/thirdparty/sinon-qunit.js"></script>
 	<script src="../../../../../resources/sap/ui/qunit/QUnitUtils.js"></script>
@@ -158,6 +158,26 @@
 			oSemanticPage.destroy();
 		});
 
+		test("Header hidden when no header content", function () {
+			var oConfig = {},
+				oSemanticPage = createSemanticPageFactory(_SemanticPageTypes.fullscreen, oConfig);
+
+			strictEqual(oSemanticPage._getPage().getShowHeader(), false, "header not shown");
+
+			oSemanticPage.destroy();
+		});
+
+		test("Header shown when there is header content", function () {
+			var oConfig = {
+						title: "Test"
+					},
+					oSemanticPage = createSemanticPageFactory(_SemanticPageTypes.fullscreen, oConfig);
+
+			strictEqual(oSemanticPage._getPage().getShowHeader(), true, "header is shown");
+
+			oSemanticPage.destroy();
+		});
+
 		module("Properties");
 
 		test("Semantic page properties have correct default values", function () {
@@ -212,6 +232,22 @@
 
 			oSemanticPage1.destroy();
 			oSemanticPage2.destroy();
+		});
+
+		test("floatingFooter is set correctly", function () {
+
+			var oConfig = {
+						title: "This is a title",
+						showNavButton: true,
+						customFooterContent: [new sap.m.Button({text: "custom"})]
+					},
+					oSemanticPage = createSemanticPageFactory(null, oConfig);
+
+			oSemanticPage.setFloatingFooter(true);
+			strictEqual(oSemanticPage._getPage().getFloatingFooter(), true);
+			oSemanticPage.setFloatingFooter(false);
+			strictEqual(oSemanticPage._getPage().getFloatingFooter(), false);
+			oSemanticPage.destroy();
 		});
 
 		module("Aggregations", {

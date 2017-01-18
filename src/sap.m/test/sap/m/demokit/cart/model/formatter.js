@@ -19,8 +19,15 @@ sap.ui.define(["sap/ui/core/format/NumberFormat"], function (NumberFormat) {
 			return numberFormat.format(value);
 		},
 
-		totalPrice: function (value) {
-			return this.getOwnerComponent().getModel("i18n").getResourceBundle().getText("CART_TOTAL_PRICE") + ": " + formatter.price(value);
+		totalPrice: function (oCartEntries) {
+			var fTotalPrice = 0;
+
+			Object.keys(oCartEntries).forEach(function (sProductId) {
+				var oProduct = oCartEntries[sProductId];
+				fTotalPrice += parseFloat(oProduct.Price) * oProduct.Quantity;
+			});
+			return this.getOwnerComponent().getModel("i18n").getResourceBundle().getText("CART_TOTAL_PRICE")
+				+ ": " + formatter.price(fTotalPrice);
 		},
 
 		statusText: function (status) {
@@ -37,6 +44,16 @@ sap.ui.define(["sap/ui/core/format/NumberFormat"], function (NumberFormat) {
 
 		statusState: function (status) {
 			return mStatusState[status] || "None";
+		},
+
+		pictureUrl: function (sUrl) {
+			return jQuery.sap.getResourcePath("sap/ui/demo/cart/" + sUrl);
+		},
+		footerTextForCart: function (oSavedForLaterEntries) {
+			if (Object.keys(oSavedForLaterEntries).length === 0) {
+				return "";
+			}
+			return this.getView().getModel("i18n").getResourceBundle().getText("CART_SAVED_FOR_LATER_FOOTER_TEXT");
 		}
 	};
 

@@ -10,7 +10,7 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/base/ManagedObject'],
 	/**
 	 * Constructor for a new ExportType.
 	 *
-	 * @param {string} [sId] id for the new control, generated automatically if no id is given 
+	 * @param {string} [sId] id for the new control, generated automatically if no id is given
 	 * @param {object} [mSettings] initial settings for the new control
 	 *
 	 * @class
@@ -34,16 +34,21 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/base/ManagedObject'],
 				 *  File extension.
 				 */
 				fileExtension: 'string',
-				
+
 				/**
 				 * MIME type.
 				 */
 				mimeType: 'string',
-				
+
 				/**
 				 * Charset.
 				 */
-				charset: 'string'
+				charset: 'string',
+
+				/**
+				 * Whether to prepend an unicode byte order mark when saving as a file (only applies for utf-8 charset).
+				 */
+				byteOrderMark: { type: 'boolean', defaultValue: undefined }
 			}
 		}
 
@@ -195,8 +200,8 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/base/ManagedObject'],
 
 					// convert customData object array to key-value map
 					var mCustomData = {};
-					jQuery.each(aCells[iIndex].getCustomData(), function() {
-						mCustomData[this.getKey()] = this.getValue();
+					aCells[iIndex].getCustomData().forEach(function(oCustomData) {
+						mCustomData[oCustomData.getKey()] = oCustomData.getValue();
 					});
 
 					return {

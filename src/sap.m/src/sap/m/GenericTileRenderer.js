@@ -2,7 +2,8 @@
  * ${copyright}
  */
 
-sap.ui.define([], function() {
+sap.ui.define([ "sap/m/LoadState", "sap/m/GenericTileScope" ],
+	function(LoadState, GenericTileScope) {
 	"use strict";
 
 	/**
@@ -18,122 +19,182 @@ sap.ui.define([], function() {
 	 * @param {sap.m.GenericTile} oControl the control to be rendered
 	 */
 	GenericTileRenderer.render = function(oRm, oControl) {
-		// write the HTML into the render manager
-		var sTooltip = oControl.getTooltip_AsString();
+		// Write the HTML into the render manager.
+		var sTooltipText = oControl._getTooltipText();
+		var sAriaText = oControl._getAriaText();
 		var sHeaderImage = oControl.getHeaderImage();
+		var bHasPress = oControl.hasListeners("press");
+		var sState = oControl.getState();
+		var sScope = oControl.getScope();
+		var sStateClass = jQuery.sap.encodeCSS("sapMGTState" + sState);
+		var sScopeClass = jQuery.sap.encodeCSS("sapMGTScope" + sScope);
 
 		oRm.write("<div");
-
 		oRm.writeControlData(oControl);
-
-		if (sTooltip) {
-			oRm.writeAttributeEscaped("title", sTooltip);
+		if (sTooltipText) {
+			oRm.writeAttributeEscaped("title", sTooltipText);
 		}
-
 		oRm.addClass("sapMGT");
-		oRm.addClass(oControl.getSize());
+		oRm.addClass(sStateClass);
+		oRm.addClass(sScopeClass);
+		// render actions view for SlideTile actions scope
+		if (sScope !== GenericTileScope.Actions && oControl._bShowActionsView) {
+			oRm.addClass("sapMGTScopeActions");
+		}
 		oRm.addClass(oControl.getFrameType());
-
-		oRm.writeAttribute("role", "presentation");
-		oRm.writeAttributeEscaped("aria-label", oControl.getAltText());
-
-		if (oControl.hasListeners("press") && oControl.getState() !== "Disabled") {
+		if (bHasPress) {
+			oRm.writeAttribute("role", "button");
+		} else {
+			oRm.writeAttribute("role", "presentation");
+		}
+		oRm.writeAttributeEscaped("aria-label", sAriaText);
+		if (sState !== LoadState.Disabled) {
 			oRm.addClass("sapMPointer");
 			oRm.writeAttribute("tabindex", "0");
 		}
-		oRm.writeClasses();
-
 		if (oControl.getBackgroundImage()) {
 			oRm.write(" style='background-image:url(");
 			oRm.writeEscaped(oControl.getBackgroundImage());
 			oRm.write(");'");
+			oRm.addClass("sapMGTBackgroundImage");
 		}
-
+		if (oControl.getMode() === sap.m.GenericTileMode.HeaderMode) {
+			oRm.addClass("sapMGTHeaderMode");
+		}
+		oRm.writeClasses();
 		oRm.write(">");
-		var sState = oControl.getState();
-		if (sState != sap.m.LoadState.Loaded) {
-			oRm.write("<div");
-			oRm.addClass("sapMGTOverlay");
-			oRm.writeClasses();
-			oRm.writeAttribute("id", oControl.getId() + "-overlay");
-			oRm.writeAttributeEscaped("title", oControl.getAltText());
-			oRm.write(">");
-			switch (sState) {
-				case sap.m.LoadState.Disabled :
-				case sap.m.LoadState.Loading :
-					oControl._oBusy.setBusy(sState === "Loading");
-					oRm.renderControl(oControl._oBusy);
-					break;
-				case sap.m.LoadState.Failed :
-					oRm.write("<div");
-					oRm.writeAttribute("id", oControl.getId() + "-failed-ftr");
-					oRm.addClass("sapMGenericTileFtrFld");
-					oRm.writeClasses();
-					oRm.write(">");
-					oRm.write("<div");
-					oRm.writeAttribute("id", oControl.getId() + "-failed-icon");
-					oRm.addClass("sapMGenericTileFtrFldIcn");
-					oRm.writeClasses();
-					oRm.write(">");
-					oRm.renderControl(oControl._oWarningIcon);
-					oRm.write("</div>");
-
-					oRm.write("<div");
-					oRm.writeAttribute("id", oControl.getId() + "-failed-text");
-					oRm.addClass("sapMGenericTileFtrFldTxt");
-					oRm.writeClasses();
-					oRm.write(">");
-					oRm.renderControl(oControl._oFailed);
-					oRm.write("</div>");
-
-					oRm.write("</div>");
-					break;
-				default :
-			}
-
-			oRm.write("</div>");
-		}
 
 		oRm.write("<div");
 		oRm.addClass("sapMGTHdrContent");
-		oRm.addClass(oControl.getSize());
 		oRm.addClass(oControl.getFrameType());
-		oRm.writeAttributeEscaped("title", oControl.getHeaderAltText());
+		if (sTooltipText) {
+			oRm.writeAttributeEscaped("title", sTooltipText);
+		}
 		oRm.writeClasses();
 		oRm.write(">");
 		if (sHeaderImage) {
 			oRm.renderControl(oControl._oImage);
 		}
 
-		this.renderHeader(oRm, oControl);
-		this.renderSubheader(oRm, oControl);
-
+		this._renderHeader(oRm, oControl);
+		if (oControl.getSubheader()) {
+			this._renderSubheader(oRm, oControl);
+		}
 		oRm.write("</div>");
 
 		oRm.write("<div");
 		oRm.addClass("sapMGTContent");
-		oRm.addClass(oControl.getSize());
 		oRm.writeClasses();
 		oRm.writeAttribute("id", oControl.getId() + "-content");
 		oRm.write(">");
-		var iLength = oControl.getTileContent().length;
+		var aTileContent = oControl.getTileContent();
+		var iLength = aTileContent.length;
 		for (var i = 0; i < iLength; i++) {
-			oRm.renderControl(oControl.getTileContent()[i]);
+			oControl._checkFooter(aTileContent[i], oControl);
+			oRm.renderControl(aTileContent[i]);
 		}
 		oRm.write("</div>");
+
+		if (sState !== LoadState.Loaded) {
+			this._renderStateOverlay(oRm, oControl, sTooltipText);
+		}
+
+		if (sState !== LoadState.Disabled) {
+			this._renderHoverOverlay(oRm, oControl);
+			this._renderFocusDiv(oRm, oControl);
+		}
+
+		if (sScope === GenericTileScope.Actions) {
+			this._renderActionsScope(oRm, oControl);
+		}
+		oRm.write("</div>");
+	};
+
+	GenericTileRenderer._renderFocusDiv = function(oRm, oControl) {
+		oRm.write("<div");
+		oRm.addClass("sapMGTFocusDiv");
+		oRm.writeClasses();
+		oRm.writeAttribute("id", oControl.getId() + "-focus");
+		oRm.write(">");
+		oRm.write("</div>");
+	};
+
+	GenericTileRenderer._renderStateOverlay = function(oRm, oControl, sTooltipText) {
+		var sState = oControl.getState();
+		oRm.write("<div");
+		oRm.addClass("sapMGTOverlay");
+		oRm.writeClasses();
+		oRm.writeAttribute("id", oControl.getId() + "-overlay");
+		if (sTooltipText) {
+			oRm.writeAttributeEscaped("title", sTooltipText);
+		}
+		oRm.write(">");
+		switch (sState) {
+			case LoadState.Loading :
+				oControl._oBusy.setBusy(sState == LoadState.Loading);
+				oRm.renderControl(oControl._oBusy);
+				break;
+			case LoadState.Failed :
+				oRm.write("<div");
+				oRm.writeAttribute("id", oControl.getId() + "-failed-ftr");
+				oRm.addClass("sapMGenericTileFtrFld");
+				oRm.writeClasses();
+				oRm.write(">");
+				oRm.write("<div");
+				oRm.writeAttribute("id", oControl.getId() + "-failed-icon");
+				oRm.addClass("sapMGenericTileFtrFldIcn");
+				oRm.writeClasses();
+				oRm.write(">");
+				oRm.renderControl(oControl._oWarningIcon);
+				oRm.write("</div>");
+
+				if (oControl.getScope() !== GenericTileScope.Actions && !oControl._bShowActionsView) {
+					oRm.write("<div");
+					oRm.writeAttribute("id", oControl.getId() + "-failed-text");
+					oRm.addClass("sapMGenericTileFtrFldTxt");
+					oRm.writeClasses();
+					oRm.write(">");
+					oRm.renderControl(oControl.getAggregation("_failedMessageText"));
+					oRm.write("</div>");
+				}
+
+				oRm.write("</div>");
+				break;
+			default :
+		}
+		oRm.write("</div>");
+	};
+
+	GenericTileRenderer._renderActionsScope = function(oRm, oControl) {
+		if (oControl.getState() !== LoadState.Disabled) {
+			oRm.renderControl(oControl._oRemoveButton);
+			oRm.renderControl(oControl._oMoreIcon);
+		}
+	};
+
+	GenericTileRenderer._renderHoverOverlay = function(oRm, oControl) {
+		oRm.write("<div");
+		if (oControl.getBackgroundImage()) {
+			oRm.addClass("sapMGTWithImageHoverOverlay");
+		} else {
+			oRm.addClass("sapMGTWithoutImageHoverOverlay");
+		}
+		oRm.writeClasses();
+		oRm.writeAttribute("id", oControl.getId() + "-hover-overlay");
+		oRm.write(">");
 		oRm.write("</div>");
 	};
 
 	/**
 	 * Renders the HTML for the header of the given control, using the provided {@link sap.ui.core.RenderManager}.
 	 *
+	 * @private
 	 * @param {sap.ui.core.RenderManager} oRm the RenderManager that can be used for writing to the render output buffer
 	 * @param {sap.ui.core.Control} oControl an object representation of the control whose title should be rendered
 	 */
-	GenericTileRenderer.renderHeader = function(oRm, oControl) {
+	GenericTileRenderer._renderHeader = function(oRm, oControl) {
 		oRm.write("<div");
 		oRm.addClass("sapMGTHdrTxt");
-		oRm.addClass(oControl.getSize());
 		oRm.writeClasses();
 		oRm.writeAttribute("id", oControl.getId() + "-hdr-text");
 		oRm.write(">");
@@ -144,34 +205,17 @@ sap.ui.define([], function() {
 	/**
 	 * Renders the HTML for the subheader of the given control, using the provided {@link sap.ui.core.RenderManager}.
 	 *
+	 * @private
 	 * @param {sap.ui.core.RenderManager} oRm the RenderManager that can be used for writing to the render output buffer
 	 * @param {sap.ui.core.Control} oControl an object representation of the control whose description should be rendered
 	 */
-	GenericTileRenderer.renderSubheader = function(oRm, oControl) {
+	GenericTileRenderer._renderSubheader = function(oRm, oControl) {
 		oRm.write("<div");
 		oRm.addClass("sapMGTSubHdrTxt");
-		oRm.addClass(oControl.getSize());
 		oRm.writeClasses();
 		oRm.writeAttribute("id", oControl.getId() + "-subHdr-text");
 		oRm.write(">");
 		oRm.writeEscaped(oControl.getSubheader());
-		oRm.write("</div>");
-	};
-
-	/**
-	 * Renders the HTML for the content of the given control, using the provided {@link sap.ui.core.RenderManager}.
-	 *
-	 * @param {sap.ui.core.RenderManager} oRm the RenderManager that can be used for writing to the render output buffer
-	 * @param {sap.ui.core.Control} oControl an object representation of the control whose content should be rendered
-	 */
-	GenericTileRenderer.renderContent = function(oRm, oControl) {
-		oRm.write("<div");
-		oRm.addClass("sapMGTContent");
-		oRm.addClass(oControl.getSize());
-		oRm.writeClasses();
-		oRm.writeAttribute("id", oControl.getId() + "-content");
-		oRm.write(">");
-		this.renderInnerContent(oRm, oControl);
 		oRm.write("</div>");
 	};
 

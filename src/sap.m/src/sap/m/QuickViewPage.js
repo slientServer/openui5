@@ -136,7 +136,24 @@ sap.ui.define([
 				if (fGetService) {
 					this.oCrossAppNavigator = fGetService("CrossApplicationNavigation");
 				}
+			};
 
+			/**
+			 * Called before the control is rendered.
+			 * @private
+			 */
+			QuickViewPage.prototype.onBeforeRendering =  function() {
+				this._destroyPageContent();
+				this._createPageContent();
+			};
+
+			/**
+			 * Returns page content containing the header and the form.
+			 * @private
+			 * @returns {Object} Object containing the header and the form
+			 */
+			QuickViewPage.prototype.getPageContent =  function() {
+				return this._mPageContent;
 			};
 
 			/**
@@ -222,6 +239,7 @@ sap.ui.define([
 							tooltip : this._oResourceBundle.getText("PAGE_NAVBUTTON_TEXT"),
 							press : function() {
 								if (mNavContext.navContainer) {
+									mNavContext.quickView._setNavOrigin(null);
 									mNavContext.navContainer.back();
 								}
 							}
@@ -273,10 +291,12 @@ sap.ui.define([
 					oForm.addAriaLabelledBy(oPageTitleControl);
 				}
 
-				return {
-					form : oForm,
-					header : oHeader
+				this._mPageContent = {
+					form: oForm,
+					header: oHeader
 				};
+
+				return this._mPageContent;
 			};
 
 			/**
@@ -422,18 +442,26 @@ sap.ui.define([
 
 					oCurrentGroupElementValue = oCurrentGroupElement._getGroupElementValue(sQuickViewId);
 
+					oForm.addContent(oLabel);
+
+					if (!oCurrentGroupElementValue) {
+						// Add dummy text element so that the form renders the oLabel
+						oForm.addContent(new sap.m.Text({text : ""}));
+						continue;
+					}
+
 					if (oCurrentGroupElementValue instanceof Link) {
 						oCurrentGroupElementValue.addAriaLabelledBy(oCurrentGroupElementValue);
 					}
 
 					oLabel.setLabelFor(oCurrentGroupElementValue.getId());
-					oForm.addContent(oLabel);
 
 					if (oCurrentGroupElement.getType() == QuickViewGroupElementType.pageLink) {
 						oCurrentGroupElementValue.attachPress(this._attachPressLink(this));
 					}
 
-					if (oCurrentGroupElement.getType() == QuickViewGroupElementType.mobile) {
+					if (oCurrentGroupElement.getType() == QuickViewGroupElementType.mobile &&
+						!sap.ui.Device.system.desktop) {
 						var oSmsLink = new Icon({
 							src: IconPool.getIconURI("post"),
 							tooltip : this._oResourceBundle.getText("QUICKVIEW_SEND_SMS"),
@@ -487,9 +515,33 @@ sap.ui.define([
 				};
 			};
 
+			QuickViewPage.prototype._destroyPageContent = function() {
+				if (!this._mPageContent) {
+					return;
+				}
+
+				if (this._mPageContent.form) {
+					this._mPageContent.form.destroy();
+				}
+
+				if (this._mPageContent.header) {
+					this._mPageContent.header.destroy();
+				}
+
+				this._mPageContent = null;
+
+			};
+
 			QuickViewPage.prototype.exit = function() {
 				this._oResourceBundle = null;
-				this._oPage = null;
+
+				if (this._oPage) {
+					this._oPage.destroy();
+					this._oPage = null;
+				} else {
+					this._destroyPageContent();
+				}
+
 				this._mNavContext = null;
 			};
 
@@ -508,6 +560,7 @@ sap.ui.define([
 					e.preventDefault();
 					var sPageId = this.getCustomData()[0].getValue();
 					if (mNavContext.navContainer && sPageId) {
+						mNavContext.quickView._setNavOrigin(this);
 						mNavContext.navContainer.to(sPageId);
 					}
 				};
@@ -534,7 +587,17 @@ sap.ui.define([
 					this._bItemsChanged = true;
 
 					mNavContext.popover.focus();
+
+					if (mNavContext.quickView.indexOfPage(this) == 0) {
+						mNavContext.quickView._clearContainerHeight();
+					}
+
 					this._createPage();
+
+					// in some cases the popover has display:none style here,
+					// which delays the simple form re-arranging and an unwanted scrollbar might appear.
+					mNavContext.popover.$().css('display', 'block');
+
 					mNavContext.quickView._restoreFocus();
 				}
 			};

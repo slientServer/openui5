@@ -44,7 +44,7 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/base/EventProvider'],
 	 * focused item. So if the control containing the items gets the focus (e.g. via tab navigation),
 	 * it is always the focused items which will be focused.
 	 *
-	 * <b>Note:</b> If the <code>ItemNavigation</code> is nested in another <code>ItemNavigation</code> 
+	 * <b>Note:</b> If the <code>ItemNavigation</code> is nested in another <code>ItemNavigation</code>
 	 * (e.g. <code>SegmentedButton</code> in <code>Toolbar</code>), the <code>RootDomRef</code> will always have <code>tabindex</code> -1.
 	 *
 	 * Per default the <code>ItemNavigation</code> cycles over the items.
@@ -234,7 +234,7 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/base/EventProvider'],
 	 */
 	ItemNavigation.prototype.hasDisabledModifier = function(oEvent) {
 		var aDisabledKeys = this.oDisabledModifiers[oEvent.type.replace("modifiers", "")];
-		if (jQuery.isArray(aDisabledKeys)) {
+		if (Array.isArray(aDisabledKeys)) {
 			for (var i = 0; i < aDisabledKeys.length; i++) {
 				if (oEvent[aDisabledKeys[i] + "Key"]) {
 					return true;
@@ -297,6 +297,7 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/base/EventProvider'],
 	 * @public
 	 */
 	ItemNavigation.prototype.setItemDomRefs = function(aItemDomRefs) {
+		jQuery.sap.assert(Array.isArray(aItemDomRefs), "aItemDomRefs must be an array of DOM elements");
 		this.aItemDomRefs = aItemDomRefs;
 
 		if (this.iFocusedIndex > aItemDomRefs.length - 1) {
@@ -440,6 +441,9 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/base/EventProvider'],
 	 */
 	ItemNavigation.prototype.setTableMode = function(bTableMode, bTableList) {
 		this.bTableMode = bTableMode;
+		if (this.oConfiguration === undefined) {
+			this.oConfiguration = sap.ui.getCore().getConfiguration();
+		}
 		this.bTableList = bTableMode ? bTableList : false;
 		return this;
 	};
@@ -527,9 +531,13 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/base/EventProvider'],
 			if (this.bTableMode) {
 				var iCol = iIndex % this.iColumns;
 				var iOldIndex = iIndex;
-				if (oEvent.keyCode == jQuery.sap.KeyCodes.ARROW_RIGHT) {
+				if (oEvent && oEvent.keyCode == jQuery.sap.KeyCodes.ARROW_RIGHT) {
 					if (iCol < this.iColumns - 1) {
-						iIndex += 1;
+						iIndex += this.oConfiguration.getRTL() ? -1 : 1;
+					}
+				} else if (oEvent && oEvent.keyCode == jQuery.sap.KeyCodes.ARROW_LEFT) {
+					if (iCol > 1) {
+						iIndex -= this.oConfiguration.getRTL() ? -1 : 1;
 					}
 				} else {
 					if (iCol > 1) {
@@ -551,7 +559,7 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/base/EventProvider'],
 		this.setFocusedIndex(iIndex);
 		this.bISetFocus = true;
 
-		if (jQuery(this.aItemDomRefs[this.iFocusedIndex]).data("sap.INRoot") && oEvent) {
+		if (oEvent && jQuery(this.aItemDomRefs[this.iFocusedIndex]).data("sap.INRoot")) {
 
 			// store event type for nested ItemNavigations
 			var oItemItemNavigation = jQuery(this.aItemDomRefs[this.iFocusedIndex]).data("sap.INRoot");
@@ -576,6 +584,12 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/base/EventProvider'],
 	 */
 	ItemNavigation.prototype.setFocusedIndex = function(iIndex) {
 		var $Item;
+
+		if (this.aItemDomRefs.length < 0) {
+			// no items -> don't change TabIndex
+			this.iFocusedIndex = -1;
+			return this;
+		}
 
 		if (iIndex < 0) {
 			iIndex = 0;
@@ -890,7 +904,7 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/base/EventProvider'],
 		}
 
 		// in the table mode we only react on events of the domrefs
-		if (this.bTableMode && jQuery.inArray(oEvent.target, this.aItemDomRefs) === -1) {
+		if (this.bTableMode && this.aItemDomRefs.indexOf(oEvent.target) === -1) {
 			return;
 		}
 
@@ -1023,7 +1037,7 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/base/EventProvider'],
 		}
 
 		// in the table mode we only react on events of the domrefs
-		if (this.bTableMode && jQuery.inArray(oEvent.target, this.aItemDomRefs) === -1) {
+		if (this.bTableMode && this.aItemDomRefs.indexOf(oEvent.target) === -1) {
 			return;
 		}
 
@@ -1159,7 +1173,7 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/base/EventProvider'],
 		}
 
 		// in the table mode we only react on events of the domrefs
-		if (this.bTableMode && jQuery.inArray(oEvent.target, this.aItemDomRefs) === -1) {
+		if (this.bTableMode && this.aItemDomRefs.indexOf(oEvent.target) === -1) {
 			return;
 		}
 
@@ -1222,7 +1236,7 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/base/EventProvider'],
 		}
 
 		// in the table mode we only react on events of the domrefs
-		if (this.bTableMode && jQuery.inArray(oEvent.target, this.aItemDomRefs) === -1) {
+		if (this.bTableMode && this.aItemDomRefs.indexOf(oEvent.target) === -1) {
 			return;
 		}
 
@@ -1287,7 +1301,7 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/base/EventProvider'],
 		}
 
 		// in the table mode we only react on events of the domrefs
-		if (this.bTableMode && jQuery.inArray(oEvent.target, this.aItemDomRefs) === -1) {
+		if (this.bTableMode && this.aItemDomRefs.indexOf(oEvent.target) === -1) {
 			return;
 		}
 
@@ -1361,7 +1375,7 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/base/EventProvider'],
 		}
 
 		// in the table mode we only react on events of the domrefs
-		if (this.bTableMode && jQuery.inArray(oEvent.target, this.aItemDomRefs) === -1) {
+		if (this.bTableMode && this.aItemDomRefs.indexOf(oEvent.target) === -1) {
 			return;
 		}
 

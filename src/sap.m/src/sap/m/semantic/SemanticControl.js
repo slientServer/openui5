@@ -2,7 +2,7 @@
  * ${copyright}
  */
 
-sap.ui.define(["sap/m/semantic/SemanticConfiguration", "sap/ui/base/ManagedObject", "sap/ui/core/Element"], function (SemanticConfiguration, ManagedObject, Element) {
+sap.ui.define(['jquery.sap.global', "sap/m/semantic/SemanticConfiguration", "sap/ui/base/ManagedObject", "sap/ui/core/Element"], function (jQuery, SemanticConfiguration, ManagedObject, Element) {
 	"use strict";
 
 	/**
@@ -29,6 +29,8 @@ sap.ui.define(["sap/m/semantic/SemanticConfiguration", "sap/ui/base/ManagedObjec
 	var SemanticControl = Element.extend("sap.m.semantic.SemanticControl", /** @lends sap.m.semantic.SemanticControl.prototype */ {
 		metadata: {
 
+			library: "sap.m",
+
 			"abstract": true,
 
 			properties: {
@@ -46,7 +48,7 @@ sap.ui.define(["sap/m/semantic/SemanticConfiguration", "sap/ui/base/ManagedObjec
 
 				/**
 				 * The internal control instance, that is abstracted by the semantic control.
-				 * Can be {@link sap.m.Button}, {@link sap.m.OverflowButton} or {@link sap.m.Select}
+				 * Can be {@link sap.m.Button}, {@link sap.m.semantic.SemanticOverflowToolbarButton} or {@link sap.m.Select}
 				 */
 				_control: {
 					type: "sap.ui.core.Control",
@@ -129,6 +131,14 @@ sap.ui.define(["sap/m/semantic/SemanticConfiguration", "sap/ui/base/ManagedObjec
 		return oClone;
 	};
 
+	SemanticControl.prototype.destroy = function () {
+		var vResult = Element.prototype.destroy.apply(this, arguments);
+		if (this.getAggregation("_control")) {
+			this.getAggregation("_control").destroy();
+		}
+		return vResult;
+	};
+
 	/**
 	 * Implementation of a commonly used function that adapts sap.ui.core.Element
 	 * to provide dom reference for opening popovers
@@ -141,6 +151,34 @@ sap.ui.define(["sap/m/semantic/SemanticConfiguration", "sap/ui/base/ManagedObjec
 
 	SemanticControl.prototype.getDomRef = function(sSuffix) {
 		return this._getControl().getDomRef(sSuffix);
+	};
+
+	SemanticControl.prototype.addEventDelegate = function (oDelegate, oThis) {
+
+		jQuery.each(oDelegate, function(sEventType, fnCallback) {
+
+			if (typeof fnCallback === 'function') {
+
+				/* replace oEvent.srcControl with the semantic control
+				to prevent exposing the inner control */
+				var fnProxy = function(oEvent) {
+					oEvent.srcControl = this;
+					fnCallback.call(oThis, oEvent);
+				}.bind(this);
+
+				oDelegate[sEventType] = fnProxy;
+			}
+		}.bind(this));
+
+		this._getControl().addEventDelegate(oDelegate, oThis);
+
+		return this;
+	};
+
+	SemanticControl.prototype.removeEventDelegate = function (oDelegate) {
+
+		this._getControl().removeEventDelegate(oDelegate);
+		return this;
 	};
 
 	SemanticControl.prototype._getConfiguration = function () {

@@ -1,31 +1,28 @@
 <!DOCTYPE HTML>
 <html>
 	<head>
-		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
-		<meta charset="UTF-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta charset="utf-8">
 		<title>Test Page for sap.m.FeedListItem</title>
 
 		<!-- UI5 Bootstrap -->
-		<script id="sap-ui-bootstrap" type="text/javascript"
-			src="../../../../resources/sap-ui-core.js"
-			data-sap-ui-theme="sap_bluecrystal" data-sap-ui-libs="sap.m"></script>
+		<script src="../shared-config.js"></script>
+		<script id="sap-ui-bootstrap"
+			src="../../../../resources/sap-ui-core.js" data-sap-ui-libs="sap.m"></script>
 
 		<!-- QUnit libraries -->
-		<link rel="stylesheet" href="../../../../resources/sap/ui/thirdparty/qunit.css" type="text/css" media="screen" />
+		<link rel="stylesheet" href="../../../../resources/sap/ui/thirdparty/qunit.css" type="text/css" media="screen">
 		<script src="../../../../resources/sap/ui/thirdparty/qunit.js"></script>
-		<script type="text/javascript" src="../../../../resources/sap/ui/qunit/qunit-junit.js"></script>
-		<script type="text/javascript" src="../../../../resources/sap/ui/qunit/QUnitUtils.js"></script>
+		<script src="../../../../resources/sap/ui/qunit/qunit-junit.js"></script>
+		<script src="../../../../resources/sap/ui/qunit/qunit-coverage.js"></script>
+		<script src="../../../../resources/sap/ui/qunit/QUnitUtils.js"></script>
 
-		<script type="text/javascript">
-
-			if(!(sap.ui.Device.browser.msie && sap.ui.Device.browser.version <= 8)) {
-				jQuery.sap.require("sap.ui.qunit.qunit-coverage");
-			}
+		<script>
 
 			var oList2 = new sap.m.List({
 				inset : true
 			});
-			
+
 			var data = {
 				navigation : [ {
 					title : "Travel Expend",
@@ -64,7 +61,7 @@
 					press : 'detailPage'
 				} ]
 			};
-			
+
 			var oItemTemplate1 = new sap.m.StandardListItem({
 				title : "{title}",
 				description : "{description}",
@@ -72,7 +69,7 @@
 				iconInset : "{iconInset}",
 				type : "{type}"
 			});
-			
+
 			function bindListData(data, itemTemplate, list)
 			{
 				var oModel = new sap.ui.model.json.JSONModel();
@@ -80,13 +77,13 @@
 				oModel.setData(data);
 				// set the model to the list
 				list.setModel(oModel);
-	
+
 				// bind Aggregation
 				list.bindAggregation("items", "/navigation", itemTemplate);
 			}
-			
+
 			bindListData(data, oItemTemplate1, oList2);
-			
+
 			var oLeftButton = new sap.m.Button({
 				text: "Modal",
 				type: sap.m.ButtonType.Reject,
@@ -94,7 +91,7 @@
 					oPopover.setModal(!oPopover.getModal());
 				}
 			});
-			
+
 			var oRightButton = new sap.m.Button({
 				text: "Close",
 				type: sap.m.ButtonType.Accept,
@@ -102,7 +99,7 @@
 					oPopover.close();
 				}
 			});
-			
+
 			var footer = new sap.m.Bar({
 				contentLeft: [],
 				contentMiddle: [new sap.m.Button({icon: "../images/favorite@2x.png"}),
@@ -110,8 +107,7 @@
 								new sap.m.Button({icon: "../images/flag@2x.png"})],
 				contentRight: []
 			});
-			
-			
+
 			var oPopover = new sap.m.Popover({
 				placement: sap.m.PlacementType.Auto,
 				title: "Popover",
@@ -135,28 +131,21 @@
 					oList2
 				]
 			});
-			
-			
-			
-			
+
 			var oFeedList = new sap.m.List("oFeedItemList", {
-			    mode: "SingleSelectMaster"
+				mode: "SingleSelectMaster"
 			});
-			
-			
+
 			var fnOpenPopup = function(oControlEvent) {
 				if (oControlEvent.getSource().getSender() == "Jack Jones") {
-					if (window.console) { // console object is only exposed when Developer Tools are open for the particular tab (which is usually not the case when unit test is run)	
-						console.log("senderPress called");
-					}
+					jQuery.sap.log.info("senderPress called");
 					oControlEvent.getSource().setSender("Event was fired");
 				}
 				else {
-					oPopover.openBy(oControlEvent.getParameters().domRef);
+					oPopover.openBy(oControlEvent.getParameters().getDomRef());
 				}
 			};
-			
-			
+
 			var oFeedListItemTemplate = new sap.m.FeedListItem({
 				type: sap.m.ListType.Active,
 				icon : "{icon}",
@@ -173,22 +162,18 @@
 				iconPress : fnOpenPopup,
 			});
 
-			function bindFeedListData(data, itemTemplate, list)
-			{
+			function bindFeedListData(data, itemTemplate, list) {
 				var oModel = new sap.ui.model.json.JSONModel();
 				// set the data for the model
 				oModel.setData(data);
 				// set the model to the list
 				list.setModel(oModel);
-
 				// bind Aggregation
 				list.bindAggregation("items", "/chunks", itemTemplate);
 			}
-			
+
 			jQuery.sap.require("sap.ui.core.IconPool");
 			var sURI = sap.ui.core.IconPool.getIconURI("personnel-view");
-
-
 
 			var feedData = {
 					chunks : [ {
@@ -273,21 +258,15 @@
 
 			var appFeedList = new sap.m.App("myApp", {initialPage:"feedListPage"});
 
-			var feedListPage = new sap.m.Page("feedListPage", 
+			var feedListPage = new sap.m.Page("feedListPage",
 				{title: "Feed List Item Test Page"}
 			);
 
-
 			feedListPage.addContent(oFeedList);
 			appFeedList.addPage(feedListPage);
-			appFeedList.placeAt("content");
+			appFeedList.placeAt("qunit-fixture");
 
-
-			QUnit.module("Properties", {
-					setup : function() {
-					//Does nothing yet
-				}
-			});
+			QUnit.module("Properties");
 
 			QUnit.test("ImagePool Icon", function(assert) {
 				assert.ok($('#__item1-oFeedItemList-1 .sapMFeedListItemImage.sapUiIcon').length === 1, "Image pool icon displayed");
@@ -304,6 +283,7 @@
 				assert.ok(oFeedList.getItems()[0].$("timestamp").length === 1, "timestamp should be rendered");
 				assert.ok(oFeedList.getItems()[0].$("info").length === 1, "info should be rendered");
 				assert.ok(oFeedList.getItems()[0].$("maxCharacters").length === 0, "maxCharacters is nothing to be rendered");
+				assert.ok(oFeedList.getItems()[8].$().find('*').hasClass("sapUiSelectable"), "Item should have class sapUiSelectable");
 			});
 
 			QUnit.test("Sender inactive, Icon inactive", function(assert) {
@@ -355,58 +335,68 @@
 				assert.ok(oFeedList.getItems()[10]._sShortText.length === 20, "the length of collapsed text without spaces equals to the property maxCharacters ");
 			});
 
-			QUnit.module("Events", {
-					setup : function() {
-					//Does nothing yet
-				}
-			});
+			QUnit.module("Events");
 
 			QUnit.test("Press Icon", function(assert) {
-				qutils.triggerEvent("tap", oFeedList.getItems()[0]._oImageControl.getId());
-				assert.ok($('.sapMPopoverCont').length === 1, "Popover is displayed");
-				if (oPopover) {
-					oPopover.close();
-				}
+				// Arrange
+				var oFeedListItem = oFeedList.getItems()[0];
+				oFeedListItem.detachIconPress(fnOpenPopup);
+				oFeedListItem.attachIconPress(function (oEvent) {
+					// Assert
+					// Deprecated event parameter
+					assert.ok(oEvent.getParameter("domRef"));
+					assert.deepEqual(oEvent.getParameter("domRef"), oFeedListItem._oImageControl.getDomRef());
+					// New parameter
+					assert.ok(jQuery.isFunction(oEvent.getParameter("getDomRef")));
+					assert.deepEqual(oEvent.getParameter("getDomRef")(), oFeedListItem._oImageControl.getDomRef());
+				});
+				// Act
+				qutils.triggerEvent("tap", oFeedListItem._oImageControl.getId());
 			});
 
 			QUnit.test("Press Sender", function(assert) {
-				qutils.triggerEvent("tap", $('#__item1-oFeedItemList-0 .sapMFeedListItemTextText .sapMLnk')[0].id);
-				assert.ok($('.sapMPopoverCont').length === 1, "Popover is displayed");
-				if (oPopover) {
-					oPopover.close();
-				}
+				// Arrange
+				var oFeedListItem = oFeedList.getItems()[0];
+				oFeedListItem.detachSenderPress(fnOpenPopup);
+				oFeedListItem.attachSenderPress(function (oEvent) {
+					// Assert
+					// Deprecated event parameter
+					assert.ok(oEvent.getParameter("domRef"));
+					assert.deepEqual(oEvent.getParameter("domRef"), oFeedListItem._oLinkControl.getDomRef());
+					// New parameter
+					assert.ok(jQuery.isFunction(oEvent.getParameter("getDomRef")));
+					assert.deepEqual(oEvent.getParameter("getDomRef")(), oFeedListItem._oLinkControl.getDomRef());
+				});
+				// Act
+				oFeedListItem._oLinkControl.firePress();
 			});
-			
+
 			QUnit.test("Press SPACE Key on Sender", function(assert) {
 				qutils.triggerKeyboardEvent(oFeedList.getItems()[9]._oLinkControl.getId(), jQuery.sap.KeyCodes.SPACE, false, false, false);
 				assert.equal(oFeedList.getItems()[9].getSender(), "Event was fired", "Sender Press event was fired");
 				oFeedList.getItems()[9].setSender("Jack Jones");
 			});
-			
+
 			QUnit.test("Press X Key on Sender", function(assert) {
 				qutils.triggerKeyboardEvent(oFeedList.getItems()[9]._oLinkControl.getId(), jQuery.sap.KeyCodes.X, false, false, false);
 				assert.notEqual(oFeedList.getItems()[9].getSender(), "Hello", "Sender Press event was not fired");
 			});
-			
+
 			QUnit.test("Press SPACE Key on MORE", function(assert) {
 				qutils.triggerKeyboardEvent(oFeedList.getItems()[9]._oLinkExpandCollapse.getId(), jQuery.sap.KeyCodes.SPACE, false, false, false);
 				assert.ok(oFeedList.getItems()[9].$("realtext").text() === oFeedList.getItems()[9]._sFullText, "the expanded text displayed ");
 				qutils.triggerKeyboardEvent(oFeedList.getItems()[9]._oLinkExpandCollapse.getId(), jQuery.sap.KeyCodes.SPACE, false, false, false);
 				assert.ok(oFeedList.getItems()[9].$("realtext").text() === oFeedList.getItems()[9]._sShortText, "the collapsed text displayed ");
 			});
-			
+
 			QUnit.test("Press X Key on MORE", function(assert) {
 				qutils.triggerKeyboardEvent(oFeedList.getItems()[9]._oLinkExpandCollapse.getId(), jQuery.sap.KeyCodes.X, false, false, false);
 				assert.notEqual(oFeedList.getItems()[9].getSender(), "Hello", "Sender Press event was not fired");
 			});
 
-			QUnit.module("Rendering behavior", {
-				setup : function() {
-					//Does nothing yet
-				}
-			});
+			QUnit.module("Rendering behavior");
 
-			QUnit.test("Expanded text should be appear also after rerendering.", function(assert) {
+			QUnit.test("Expanded text should appear also after rerendering.", function(assert) {
 				oFeedList.getItems()[10]._toggleTextExpanded();
 				oFeedList.getItems()[10].invalidate();
 				assert.equal(oFeedList.getItems()[10]._oLinkExpandCollapse.getText(), sap.m.FeedListItem._sTextShowLess);
@@ -414,10 +404,134 @@
 				oFeedList.getItems()[10].invalidate();
 				assert.equal(oFeedList.getItems()[10]._oLinkExpandCollapse.getText(), sap.m.FeedListItem._sTextShowMore);
 			});
+
+			QUnit.test("Item with a clickable icon is rendered", function(assert) {
+				//Arrange
+				var oItem = oFeedList.getItems()[0];
+				//Act
+				var $Image = jQuery.sap.domById(oItem.getId() + "-icon");
+				var sStyleClass = $Image.className;
+				//Assert
+				assert.ok(sStyleClass.indexOf("sapMFeedListItemImage") >= 0, "Css class 'sapMFeedListItemImage' is present");
+			});
+
+			QUnit.test("Item with a non clickable icon is rendered", function(assert) {
+				//Arrange
+				var oItem = oFeedList.getItems()[0];
+				//Act
+				oItem.setIconActive(false);
+				oFeedList.rerender();
+				var $Image = jQuery.sap.domById(oItem.getId() + "-icon");
+				var sStyleClass = $Image.className;
+				//Assert
+				assert.ok(sStyleClass.indexOf("sapMFeedListItemImageInactive") >= 0, "Css class 'sapMFeedListItemImageInactive' is present");
+			});
+
+			QUnit.module("Check property combination", {
+				beforeEach : function() {
+					this.oFeedListItem = new sap.m.FeedListItem({
+						sender : null,
+						text : "Some text which is displayed.",
+						timestamp : "March 03 2013",
+						iconActive : true,
+						iconDensityAware: true,
+						showIcon : true,
+						senderActive : false
+					}).placeAt("qunit-fixture");
+					sap.ui.getCore().applyChanges();
+				},
+				afterEach : function () {
+					this.oFeedListItem.destroy();
+				}
+			});
+
+			QUnit.test("'sender' is set to null and 'senderActive' is set to false", function(assert) {
+				this.oFeedListItem.ontap({
+					srcControl : this.oFeedListItem
+				});
+				assert.ok(this.oFeedListItem, "FeedListItem is clickable");
+			});
+
+			QUnit.module("HTML Text inside", {
+				beforeEach : function() {
+					this.oFeedListItem = new sap.m.FeedListItem({
+						sender : null,
+						text : "Some text <strong>which</strong> is <em>displayed</em>."
+					}).placeAt("qunit-fixture");
+					sap.ui.getCore().applyChanges();
+				},
+				afterEach : function () {
+					this.oFeedListItem.destroy();
+				}
+			});
+
+			QUnit.test("Converts html text to plain text and back to html text", function(assert) {
+				//Arrange
+				var sHtmlText = this.oFeedListItem._sFullText;
+				var sPlainText = "Some text which is displayed.";
+				//Act
+				var sConvertedText1 = this.oFeedListItem._convertHtmlToPlainText(sHtmlText);
+				var sConvertedText2 = this.oFeedListItem._convertPlainToHtmlText(sConvertedText1);
+				//Assert
+				assert.equal(sConvertedText1, sPlainText, "Html text is converted to plain text");
+				assert.equal(sConvertedText2, sHtmlText, "Plain text is converted back to html text");
+			});
+
+			QUnit.test("No html text", function(assert) {
+				//Arrange
+				var sPlainText = "Some text which is displayed.";
+				//Act
+				this.oFeedListItem.setText(sPlainText);
+				sap.ui.getCore().applyChanges();
+				var sText = this.oFeedListItem._sFullText;
+				//Assert
+				assert.equal(sPlainText, sText, "Text does not have html tags");
+			});
+
+			QUnit.test("Html collapsed text ", function(assert) {
+				//Arrange
+				var sCollapsedText = "Some text <strong>which</strong>";
+				var sFullText = this.oFeedListItem.getText();
+				//Act
+				this.oFeedListItem.setMaxCharacters(17);
+				sap.ui.getCore().applyChanges();
+				var sCollapsedTextNew = this.oFeedListItem._sShortText;
+				var sFullTextNew = this.oFeedListItem._sFullText;
+				//Assert
+				assert.equal(sCollapsedText, sCollapsedTextNew, "Collapsed text has html tags");
+				assert.equal(this.oFeedListItem._checkTextIsExpandable(), true, "Text is expandable");
+				assert.equal(sFullText, sFullTextNew, "Full text has html tags");
+			});
+
+			QUnit.test("No collapsed text", function(assert) {
+				//Arrange
+				var sText = this.oFeedListItem._getCollapsedText();
+				var sShortText = this.oFeedListItem._sShortText;
+				//Act
+				//Assert
+				assert.ok(!sShortText, "Short text is null");
+				assert.ok(!sText, "Collapsed text is null");
+				assert.equal(this.oFeedListItem._checkTextIsExpandable(), false, "Text is not expandable");
+			});
+
+			QUnit.test("Empty html tags are removed for collapsed text", function(assert) {
+				//Arrange
+				var sText = "<p></p><ul></ul><strong></strong><p>Some</p> text";
+				var sCollapsedText = "<p>Some</p>";
+				//Act
+				this.oFeedListItem.setText(sText);
+				this.oFeedListItem.setMaxCharacters(5);
+				sap.ui.getCore().applyChanges();
+				var sCollapsedTextNew = this.oFeedListItem._sShortText;
+				var sFullText = this.oFeedListItem._sFullText;
+				//Assert
+				assert.equal(sCollapsedText, sCollapsedTextNew, "Empty html tags are removed for collapsed text");
+				assert.equal(sText, sFullText, "Full text remains the same");
+			});
 		</script>
 	</head>
 	<body id="body" class="sapUiBody">
 		<div id="qunit"></div>
-		<div id="content"></div>
+		<div id="qunit-fixture"></div>
 	</body>
 </html>

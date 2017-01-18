@@ -3,8 +3,8 @@
  */
 
 // Provides control sap.m.Button.
-sap.ui.define(['jquery.sap.global', './library', 'sap/ui/core/Control', 'sap/ui/core/EnabledPropagator', 'sap/ui/core/IconPool', 'sap/ui/core/theming/Parameters'],
-	function(jQuery, library, Control, EnabledPropagator, IconPool, Parameters) {
+sap.ui.define(['jquery.sap.global', './library', 'sap/ui/core/Control', 'sap/ui/core/EnabledPropagator', 'sap/ui/core/IconPool', 'sap/ui/Device'],
+	function(jQuery, library, Control, EnabledPropagator, IconPool, Device) {
 	"use strict";
 
 	/**
@@ -105,9 +105,16 @@ sap.ui.define(['jquery.sap.global', './library', 'sap/ui/core/Control', 'sap/ui/
 			 * Event is fired when the user clicks on the control.
 			 */
 			press : {}
-		},
-		designTime: true
+		}
 	}});
+
+
+	/**
+	 * Specifies whether the button should be excluded (default false) from tab chain.
+	 * @type {boolean}
+	 * @protected
+	 */
+	//this._bExcludeFromTabChain
 
 	EnabledPropagator.call(Button.prototype);
 
@@ -128,6 +135,25 @@ sap.ui.define(['jquery.sap.global', './library', 'sap/ui/core/Control', 'sap/ui/
 		}
 	};
 
+	/*
+	 * Remember active state if the button was depressed before re-rendering.
+	 */
+	Button.prototype.onBeforeRendering = function() {
+		this._bRenderActive = this._bActive;
+	};
+
+	/*
+	 * Restore active state if the button was depressed before re-rendering.
+	 * Save _bRenderActive to treate the next mouseup as a tap event.
+	 */
+	Button.prototype.onAfterRendering = function() {
+		if (this._bRenderActive) {
+			this._activeButton();
+			// now, this._bActive may be false if the button was disabled
+			this._bRenderActive = this._bActive;
+		}
+	};
+
 	/**
 	 * Function is called when touchstart occurs on button .
 	 * @param {jQuery.Event} oEvent - the touch event.
@@ -137,6 +163,9 @@ sap.ui.define(['jquery.sap.global', './library', 'sap/ui/core/Control', 'sap/ui/
 
 		// mark the event for components that needs to know if the event was handled by the button
 		oEvent.setMarked();
+		if (this._bRenderActive) {
+			delete this._bRenderActive;
+		}
 
 		// change the source only when the first finger is on the control, the
 		// following fingers doesn't affect
@@ -144,9 +173,16 @@ sap.ui.define(['jquery.sap.global', './library', 'sap/ui/core/Control', 'sap/ui/
 
 			// set active button state
 			this._activeButton();
+		}
 
-			// set target which started the event
-			this._target = oEvent.target;
+		if (this.getEnabled() && this.getVisible()) {
+			// Safari doesn't set the focus to the clicked button tag but to the nearest parent DOM which is focusable
+			// This behavior has to be stopped by calling prevent default when the original event is 'mousedown'
+			// and set the focus explicitly to the button.
+			if (Device.browser.safari && (oEvent.originalEvent && oEvent.originalEvent.type === "mousedown")) {
+				this.focus();
+				oEvent.preventDefault();
+			}
 		}
 	};
 
@@ -155,10 +191,18 @@ sap.ui.define(['jquery.sap.global', './library', 'sap/ui/core/Control', 'sap/ui/
 	 * @param {jQuery.Event} oEvent - the touch event.
 	 * @private
 	 */
-	Button.prototype.ontouchend = function() {
+	Button.prototype.ontouchend = function(oEvent) {
 
 		// set inactive button state
 		this._inactiveButton();
+
+		// if the button was re-rendered being in depressed state, the tap event won't come. Simulate it:
+		if (this._bRenderActive) {
+			delete this._bRenderActive;
+			if (oEvent.originalEvent && oEvent.originalEvent.type in {mouseup:1, touchend:1}) {
+				this.ontap(oEvent);
+			}
+		}
 	};
 
 	/**
@@ -183,28 +227,15 @@ sap.ui.define(['jquery.sap.global', './library', 'sap/ui/core/Control', 'sap/ui/
 		oEvent.setMarked();
 
 		// fire tap event
-		if (this.getEnabled()) {
-
-			// if target is empty set target (specially for selenium test)
-			if (!this._target) {
-				this._target = oEvent.target;
-			}
-
-			// check if target which started the event is the same
-			if ((!!this._target) && (this._target === oEvent.target)) {
-
-				// note: on mobile, the press event should be fired after the focus is on the button
-				if (oEvent.originalEvent && oEvent.originalEvent.type === "touchend") {
+		if (this.getEnabled() && this.getVisible()) {
+			// note: on mobile, the press event should be fired after the focus is on the button
+			if ((oEvent.originalEvent && oEvent.originalEvent.type === "touchend")) {
 					this.focus();
-				}
-
-				this.fireTap({/* no parameters */}); // (This event is deprecated, use the "press" event instead)
-				this.firePress({/* no parameters */});
 			}
-		}
 
-		// reset target which started the event
-		delete this._target;
+			this.fireTap({/* no parameters */}); // (This event is deprecated, use the "press" event instead)
+			this.firePress({/* no parameters */});
+		}
 	};
 
 	/**
@@ -223,9 +254,6 @@ sap.ui.define(['jquery.sap.global', './library', 'sap/ui/core/Control', 'sap/ui/
 
 			// set active button state
 			this._activeButton();
-
-			// set target which started the event
-			this._target = oEvent.target;
 		}
 	};
 
@@ -236,13 +264,6 @@ sap.ui.define(['jquery.sap.global', './library', 'sap/ui/core/Control', 'sap/ui/
 	 * @private
 	 */
 	Button.prototype.onkeyup = function(oEvent) {
-
-		// if keydown isn't caught by button, ignore the keyup.
-		if (!this._target) {
-			return;
-		}
-
-		this._target = null;
 
 		if (oEvent.which === jQuery.sap.KeyCodes.SPACE || oEvent.which === jQuery.sap.KeyCodes.ENTER) {
 
@@ -278,7 +299,8 @@ sap.ui.define(['jquery.sap.global', './library', 'sap/ui/core/Control', 'sap/ui/
 		}
 
 		// handling active icon
-		if (this.getEnabled()) {
+		this._bActive = this.getEnabled();
+		if (this._bActive) {
 			if (this.getIcon() && this.getActiveIcon() && this._image) {
 				this._image.setSrc(this.getActiveIcon());
 			}
@@ -296,6 +318,7 @@ sap.ui.define(['jquery.sap.global', './library', 'sap/ui/core/Control', 'sap/ui/
 		}
 
 		// handling active icon
+		this._bActive = false;
 		if (this.getEnabled()) {
 			if (this.getIcon() && this.getActiveIcon() && this._image) {
 				this._image.setSrc(this.getIcon());
@@ -310,7 +333,7 @@ sap.ui.define(['jquery.sap.global', './library', 'sap/ui/core/Control', 'sap/ui/
 	 * @private
 	 */
 	Button.prototype._isHoverable = function() {
-		return this.getEnabled() && sap.ui.Device.system.desktop;
+		return this.getEnabled() && Device.system.desktop;
 	};
 
 	/**
@@ -476,10 +499,28 @@ sap.ui.define(['jquery.sap.global', './library', 'sap/ui/core/Control', 'sap/ui/
 	Button.prototype.getPopupAnchorDomRef = function() {
 		return this.getDomRef("inner");
 	};
-	
+
 	// A hook to be used by controls that extend sap.m.Button and want to display the text in a different way
 	Button.prototype._getText = function() {
 		return this.getText();
+	};
+
+	// A hook to be used by controls that extend sap.m.Button and want to display the tooltip in a different way
+	Button.prototype._getTooltip = function() {
+
+		var sTooltip = this.getTooltip_AsString();
+
+		if (!sTooltip && !this.getText()) {
+			// get icon-font info. will return null if the icon is a image
+			var oIconInfo = sap.ui.core.IconPool.getIconInfo(this.getIcon());
+
+			// add tooltip if available
+			if (oIconInfo && oIconInfo.text) {
+				sTooltip = oIconInfo.text;
+			}
+		}
+
+		return sTooltip;
 	};
 
 	Button.prototype.setType = function(sType) {
@@ -492,27 +533,27 @@ sap.ui.define(['jquery.sap.global', './library', 'sap/ui/core/Control', 'sap/ui/
 
 		switch (sType) {
 		case sap.m.ButtonType.Accept:
-			if (!sap.m.Button._oStaticAcceptText) {
+			if (!Button._oStaticAcceptText) {
 				oRb = sap.ui.getCore().getLibraryResourceBundle("sap.m");
 				sTypeText = oRb.getText("BUTTON_ARIA_TYPE_ACCEPT");
-				sap.m.Button._oStaticAcceptText = new sap.ui.core.InvisibleText({text: sTypeText});
-				sap.m.Button._oStaticAcceptText.toStatic(); //Put to Static UiArea
+				Button._oStaticAcceptText = new sap.ui.core.InvisibleText({text: sTypeText});
+				Button._oStaticAcceptText.toStatic(); //Put to Static UiArea
 			}
 			break;
 		case sap.m.ButtonType.Reject:
-			if (!sap.m.Button._oStaticRejectText) {
+			if (!Button._oStaticRejectText) {
 				oRb = sap.ui.getCore().getLibraryResourceBundle("sap.m");
 				sTypeText = oRb.getText("BUTTON_ARIA_TYPE_REJECT");
-				sap.m.Button._oStaticRejectText = new sap.ui.core.InvisibleText({text: sTypeText});
-				sap.m.Button._oStaticRejectText.toStatic(); //Put to Static UiArea
+				Button._oStaticRejectText = new sap.ui.core.InvisibleText({text: sTypeText});
+				Button._oStaticRejectText.toStatic(); //Put to Static UiArea
 			}
 			break;
 		case sap.m.ButtonType.Emphasized:
-			if (!sap.m.Button._oStaticEmphasizedText) {
+			if (!Button._oStaticEmphasizedText) {
 				oRb = sap.ui.getCore().getLibraryResourceBundle("sap.m");
 				sTypeText = oRb.getText("BUTTON_ARIA_TYPE_EMPHASIZED");
-				sap.m.Button._oStaticEmphasizedText = new sap.ui.core.InvisibleText({text: sTypeText});
-				sap.m.Button._oStaticEmphasizedText.toStatic(); //Put to Static UiArea
+				Button._oStaticEmphasizedText = new sap.ui.core.InvisibleText({text: sTypeText});
+				Button._oStaticEmphasizedText.toStatic(); //Put to Static UiArea
 			}
 			break;
 		default: // No need to do anything for other button types
@@ -521,6 +562,28 @@ sap.ui.define(['jquery.sap.global', './library', 'sap/ui/core/Control', 'sap/ui/
 
 		return this;
 
+	};
+
+	/**
+	 * @see sap.ui.core.Control#getAccessibilityInfo
+	 * @protected
+	 */
+	Button.prototype.getAccessibilityInfo = function() {
+		var sDesc = this.getText() || this.getTooltip_AsString();
+		if (!sDesc && this.getIcon()) {
+			var oIconInfo = sap.ui.core.IconPool.getIconInfo(this.getIcon());
+			if (oIconInfo) {
+				sDesc = oIconInfo.text || oIconInfo.name;
+			}
+		}
+
+		return {
+			role: "button",
+			type: sap.ui.getCore().getLibraryResourceBundle("sap.m").getText("ACC_CTR_TYPE_BUTTON"),
+			description: sDesc,
+			focusable: this.getEnabled(),
+			enabled: this.getEnabled()
+		};
 	};
 
 	return Button;

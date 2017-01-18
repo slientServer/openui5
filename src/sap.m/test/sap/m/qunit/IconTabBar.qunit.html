@@ -1,26 +1,25 @@
 <!DOCTYPE HTML>
 <html>
 	<head>
-		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
 		<title>qUnit Page for sap.m.IconTabBar</title>
 
+		<script src="../shared-config.js"></script>
 		<script id="sap-ui-bootstrap"
-			type="text/javascript"
 			src="../../../../resources/sap-ui-core.js"
-			data-sap-ui-theme="sap_bluecrystal"
 			data-sap-ui-noConflict="true"
 			data-sap-ui-libs="sap.m">
 		</script>
 
-		<link rel="stylesheet" href="../../../../resources/sap/ui/thirdparty/qunit.css" type="text/css" media="screen" />
-		<script type="text/javascript" src="../../../../resources/sap/ui/thirdparty/qunit.js"></script>
-		<script type="text/javascript" src="../../../../resources/sap/ui/qunit/qunit-junit.js"></script>
-		<script type="text/javascript" src="../../../../resources/sap/ui/qunit/QUnitUtils.js"></script>
+		<link rel="stylesheet" href="../../../../resources/sap/ui/thirdparty/qunit.css" type="text/css" media="screen">
+		<script src="../../../../resources/sap/ui/thirdparty/qunit.js"></script>
+		<script src="../../../../resources/sap/ui/qunit/qunit-junit.js"></script>
+		<script src="../../../../resources/sap/ui/qunit/QUnitUtils.js"></script>
 		<script src="../../../../resources/sap/ui/thirdparty/sinon.js"></script>
 		<script src="../../../../resources/sap/ui/thirdparty/sinon-qunit.js"></script>
 
 		<!-- use the sinon faketimers for this test -->
-		<script type="text/javascript">
+		<script>
 			sinon.config.useFakeTimers = true;
 			// make jQuery.now work with Sinon fake timers (since jQuery 2.x, jQuery.now caches the native Date.now)
 			jQuery.now = function() {
@@ -635,6 +634,8 @@
 				ok(oIconTabHeader.getItems()[1].$().hasClass("sapMITBSep"), "IconTabSeparator has class sapMITBSep");
 				ok(!oIconTabHeader.getItems()[1].$().hasClass("sapMITBFilter"), "IconTabSeparator does not have class sapMITBFilter");
 
+				ok(oIconTabHeader.getItems()[0].$().hasClass("sapMITBSelected"), "First IconTabBarFilter has class sapMITBSelected");
+
 				// Clean up
 				oIconTabHeader.destroy();
 			});
@@ -690,6 +691,37 @@
 
 				ok (jQuery('.sapMITBFilter').length > 0, 'IconTabFilters are rendered')
 			});
+
+			test("disabled tab", function() {
+
+				// Arrange
+				var oIconTabBar = new sap.m.IconTabBar({
+					items: [
+						new sap.m.IconTabFilter ({
+							icon: "sap-icon://instance"
+						}),
+						new sap.m.IconTabFilter ({
+							icon: "sap-icon://instance",
+							enabled: false
+						})
+					]
+				});
+
+				// System under Test
+				oIconTabBar.placeAt("qunit-fixture");
+				sap.ui.getCore().applyChanges();
+
+				// Assert
+
+				var aTabs = oIconTabBar.$().find('.sapMITBFilter');
+
+				ok(!aTabs[0].hasAttribute('aria-disabled'), "First item is not disabled");
+				ok(aTabs[1].hasAttribute('aria-disabled'), "Second item is disabled");
+
+				// Clean up
+				oIconTabBar.destroy();
+			});
+
 
 			module("icon color");
 
@@ -1126,6 +1158,63 @@
 				// Assert
 				ok(oIconTabBar.getItems()[0].$().hasClass("sapMITBAll"), "should have class for showAll property");
 				ok(!oIconTabBar.getItems()[1].$().hasClass("sapMITBAll"), "should not have class for showAll property");
+
+				// Clean up
+				oIconTabBar.destroy();
+			});
+
+			test("Inline Mode", function() {
+
+				// Arrange
+				var oIconTabBar = new sap.m.IconTabBar({
+					items: [
+						new sap.m.IconTabFilter({
+							text: "Text 1",
+							count: "10",
+							content: [
+								new sap.m.Label({
+									text: "info info info"
+								})
+							]
+						}),
+						new sap.m.IconTabFilter({
+							text: "Text 2",
+							count: "20",
+							content: [
+								new sap.m.Label({
+									text: "info info info"
+								})
+							]
+						}),
+						new sap.m.IconTabFilter({
+							text: "Text 3",
+							count: "30",
+							content: [
+								new sap.m.Label({
+									text: "info info info"
+								})
+							]
+						})
+					]
+				});
+
+				// System under Test
+				oIconTabBar.placeAt("qunit-fixture");
+				sap.ui.getCore().applyChanges();
+
+				// Assert
+				ok(oIconTabBar.$().find(".sapMITBCount").length == 3, '3 "counts" texts are displayed');
+				ok(jQuery(oIconTabBar.$().find(".sapMITBText")[0]).text() == "Text 1", "The text is correct");
+
+				oIconTabBar.setHeaderMode(sap.m.IconTabHeaderMode.Inline);
+
+				sap.ui.getCore().applyChanges();
+
+				var bRtl = sap.ui.getCore().getConfiguration().getRTL();
+				var sText = bRtl ? "(10) Text 1" : "Text 1 (10)";
+
+				ok(oIconTabBar.$().find(".sapMITBCount").length == 0, '"counts" texts are not displayed');
+				equals(jQuery(oIconTabBar.$().find(".sapMITBText")[0]).text(), sText, "The count is attached to the text");
 
 				// Clean up
 				oIconTabBar.destroy();
@@ -2162,6 +2251,122 @@
 
 				// Clean up
 				oIconTabBar.destroy();
+			});
+
+			test("tab reordering", function() {
+
+				// create
+				var oIconTabBar = new sap.m.IconTabBar({
+					enableTabReordering: true,
+					items: [
+						new sap.m.IconTabFilter({
+							id: 'tabReorder1',
+							text: "First tab",
+							count: "3",
+							content: [
+								new sap.m.Button({ text: "Text 1" })
+							]
+						}),
+						new sap.m.IconTabFilter({
+							id: 'tabReorder2',
+							text: "Second tab",
+							count: "1",
+							content: [
+								new sap.m.Button({ text: "Text 2" })
+							]
+						}),
+						new sap.m.IconTabFilter({
+							id: 'tabReorder3',
+							text: "Third tab",
+							count: "Count",
+							content: [
+								new sap.m.Button({ text: "Text 3" })
+							]
+						})
+					]
+				});
+
+				// System under Test
+				oIconTabBar.placeAt("qunit-fixture");
+				sap.ui.getCore().applyChanges();
+
+				var $tab = jQuery('#tabReorder1');
+				var mOffset = $tab.offset();
+
+				ok (oIconTabBar.getItems()[0].getText() == 'First tab', 'First Tab is "First Tab"');
+
+				qutils.triggerMouseEvent($tab, "mousedown", 0, 0, mOffset.left + 10, mOffset.top + 10);
+				qutils.triggerMouseEvent($tab, "mousemove", 0, 0, mOffset.left + 200, mOffset.top + 10);
+				qutils.triggerMouseEvent($tab, "mouseup");
+
+				ok (oIconTabBar.getItems()[0].getText() != 'First tab', 'First Tab is not "First Tab"');
+
+				// Clean up
+				oIconTabBar.destroy();
+			});
+
+			function getIconTabBarWithOverflowList() {
+				var aTabItems = [];
+				for (var i = 0; i < 30; i++) {
+					aTabItems.push(new sap.m.IconTabFilter({
+						key: i.toString(),
+						text : 'Tab ' + i,
+						content: new sap.m.Text({
+							text: 'Content ' + i
+						})
+					}));
+				}
+
+				var oIconTabBarOverflowSelectList = new sap.m.IconTabBar({
+					showOverflowSelectList: true,
+					items: aTabItems
+				});
+
+				return oIconTabBarOverflowSelectList;
+			}
+
+			module("Overflow Select List",{
+				setup: function () {
+					this.oIconTabBar = getIconTabBarWithOverflowList();
+					this.oIconTabBar.placeAt('qunit-fixture');
+
+					sap.ui.getCore().applyChanges();
+				},
+				teardown: function () {
+				this.oIconTabBar.destroy();
+				this.oIconTabBar = null;
+				}
+			});
+
+			test("Rendering", function (assert) {
+				assert.strictEqual(this.oIconTabBar.$().find('.sapMBtn').length, 1, "Overflow button is rendered");
+
+				var oButton = this.oIconTabBar.$().find('.sapMBtn');
+				oButton.trigger('tap');
+
+				sap.ui.getCore().applyChanges();
+
+				assert.strictEqual(jQuery('.sapMITBSelectList').length, 1, "Select list is open");
+			});
+
+			test("Selection", function (assert) {
+				this.oIconTabBar.setSelectedKey('3');
+
+				sap.ui.getCore().applyChanges();
+
+				var oButton = this.oIconTabBar.$().find('.sapMBtn');
+				oButton.trigger('tap');
+
+				sap.ui.getCore().applyChanges();
+				var selectItems = jQuery('.sapMITBSelectItem');
+
+				assert.strictEqual(jQuery(selectItems[3]).hasClass('sapMITBSelectItemSelected'), true, 'Correct select item is selected');
+
+				jQuery(selectItems[10]).trigger('tap');
+
+				sap.ui.getCore().applyChanges();
+
+				assert.strictEqual(this.oIconTabBar.getSelectedKey(), '10', 'Correct tab filter is selected');
 			});
 
 			module("padding");

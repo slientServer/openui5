@@ -1,18 +1,17 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<title>QUnit Tests - sap.m.Text</title>
+	<script src="../shared-config.js"></script>
 	<script id="sap-ui-bootstrap"
-			data-sap-ui-theme="sap_bluecrystal"
-			type="text/javascript"
 			data-sap-ui-noConflict="true"
 			data-sap-ui-libs="sap.m"
 			src="../../../../resources/sap-ui-core.js">
 	</script>
-	<link rel="stylesheet" href="../../../../resources/sap/ui/thirdparty/qunit.css" type="text/css" media="screen" />
+	<link rel="stylesheet" href="../../../../resources/sap/ui/thirdparty/qunit.css" type="text/css" media="screen">
 	<script src="../../../../resources/sap/ui/thirdparty/qunit.js"></script>
-	<script type="text/javascript" src="../../../../resources/sap/ui/qunit/qunit-junit.js"></script>
+	<script src="../../../../resources/sap/ui/qunit/qunit-junit.js"></script>
 	<script src="../../../../resources/sap/ui/qunit/QUnitUtils.js"></script>
 	<script>
 
@@ -158,18 +157,7 @@
 			strictEqual(t4.$().css("word-wrap"), "normal", "Text has correct word-wrap style for non-wrapping");
 		});
 
-		if (t5.canUseNativeLineClamp()) {
-			test("native max lines", function() {
-				strictEqual(t5.$("inner").hasClass("sapMTextLineClamp"), true, "Text has correct class for native MaxLine");
-				equals(t5.$("inner").css("-webkit-line-clamp"), t5.getMaxLines(), "Text has correct line clamp value in CSS");
-				strictEqual(t5.hasOwnProperty("_sResizeListenerId"), false, "Text does not have resize handler");
-			});
-		}
-
 		asyncTest("non-native max lines", function() {
-			t5.canUseNativeLineClamp = function() {
-				return false;
-			};
 
 			t5.addEventDelegate({
 				onAfterRendering : function() {
@@ -245,6 +233,22 @@
 			strictEqual(t6.$().hasClass("sapMTextBreakWord"), true, "Text has a class for break word");
 			t6.setText("LongTextWith Spaces");
 			strictEqual(t6.$().hasClass("sapMTextBreakWord"), false, "Text does not have a class for break word");
+		});
+
+		module("Accessibility");
+
+		test("getAccessibilityInfo", function() {
+			var oControl = new sap.m.Text({text: "Text"});
+			ok(!!oControl.getAccessibilityInfo, "Text has a getAccessibilityInfo function");
+			var oInfo = oControl.getAccessibilityInfo();
+			ok(!!oInfo, "getAccessibilityInfo returns a info object");
+			strictEqual(oInfo.role, undefined, "AriaRole");
+			strictEqual(oInfo.type, undefined, "Type");
+			strictEqual(oInfo.description, "Text", "Description");
+			strictEqual(oInfo.focusable, undefined, "Focusable");
+			strictEqual(oInfo.enabled, undefined, "Enabled");
+			strictEqual(oInfo.editable, undefined, "Editable");
+			oControl.destroy();
 		});
 
 	</script>

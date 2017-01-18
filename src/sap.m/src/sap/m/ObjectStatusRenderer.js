@@ -26,6 +26,7 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/core/ValueStateSupport'],
 
 			var sState = oObjStatus.getState();
 			var sTextDir = oObjStatus.getTextDirection();
+			var sTitleDir = sTextDir;
 
 			oRm.write("<div");
 			oRm.writeControlData(oObjStatus);
@@ -53,8 +54,19 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/core/ValueStateSupport'],
 			oRm.write(">");
 
 			if (oObjStatus.getTitle()) {
+				var bPageRTL = sap.ui.getCore().getConfiguration().getRTL();
+				// if the textDirection is inherit, set the one that the page has for the title
+				if (sTitleDir === sap.ui.core.TextDirection.Inherit) {
+					sTitleDir = bPageRTL ? sap.ui.core.TextDirection.RTL : sap.ui.core.TextDirection.LTR;
+				}
+
 				oRm.write("<span");
+				oRm.writeAttributeEscaped("id", oObjStatus.getId() + "-title");
 				oRm.addClass("sapMObjStatusTitle");
+
+				if (sTitleDir) {
+					oRm.writeAttribute("dir", sTitleDir.toLowerCase());
+				}
 				oRm.writeClasses();
 				oRm.write(">");
 				oRm.writeEscaped(oObjStatus.getTitle() + ":");
@@ -63,6 +75,7 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/core/ValueStateSupport'],
 
 			if (oObjStatus.getIcon()) {
 				oRm.write("<span");
+				oRm.writeAttributeEscaped("id", oObjStatus.getId() + "-icon");
 				oRm.addClass("sapMObjStatusIcon");
 				oRm.writeClasses();
 				oRm.write(">");
@@ -72,6 +85,7 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/core/ValueStateSupport'],
 
 			if (oObjStatus.getText()) {
 				oRm.write("<span");
+				oRm.writeAttributeEscaped("id", oObjStatus.getId() + "-text");
 				oRm.addClass("sapMObjStatusText");
 
 				if (sTextDir && sTextDir !== sap.ui.core.TextDirection.Inherit) {

@@ -12,7 +12,7 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/core/format/NumberFormat', 'sap/ui/m
 	 * Constructor for a Currency type.
 	 *
 	 * @class
-	 * This class represents float simple types.
+	 * This class represents the currency composite type.
 	 *
 	 * @extends sap.ui.model.CompositeType
 	 *
@@ -22,12 +22,12 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/core/format/NumberFormat', 'sap/ui/m
 	 * @constructor
 	 * @public
 	 * @param {object} [oFormatOptions] formatting options. Supports the same options as {@link sap.ui.core.format.NumberFormat.getCurrencyInstance NumberFormat.getCurrencyInstance}
-	 * @param {object} [oFormatOptions.source] additional set of format options to be used if the property in the model is not of type string and needs formatting as well. 
-	 * 										   In case an empty object is given, the default is disabled grouping and a dot as decimal separator. 
-	 * @param {object} [oConstraints] value constraints. 
-	 * @param {float} [oConstraints.minimum] smallest value allowed for this type  
-	 * @param {float} [oConstraints.maximum] largest value allowed for this type  
-	 * @alias sap.ui.model.type.Currency 
+	 * @param {object} [oFormatOptions.source] additional set of format options to be used if the property in the model is not of type string and needs formatting as well.
+	 * 										   In case an empty object is given, the default is disabled grouping and a dot as decimal separator.
+	 * @param {object} [oConstraints] value constraints.
+	 * @param {float} [oConstraints.minimum] smallest value allowed for this type
+	 * @param {float} [oConstraints.maximum] largest value allowed for this type
+	 * @alias sap.ui.model.type.Currency
 	 */
 	var Currency = CompositeType.extend("sap.ui.model.type.Currency", /** @lends sap.ui.model.type.Currency.prototype  */ {
 
@@ -40,7 +40,19 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/core/format/NumberFormat', 'sap/ui/m
 	});
 
 	/**
-	 * @see sap.ui.model.SimpleType.prototype.formatValue
+	 * Format the given array containing amount and currency code to an output value of type string.
+	 * Other internal types than 'string' are not supported by the Currency type.
+	 * If an source format is has been defined for this type, the formatValue does also accept
+	 * a string value as input, which will be parsed into an array using the source format.
+	 * If aValues is not defined or null, null will be returned.
+	 *
+	 * @function
+	 * @name sap.ui.model.type.Currency.prototype.formatValue
+	 * @param {array|string} vValue the array of values or string value to be formatted
+	 * @param {string} sInternalType the target type
+	 * @return {any} the formatted output value
+	 *
+	 * @public
 	 */
 	Currency.prototype.formatValue = function(vValue, sInternalType) {
 		var aValues = vValue;
@@ -52,7 +64,7 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/core/format/NumberFormat', 'sap/ui/m
 		}
 		if (!jQuery.isArray(aValues)) {
 			throw new FormatException("Cannot format currency: " + vValue + " has the wrong format");
-		}	
+		}
 		if (aValues[0] == undefined || aValues[0] == null) {
 			return null;
 		}
@@ -68,7 +80,19 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/core/format/NumberFormat', 'sap/ui/m
 	};
 
 	/**
-	 * @see sap.ui.model.SimpleType.prototype.parseValue
+	 * Parse a string value to an array containing amount and currency. Parsing of other
+	 * internal types than 'string' is not supported by the Currency type.
+	 * In case a source format has been defined, after parsing the currency is formatted
+	 * using the source format and a string value is returned instead.
+	 *
+	 * @function
+	 * @name sap.ui.model.type.Currency.prototype.parseValue
+	 * @param {any} vValue the value to be parsed
+	 * @param {string} sInternalType the source type
+	 * @param {array} aCurrentValues the current values of all binding parts
+	 * @return {array|string} the parse result array
+	 *
+	 * @public
 	 */
 	Currency.prototype.parseValue = function(vValue, sInternalType) {
 		var vResult, oBundle;
@@ -87,19 +111,21 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/core/format/NumberFormat', 'sap/ui/m
 		}
 		if (this.oInputFormat) {
 			vResult = this.oInputFormat.format(vResult);
-		}				
+		}
 		return vResult;
 	};
 
-	/**
-	 * @see sap.ui.model.SimpleType.prototype.validateValue
-	 */
-	Currency.prototype.validateValue = function(aValues) {
-		var iValue = aValues[0];
+	Currency.prototype.validateValue = function(vValue) {
 		if (this.oConstraints) {
 			var oBundle = sap.ui.getCore().getLibraryResourceBundle(),
 				aViolatedConstraints = [],
-				aMessages = [];
+				aMessages = [],
+				aValues = vValue,
+				iValue;
+			if (this.oInputFormat) {
+				aValues = this.oInputFormat.parse(vValue);
+			}
+			iValue = aValues[0];
 			jQuery.each(this.oConstraints, function(sName, oContent) {
 				switch (sName) {
 					case "minimum":
@@ -121,9 +147,6 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/core/format/NumberFormat', 'sap/ui/m
 		}
 	};
 
-	/**
-	 * @see sap.ui.model.SimpleType.prototype.setFormatOptions
-	 */
 	Currency.prototype.setFormatOptions = function(oFormatOptions) {
 		this.oFormatOptions = oFormatOptions;
 		this._createFormats();
@@ -136,7 +159,7 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/core/format/NumberFormat', 'sap/ui/m
 	Currency.prototype._handleLocalizationChange = function() {
 		this._createFormats();
 	};
-	
+
 	/**
 	 * Create formatters used by this type
 	 * @private

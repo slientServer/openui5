@@ -26,7 +26,11 @@ sap.ui.define([
 			this.setModel(oModel);
 
 			// set dialog
-			this.helloDialog = new HelloDialog();
+			this._helloDialog = new HelloDialog(this.getAggregation("rootControl"));
+		},
+
+		openHelloDialog : function () {
+			this._helloDialog.open();
 		}
 	});
 

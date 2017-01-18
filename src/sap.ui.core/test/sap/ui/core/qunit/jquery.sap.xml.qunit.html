@@ -1,26 +1,24 @@
 <!DOCTYPE HTML>
 <html>
 
-<!-- 
+<!--
   Tested file: jquery.sap.xml
-  Author: d050084
 -->
 
 	<head>
-		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
 		<title>qUnit Page for jquery.sap.xml</title>
 
-		<script id="sap-ui-bootstrap" 
-			type="text/javascript"
+		<script src="../shared-config.js"></script>
+		<script id="sap-ui-bootstrap"
 			src="../../../../../resources/sap-ui-core.js"
-			data-sap-ui-theme="sap_bluecrystal"
 			data-sap-ui-noConflict="true">
 		</script>
 
-		<link rel="stylesheet" href="../../../../../resources/sap/ui/thirdparty/qunit.css" type="text/css" media="screen" />
-		<script type="text/javascript" src="../../../../../resources/sap/ui/thirdparty/qunit.js"></script>
-		<script type="text/javascript" src="../../../../../resources/sap/ui/qunit/qunit-junit.js"></script>
-		<script type="text/javascript" src="../../../../../resources/sap/ui/qunit/QUnitUtils.js"></script>
+		<link rel="stylesheet" href="../../../../../resources/sap/ui/thirdparty/qunit.css" type="text/css" media="screen">
+		<script src="../../../../../resources/sap/ui/thirdparty/qunit.js"></script>
+		<script src="../../../../../resources/sap/ui/qunit/qunit-junit.js"></script>
+		<script src="../../../../../resources/sap/ui/qunit/QUnitUtils.js"></script>
 
 		<script>
 		jQuery.sap.require("jquery.sap.xml");
@@ -34,7 +32,7 @@
 							"<member firstName=\"Frank\" lastName=\"Wallace\"></member>" +
 						"</teamMembers>";
 
-		var testdataError = "<?xml version=\"1.0\"><teamMembers>" + 
+		var testdataError = "<?xml version=\"1.0\"><teamMembers>" +
 						"<member firstName=\"Andreas\" lastName=\"Klark\"></member>" +
 						"<member firstName=\"Peter\" lastName=\"Miller\"></member>" +
 						"<member firstName=\"Gina\" lastName=\"Rush\"></member>" +
@@ -44,7 +42,7 @@
 						"<member firstName=\"Frank\" lastName=\"Wallace\"></member>" +
 					"</teamMembers>";
 
-		test("test parse XML string no error", function(){
+		test("parse XML string no error", function(){
 			var oXMLDocument = jQuery.sap.parseXML(testdata);
 			ok(oXMLDocument.parseError.errorCode == 0, "check parse Error");
 			equal(oXMLDocument.getElementsByTagName("teamMembers")[0].childNodes.length,7, "check length");
@@ -59,20 +57,16 @@
 			equal(oXMLDocument.getElementsByTagName("member")[6].getAttribute("firstName"), "Frank", "name check");
 		});
 
-		test("test parse XML string parse error", function(){
+		test("parse XML string parse error", function(){
 			var oXMLDocument = jQuery.sap.parseXML(testdataError);
 			ok(oXMLDocument.parseError.errorCode != 0, "check parse Error");
-			if (!(sap.ui.Device.browser.internet_explorer && parseInt(sap.ui.Device.browser.version) < 9) && oXMLDocument.getElementsByTagName){
-				equal(oXMLDocument.getElementsByTagName("teamMembers").length,0, "check length");
-				equal(oXMLDocument.getElementsByTagName("member").length,0, "check length");
-			}else if (sap.ui.Device.browser.internet_explorer && parseInt(sap.ui.Device.browser.version) < 9){
-				// IE8 check
+			if (oXMLDocument.getElementsByTagName){
 				equal(oXMLDocument.getElementsByTagName("teamMembers").length,0, "check length");
 				equal(oXMLDocument.getElementsByTagName("member").length,0, "check length");
 			}
 		});
 
-		test("test serialize XML document", function(){
+		test("serialize XML document", function(){
 			var oXMLDocument = jQuery.sap.parseXML(testdata);
 			var sXMLText = jQuery.sap.serializeXML(oXMLDocument);
 			ok(sXMLText, "check not undefined");
@@ -91,6 +85,11 @@
 			equal(oXMLDocument.getElementsByTagName("member")[5].getAttribute("firstName"), "Marc", "name check");
 			equal(oXMLDocument.getElementsByTagName("member")[6].getAttribute("firstName"), "Frank", "name check");
 
+		});
+
+		test("get parse error", function() {
+			var oParseError = jQuery.sap.getParseError(jQuery.sap.parseXML(testdataError));
+			assert.ok(oParseError, "error found");
 		});
 
 

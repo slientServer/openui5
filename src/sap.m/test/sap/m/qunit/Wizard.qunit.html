@@ -3,26 +3,25 @@
 <head>
 	<meta charset="utf-8">
 	<title>QUnit Page for sap.m.Wizard</title>
-	<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 
+	<script src="../shared-config.js"></script>
 	<script id="sap-ui-bootstrap"
-			type="text/javascript"
 			src="../../../../resources/sap-ui-core.js"
-			data-sap-ui-theme="sap_bluecrystal"
 			data-sap-ui-noConflict="true"
 			data-sap-ui-libs="sap.m">
 	</script>
 
-	<link rel="stylesheet" href="../../../../resources/sap/ui/thirdparty/qunit.css" type="text/css" media="screen"/>
+	<link rel="stylesheet" href="../../../../resources/sap/ui/thirdparty/qunit.css" type="text/css" media="screen">
 
-	<script type="text/javascript" src="../../../../resources/sap/ui/thirdparty/qunit.js"></script>
-	<script type="text/javascript" src="../../../../resources/sap/ui/qunit/qunit-junit.js"></script>
-	<script type="text/javascript" src="../../../../resources/sap/ui/qunit/qunit-coverage.js"></script>
-	<script type="text/javascript" src="../../../../resources/sap/ui/qunit/QUnitUtils.js"></script>
-	<script type="text/javascript" src="../../../../resources/sap/ui/thirdparty/sinon.js"></script>
-	<script type="text/javascript" src="../../../../resources/sap/ui/thirdparty/sinon-qunit.js"></script>
+	<script src="../../../../resources/sap/ui/thirdparty/qunit.js"></script>
+	<script src="../../../../resources/sap/ui/qunit/qunit-junit.js"></script>
+	<script src="../../../../resources/sap/ui/qunit/qunit-coverage.js"></script>
+	<script src="../../../../resources/sap/ui/qunit/QUnitUtils.js"></script>
+	<script src="../../../../resources/sap/ui/thirdparty/sinon.js"></script>
+	<script src="../../../../resources/sap/ui/thirdparty/sinon-qunit.js"></script>
 
-	<script type="text/javascript">
+	<script>
 		jQuery.sap.require("sap.m.WizardProgressNavigator");
 		jQuery.sap.require("sap.m.WizardStep");
 
@@ -73,6 +72,7 @@
 					]
 				});
 
+				this.oWizardSecondStep = this.oWizard.getSteps()[1];
 				this.oWizard.placeAt("qunit-fixture");
 				sap.ui.getCore().applyChanges();
 
@@ -86,6 +86,7 @@
 				this.oWizard.destroy();
 				this.oSpies.error.restore();
 				sap.ui.base.ObjectPool.prototype.returnObject.restore();
+				this.oWizardSecondStep = null;
 				this.oWizard = null;
 			}
 		});
@@ -219,12 +220,25 @@
 			assert.strictEqual(this.oWizard.getProgress(), 3, "Progress should be 3");
 		});
 
+		QUnit.test("DiscardProgress() should return the wizard instance", function (assert) {
+			var oButton = this.oWizard._getNextButton(), vResult;
+			oButton.firePress();
+			oButton.firePress();
+			oButton.firePress();
+
+			vResult = this.oWizard.discardProgress(this.oWizardSecondStep);
+			assert.strictEqual(vResult, this.oWizard, "The Wizard instance returned correctly");
+
+			vResult = this.oWizard.discardProgress();
+			assert.strictEqual(vResult, this.oWizard, "The Wizard instance returned correctly when no step provided");
+		});
+
 		QUnit.test("DiscardProgress() should reset the steps after a given step", function (assert) {
 			var oButton = this.oWizard._getNextButton();
 			oButton.firePress();
 			oButton.firePress();
 			oButton.firePress();
-			this.oWizard.discardProgress(this.oWizard.getSteps()[1]);
+			this.oWizard.discardProgress(this.oWizardSecondStep);
 			assert.strictEqual(this.oWizard.getProgress(), 2, "Progress should be 1");
 		});
 
@@ -233,7 +247,7 @@
 			oButton.firePress();
 			oButton.firePress();
 			oButton.firePress();
-			this.oWizard.discardProgress(this.oWizard.getSteps()[1]);
+			this.oWizard.discardProgress(this.oWizardSecondStep);
 			assert.strictEqual(this.oWizard.getSteps()[2].$().css("display"), "none", "Step should be hidden");
 		});
 
@@ -248,6 +262,23 @@
 			 this.oWizard.previousStep();
 			 assert.strictEqual(this.oWizard.getProgress(), 2, "Should be at step 1");
 		 });
+
+		QUnit.test("setVisible() of WizardStep should not change the visibility of the steps", function (assert) {
+			var step0 = this.oWizard.getSteps()[0];
+			var domRefInit = step0.$()[0];
+			step0.setVisible(false);
+			sap.ui.getCore().applyChanges();
+			assert.equal(step0.$()[0], domRefInit, "setVisible(false) of the wizardStep should not hide the step");
+		});
+
+		QUnit.test("nextStep().nextStep() chaining nextStep method should be possible", function (assert) {
+			assert.ok(this.oWizard.nextStep().nextStep(), "nextStep chaining should not throw an error");
+		});
+
+		QUnit.test("preivousStep().previousStep() chaining previousStep method should be possible", function (assert) {
+			this.oWizard.nextStep().nextStep();
+			assert.ok(this.oWizard.previousStep().previousStep(), "previousStep chaining should not throw an Error");
+		});
 
 		QUnit.module("Wizard Branching", {
 			sWizardId: "wizard-branching-id",
@@ -369,6 +400,44 @@
 				that.step1.setNextStep(that.externalStep);
 				that.oWizard.nextStep();
 			}, "Should raise an error.");
+		});
+
+		QUnit.module("Wizard ACC", {
+			sWizardId: "wizard-acc-id",
+			setup: function () {
+				this.oWizard = new sap.m.Wizard(this.sWizardId, {
+					steps: [
+						new sap.m.WizardStep({
+							validated: true,
+							title: "Step 1",
+						}),
+						new sap.m.WizardStep({
+							validated: true,
+							title: "Step 2",
+						}),
+						new sap.m.WizardStep({
+							title: "Step 3"
+						})
+					]
+				});
+
+				this.oWizard.placeAt("qunit-fixture");
+				sap.ui.getCore().applyChanges();
+
+				this.oResourceBundle = sap.ui.getCore().getLibraryResourceBundle("sap.m");
+
+			},
+			teardown: function () {
+				this.oWizard.destroy();
+				this.oWizard = null;
+				this.oResourceBundle = null;
+			}
+		});
+
+		QUnit.test("Wizard aria-label attribute", function (assert) {
+			var sAriaLabel = jQuery(this.oWizard.getDomRef()).attr("aria-label");
+			var sWizardLabel = this.oResourceBundle.getText("WIZARD_LABEL");
+			assert.strictEqual(sAriaLabel, sWizardLabel, "Aria-label attribute of the wizard should be set to '" + sWizardLabel + "'");
 		});
 
 	</script>

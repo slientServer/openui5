@@ -1,17 +1,16 @@
 <mvc:View controllerName="sap.ui.demokit.icex.view.Master"
 	xmlns="sap.m"
-	xmlns:core="sap.ui.core"
 	xmlns:mvc="sap.ui.core.mvc"
-	xmlns:control="control"
-	xmlns:h="http://www.w3.org/1999/xhtml">
+	xmlns:app="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1">
 	<Page
 		id="page"
-		title="Icon Explorer"
+		title="{i18n>appTitle}"
 		showFooter="{ui>/showFooter}"
 		icon="{img>/icon/ui5}">
 		<headerContent>
 			<Button
-				icon="sap-icon://favorite-list" 
+			  	id="openFavorites"
+				icon="sap-icon://favorite-list"
 				tooltip="Show Favorites"
 				press="toFavorite">
 			</Button>
@@ -21,9 +20,7 @@
 				<ToolbarSpacer/>
 				<SearchField
 					id="search"
-					placeholder="Search ..."
 					liveChange="search"
-					tooltip="Search for Icons"
 					width="100%">
 				</SearchField>
 				<ToolbarSpacer/>
@@ -39,7 +36,7 @@
 				id="iconList"
 				growing="true"
 				select="selectIconList"
-				noDataText="No matches for your search"
+				noDataText="{i18n>noSearchResults}"
 				mode="{ui>/listMode}"
 				growingScrollToLoad="false"
 				growingThreshold="{ui>/listPageSize}"
@@ -47,6 +44,7 @@
 				<items>
 					<StandardListItem
 						title="{name}"
+						app:tags="{tags}"
 						type="{ui>/listItemType}"
 						press="pressIconListItem"
 						icon="sap-icon://{name}"
@@ -57,7 +55,6 @@
 			<!-- This list shows the icon groups -->
 			<List
 				id="groupList"
-				headerText="Categories"
 				mode="None"
 				items="{/groups}">
 				<items>

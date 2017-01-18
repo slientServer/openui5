@@ -5,7 +5,7 @@
 /**
  * Initialization Code and shared classes of library sap.ui.unified.
  */
-sap.ui.define(['jquery.sap.global', 
+sap.ui.define(['jquery.sap.global',
 	'sap/ui/core/library'], // library dependency
 	function(jQuery) {
 
@@ -41,6 +41,7 @@ sap.ui.define(['jquery.sap.global',
 			"sap.ui.unified.calendar.YearPicker",
 			"sap.ui.unified.Calendar",
 			"sap.ui.unified.CalendarDateInterval",
+			"sap.ui.unified.CalendarWeekInterval",
 			"sap.ui.unified.CalendarMonthInterval",
 			"sap.ui.unified.CalendarTimeInterval",
 			"sap.ui.unified.CalendarLegend",
@@ -158,22 +159,56 @@ sap.ui.define(['jquery.sap.global',
 	sap.ui.unified.CalendarIntervalType = {
 
 		/**
-		 * one code>CalendarRow</code> interval has the size of one hour
+		 * one <code>CalendarRow</code> interval has the size of one hour
 		 * @public
 		 */
 		Hour : "Hour",
 
 		/**
-		 * one code>CalendarRow</code> interval has the size of one day
+		 * one <code>CalendarRow</code> interval has the size of one day
 		 * @public
 		 */
 		Day : "Day",
 
 		/**
-		 * one code>CalendarRow</code> interval has the size of one Month
+		 * one <code>CalendarRow</code> interval has the size of one Month
 		 * @public
 		 */
-		Month : "Month"
+		Month : "Month",
+
+		/**
+		 * one <code>CalendarRow</code> interval has the size of one Week
+		 */
+		Week : "Week",
+
+		/**
+		 * one code>CalendarRow</code> interval has the size of whole one month
+		 */
+		OneMonth : "One Month"
+
+	};
+
+	/**
+	 * Visualisation of an <code>CalendarAppoinment</code> in a <code>CalendarRow</code>.
+	 *
+	 * @enum {string}
+	 * @public
+	 * @since 1.40.0
+	 * @ui5-metamodel This enumeration also will be described in the UI5 (legacy) designtime metamodel
+	 */
+	sap.ui.unified.CalendarAppointmentVisualization = {
+
+		/**
+		 * Standard visualization of an <code>CalendarAppoinment</code>
+		 * @public
+		 */
+		Standard : "Standard",
+
+		/**
+		 * depending on the used theme the <code>CalendarAppoinment</code> are visualized with filled color
+		 * @public
+		 */
+		Filled : "Filled"
 
 	};
 
@@ -183,7 +218,7 @@ sap.ui.define(['jquery.sap.global',
 	 * @enum {string}
 	 * @public
 	 * @since 1.16.0
-	 * @experimental Since version 1.16.0. 
+	 * @experimental Since version 1.16.0.
 	 * API is not yet finished and might change completely
 	 * @ui5-metamodel This enumeration also will be described in the UI5 (legacy) designtime metamodel
 	 */

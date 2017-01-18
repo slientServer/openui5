@@ -11,7 +11,8 @@
 			"attributes":[
 				{
 					"title":"Uploaded By",
-					"text":"Susan Baker"
+					"text":"Susan Baker",
+					"active" : true
 				},
 				{
 					"title":"Uploaded On",
@@ -26,6 +27,11 @@
 				{
 					"title":"First status' title",
 					"text":"First status' text"
+				}
+			],
+			"markers":[
+				{
+					"type":"Flagged"
 				}
 			]
 		}, {
@@ -43,11 +49,13 @@
 				},
 				{
 					"title":"Uploaded On",
-					"text":"2014-09-02"
+					"text":"2014-09-02",
+					"active" : true
 				},
 				{
 					"title":"File Size",
-					"text":"226600"
+					"text":"226600",
+					"active" : true
 				},
 				{
 					"title":"Attribute with a long text",
@@ -59,6 +67,14 @@
 					"title":"Status",
 					"text":"None",
 					"state":"None"
+				}
+			],
+			"markers":[
+				{
+					"type":"Flagged"
+				},
+				{
+					"type":"Favorite"
 				}
 			]
 		}, {
@@ -88,6 +104,11 @@
 					"text":"Success",
 					"state":"Success"
 				}
+			],
+			"markers":[
+				{
+					"type":"Locked"
+				}
 			]
 		}, {
 			"documentId" : "1700ead2-3dfb-5a94-6f5c-cf1da409e028",
@@ -100,7 +121,8 @@
 			"attributes":[
 				{
 					"title":"Uploaded By",
-					"text":"Sean O'Connel"
+					"text":"Sean O'Connel",
+					"active" : true
 				},
 				{
 					"title":"Uploaded On",
@@ -116,6 +138,11 @@
 					"title":"Status",
 					"text":"Warning",
 					"state":"Warning"
+				}
+			],
+			"markers":[
+				{
+					"type":"Draft"
 				}
 			]
 		}, {
@@ -146,6 +173,23 @@
 					"text":"Error",
 					"state":"Error"
 				}
+			],
+			"markers":[
+				{
+					"type":"Draft"
+				},
+				{
+					"type":"Locked"
+				},
+				{
+					"type":"Favorite"
+				},
+				{
+					"type":"Unsaved"
+				},
+				{
+					"type":"Flagged"
+				}
 			]
 		}, {
 			"documentId" : "bcc27c4d-a8ce-3ab6-e807-ec05119685a5",
@@ -158,7 +202,8 @@
 			"attributes":[
 				{
 					"title":"Uploaded By",
-					"text":"John Black"
+					"text":"John Black",
+					"active" : true
 				},
 				{
 					"title":"Uploaded On",

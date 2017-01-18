@@ -1,25 +1,25 @@
 <!DOCTYPE HTML>
-<!-- 
+<!--
   Tested control/class: sap.ui.layout.form.ResponsiveGridLayout
   Author: SAP
 -->
 
 <html>
 <head>
-	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<script src="../../shared-config.js"></script>
 	<script id="sap-ui-bootstrap"
-		type="text/javascript"
 		src="../../../../../../resources/sap-ui-core.js"
-		data-sap-ui-theme="sap_bluecrystal"
 		data-sap-ui-noConflict="true"
-		data-sap-ui-libs="sap.ui.layout, sap.ui.commons">
+		data-sap-ui-libs="sap.ui.layout, sap.m">
 	</script>
-	<link rel="stylesheet" href="../../../../../../resources/sap/ui/thirdparty/qunit.css" type="text/css" media="screen" />
-	<script type="text/javascript" src="../../../../../../resources/sap/ui/thirdparty/qunit.js"></script>
-	<script type="text/javascript" src="../../../../../../resources/sap/ui/qunit/qunit-junit.js"></script>
-	<script type="text/javascript" src="../../../../../../resources/sap/ui/qunit/QUnitUtils.js"></script>
+	<link rel="stylesheet" href="../../../../../../resources/sap/ui/thirdparty/qunit.css" type="text/css" media="screen">
+	<script src="../../../../../../resources/sap/ui/thirdparty/qunit.js"></script>
+	<script src="../../../../../../resources/sap/ui/qunit/qunit-junit.js"></script>
+	<script src="../../../../../../resources/sap/ui/qunit/qunit-coverage.js"></script>
+	<script src="../../../../../../resources/sap/ui/qunit/QUnitUtils.js"></script>
 
-	<script language="javascript">
+	<script>
 
 		// create Form
 
@@ -33,7 +33,7 @@
 						formElements: [
 							new sap.ui.layout.form.FormElement("F1C1E1",{
 									label: "Label",
-									fields: [new sap.ui.commons.TextField("F1C1E1_T1",{value: "Text"})]
+									fields: [new sap.m.Input("F1C1E1_T1",{value: "Text"})]
 								})
 							]
 					})
@@ -41,7 +41,8 @@
 			}).placeAt("uiArea1");
 
 		var oLayout2 = new sap.ui.layout.form.ResponsiveGridLayout("Layout2",  {
-			singleContainerFullSize: false
+			singleContainerFullSize: false,
+			backgroundDesign: sap.ui.layout.BackgroundDesign.Transparent
 		});
 		var oForm2 = new sap.ui.layout.form.Form("F2",{
 			title: "Form2",
@@ -53,15 +54,17 @@
 						formElements: [
 							new sap.ui.layout.form.FormElement("F2C1E1",{
 									label: "Label",
-									fields: [new sap.ui.commons.TextField("F2C1E1_T1",{value: "Text"}),
-									         new sap.ui.commons.TextField("F2C1E1_T2",{value: "Text"})]
+									fields: [new sap.m.Input("F2C1E1_T1",{value: "Text"}),
+									         new sap.m.Input("F2C1E1_T2",{value: "Text"})]
 								})
 							]
 					})
 				]
 			}).placeAt("uiArea2");
 
-		var oLayout3 = new sap.ui.layout.form.ResponsiveGridLayout("Layout3");
+		var oLayout3 = new sap.ui.layout.form.ResponsiveGridLayout("Layout3", {
+			backgroundDesign: sap.ui.layout.BackgroundDesign.Solid
+		});
 		var oForm3 = new sap.ui.layout.form.Form("F3",{
 			title: "Form3",
 			editable: true,
@@ -72,14 +75,14 @@
 						formElements: [
 							new sap.ui.layout.form.FormElement("F3C1E1",{
 									label: "Label",
-									fields: [new sap.ui.commons.TextField("F3C1E1_T1",{value: "Text"}),
-									         new sap.ui.commons.TextField("F3C1E1_T2",{value: "Text"})]
+									fields: [new sap.m.Input("F3C1E1_T1",{value: "Text"}),
+									         new sap.m.Input("F3C1E1_T2",{value: "Text"})]
 								}),
 							new sap.ui.layout.form.FormElement("F3C1E2",{
-									label: new sap.ui.commons.Label("F3C1E2_L2",{text: "Label",
+									label: new sap.m.Label("F3C1E2_L2",{text: "Label",
 															layoutData: new sap.ui.layout.GridData("F3C1E2_L2_LD",{span: "L3 M3 S12"})}),
-									fields: [new sap.ui.commons.TextField("F3C1E2_T1",{value: "Text"}),
-									         new sap.ui.commons.TextField("F3C1E2_T2",{value: "Text"})]
+									fields: [new sap.m.Input("F3C1E2_T1",{value: "Text"}),
+									         new sap.m.Input("F3C1E2_T2",{value: "Text"})]
 								})
 							]
 					}),
@@ -88,20 +91,20 @@
 						expandable: true,
 						formElements: [
 							new sap.ui.layout.form.FormElement("F3C2E1",{
-									fields: [new sap.ui.commons.TextField("F3C2E1_T1",{value: "Text without label"}),
-									         new sap.ui.commons.TextField("F3C2E1_T2",{value: "Text without label"})]
+									fields: [new sap.m.Input("F3C2E1_T1",{value: "Text without label"}),
+									         new sap.m.Input("F3C2E1_T2",{value: "Text without label"})]
 								}),
 							new sap.ui.layout.form.FormElement("F3C2E2",{
 									label: "Label",
-									fields: [new sap.ui.commons.TextField("F3C2E2_T1",{value: "Text"}),
-									         new sap.ui.commons.TextField("F3C2E2_T2",{value: "Text",
+									fields: [new sap.m.Input("F3C2E2_T1",{value: "Text"}),
+									         new sap.m.Input("F3C2E2_T2",{value: "Text",
 																layoutData: new sap.ui.layout.GridData("F3C2E2_T2LD",{span: "L2 M2 S2"})
 														})]
 								}),
 							new sap.ui.layout.form.FormElement("F3C2E3",{
 									visible: false,
 									label: "Label",
-									fields: [new sap.ui.commons.TextField("F3C2E3_T1",{value: "invisible"})]
+									fields: [new sap.m.Input("F3C2E3_T1",{value: "invisible"})]
 								})
 							],
 						layoutData: new sap.ui.layout.GridData("F3C2LD",{span: "L6 M12 S12"})
@@ -113,13 +116,13 @@
 						formElements: [
 							new sap.ui.layout.form.FormElement("F3C3E1",{
 									label: "Label",
-									fields: [new sap.ui.commons.TextField("F3C3E1_T1",{value: "Text"}),
-									         new sap.ui.commons.TextField("F3C3E1_T2",{value: "Text"})]
+									fields: [new sap.m.Input("F3C3E1_T1",{value: "Text"}),
+									         new sap.m.Input("F3C3E1_T2",{value: "Text"})]
 								}),
 							new sap.ui.layout.form.FormElement("F3C3E2",{
 									label: "Label",
-									fields: [new sap.ui.commons.TextField("F3C3E2_T1",{value: "Text"}),
-									         new sap.ui.commons.TextField("F3C3E2_T2",{value: "Text"})]
+									fields: [new sap.m.Input("F3C3E2_T1",{value: "Text"}),
+									         new sap.m.Input("F3C3E2_T2",{value: "Text"})]
 								})
 							],
 						layoutData: new sap.ui.core.VariantLayoutData("F3C3VLD",{
@@ -132,9 +135,17 @@
 						formElements: [
 							new sap.ui.layout.form.FormElement("F3C5E1",{
 									label: "Label",
-									fields: [new sap.ui.commons.TextField("F3C5E1_T1",{value: "Text"})]
+									fields: [new sap.m.Input("F3C5E1_T1",{value: "Text"})]
 								})
 							]
+					}),
+				new sap.ui.layout.form.FormContainer("F3C6",{
+					formElements: [
+						new sap.ui.layout.form.FormElement("F3C6E1",{
+								label: "Label",
+								fields: [new sap.m.Input("F3C6E1_T1",{value: "Text"})]
+							})
+						]
 					})
 				]
 			}).placeAt("uiArea3");
@@ -143,6 +154,7 @@
 		var oLayout4 = new sap.ui.layout.form.ResponsiveGridLayout("Layout4");
 		var oForm4 = new sap.ui.layout.form.Form("F4",{
 			title: "Form4",
+			editable: true,
 			layout: oLayout4,
 			formContainers: [
 				new sap.ui.layout.form.FormContainer("F4C1",{
@@ -151,7 +163,7 @@
 						formElements: [
 							new sap.ui.layout.form.FormElement("F4C1E1",{
 									label: "Label",
-									fields: [new sap.ui.commons.TextField("F4C1E1_T1")]
+									fields: [new sap.m.Input("F4C1E1_T1")]
 								})]
 					}),
 				new sap.ui.layout.form.FormContainer("F4C2",{
@@ -160,7 +172,7 @@
 						formElements: [
 							new sap.ui.layout.form.FormElement("F4C2E1",{
 									label: "Label",
-									fields: [new sap.ui.commons.TextField("F4C2E1_T1")]
+									fields: [new sap.m.Input("F4C2E1_T1")]
 								})]
 					})]
 			}).placeAt("uiArea4");
@@ -174,6 +186,7 @@
 		});
 		var oForm5 = new sap.ui.layout.form.Form("F5",{
 			title: "Form5",
+			editable: true,
 			layout: oLayout5,
 			width: "800px",
 			formContainers: [
@@ -182,7 +195,7 @@
 						formElements: [
 							new sap.ui.layout.form.FormElement("F5C1E1",{
 									label: "Label",
-									fields: [new sap.ui.commons.TextField("F5C1E1_T1")]
+									fields: [new sap.m.Input("F5C1E1_T1")]
 								})]
 					}),
 				new sap.ui.layout.form.FormContainer("F5C2",{
@@ -190,10 +203,51 @@
 						formElements: [
 							new sap.ui.layout.form.FormElement("F5C2E1",{
 									label: "Label",
-									fields: [new sap.ui.commons.TextField("F5C2E1_T1")]
+									fields: [new sap.m.Input("F5C2E1_T1")]
 								})]
 					})]
 			}).placeAt("uiArea5");
+
+		// test toolbar as header
+		var oLayout6 = new sap.ui.layout.form.ResponsiveGridLayout("Layout6");
+		var oForm6 = new sap.ui.layout.form.Form("F6",{
+			editable: true,
+			title: new sap.ui.core.Title("F6-T",{text: "Form6"}),
+			toolbar: new sap.m.Toolbar("F6-TB1", {
+				content: [new sap.m.Title("F6-Title", {text: "Form 6", level: sap.ui.core.TitleLevel.H3, titleStyle: sap.ui.core.TitleLevel.H3, tooltip: "Title tooltip"}),
+				          new sap.m.ToolbarSpacer(),
+				          new sap.m.Button({icon: "sap-icon://sap-ui5"})]
+			}),
+			ariaLabelledBy: "F6-Title",
+			layout: oLayout6,
+			formContainers: [
+				new sap.ui.layout.form.FormContainer("F6C1",{
+						title: new sap.ui.core.Title("F6-C1T",{text: "Container 1"}),
+						toolbar: new sap.m.Toolbar("F6-TB2", {
+							content: [new sap.m.Title("F6C1-Title", {text: "Container 1", level: sap.ui.core.TitleLevel.H4, titleStyle: sap.ui.core.TitleLevel.H4, tooltip: "Title tooltip"}),
+							          new sap.m.ToolbarSpacer(),
+							          new sap.m.Button({icon: "sap-icon://sap-ui5"})]
+						}),
+						ariaLabelledBy: "F6C1-Title",
+						formElements: [
+							new sap.ui.layout.form.FormElement("F6C1E1",{
+									label: "Label",
+									fields: [new sap.m.Input("F6C1E1_T1")]
+								})]
+					}),
+				new sap.ui.layout.form.FormContainer("F6C2",{
+						toolbar: new sap.m.Toolbar("F6-TB3", {
+							content: [new sap.m.Title("F6C2-Title", {text: "Container 2", level: sap.ui.core.TitleLevel.H4, titleStyle: sap.ui.core.TitleLevel.H4, tooltip: "Title tooltip"}),
+							          new sap.m.ToolbarSpacer(),
+							          new sap.m.Button({icon: "sap-icon://sap-ui5"})]
+						}),
+						formElements: [
+							new sap.ui.layout.form.FormElement("F6C2E1",{
+									label: "Label",
+									fields: [new sap.m.Input("F6C2E1_T1")]
+								})]
+					})]
+			}).placeAt("uiArea6");
 
 		// test functions
 		qutils.delayTestStart();
@@ -237,13 +291,13 @@
 			var oGrid = sap.ui.getCore().byId("F1C1--Grid");
 			oLayoutData = oGrid._getLayoutDataForControl(oLabel);
 			equal(oLayoutData.getId(), "Layout1--Dummy", "Form1: Label1 must use calculated LayoutData");
-			equal(oLayoutData.getSpan(), "L2 M2 S12", "Form1: Label1 calculated LayoutData span correct");
+			equal(oLayoutData.getSpan(), "XL2 L2 M2 S12", "Form1: Label1 calculated LayoutData span correct");
 			equal(oLayoutData.getLinebreak(), true, "Form1: Label1 calculated LayoutData linebreak correct");
 
 			var oField = sap.ui.getCore().byId("F1C1E1_T1");
 			oLayoutData = oGrid._getLayoutDataForControl(oField);
 			equal(oLayoutData.getId(), "Layout1--Dummy", "Form1: Field1 must use calculated LayoutData");
-			equal(oLayoutData.getSpan(), "L10 M10 S12", "Form1: Field1 calculated LayoutData span correct");
+			equal(oLayoutData.getSpan(), "XL10 L10 M10 S12", "Form1: Field1 calculated LayoutData span correct");
 			equal(oLayoutData.getLinebreak(), false, "Form1: Field1 calculated LayoutData linebreak correct");
 
 			var oPanel = sap.ui.getCore().byId("F3C1---Panel");
@@ -278,25 +332,25 @@
 			oField = sap.ui.getCore().byId("F3C1E2_T1");
 			oLayoutData = oGrid._getLayoutDataForControl(oField);
 			equal(oLayoutData.getId(), "Layout3--Dummy", "Form3: Field3 must use calculated LayoutData");
-			equal(oLayoutData.getSpan(), "L5 M5 S12", "Form3: Field3 calculated LayoutData span correct");
+			equal(oLayoutData.getSpan(), "XL4 L5 M5 S12", "Form3: Field3 calculated LayoutData span correct");
 			equal(oLayoutData.getLinebreak(), false, "Form3: Field3 calculated LayoutData linebreak correct");
 
 			oField = sap.ui.getCore().byId("F3C1E2_T2");
 			oLayoutData = oGrid._getLayoutDataForControl(oField);
 			equal(oLayoutData.getId(), "Layout3--Dummy", "Form3: Field4 must use calculated LayoutData");
-			equal(oLayoutData.getSpan(), "L4 M4 S12", "Form3: Field4 calculated LayoutData span correct");
+			equal(oLayoutData.getSpan(), "XL4 L4 M4 S12", "Form3: Field4 calculated LayoutData span correct");
 			equal(oLayoutData.getLinebreak(), false, "Form3: Field4 calculated LayoutData linebreak correct");
 
 			oField = sap.ui.getCore().byId("F3C2E1_T1");
 			oLayoutData = oGrid._getLayoutDataForControl(oField);
 			equal(oLayoutData.getId(), "Layout3--Dummy", "Form3: Container2 Field1 must use calculated LayoutData");
-			equal(oLayoutData.getSpan(), "L6 M6 S12", "Form3: Container2 Field1 calculated LayoutData span correct");
+			equal(oLayoutData.getSpan(), "XL6 L6 M6 S12", "Form3: Container2 Field1 calculated LayoutData span correct");
 			equal(oLayoutData.getLinebreak(), true, "Form3: Container2 Field1 calculated LayoutData linebreak correct");
 
 			oField = sap.ui.getCore().byId("F3C2E1_T2");
 			oLayoutData = oGrid._getLayoutDataForControl(oField);
 			equal(oLayoutData.getId(), "Layout3--Dummy", "Form3: Container2 Field2 must use calculated LayoutData");
-			equal(oLayoutData.getSpan(), "L6 M6 S12", "Form3: Container2 Field2 calculated LayoutData span correct");
+			equal(oLayoutData.getSpan(), "XL6 L6 M6 S12", "Form3: Container2 Field2 calculated LayoutData span correct");
 			equal(oLayoutData.getLinebreak(), false, "Form3: Container2 Field2 calculated LayoutData linebreak correct");
 
 			oField = sap.ui.getCore().byId("F3C2E2_T1");
@@ -314,7 +368,7 @@
 			oGrid = sap.ui.getCore().byId("F5C1--Grid");
 			oLayoutData = oGrid._getLayoutDataForControl(oLabel);
 			equal(oLayoutData.getId(), "Layout5--Dummy", "Form5: Label1 must use calculated LayoutData");
-			equal(oLayoutData.getSpan(), "L4 M12 S12", "Form5: Label1 calculated LayoutData span correct");
+			equal(oLayoutData.getSpan(), "XL4 L4 M12 S12", "Form5: Label1 calculated LayoutData span correct");
 			equal(oLayoutData.getLinebreak(), true, "Form5: Label1 calculated LayoutData linebreak correct");
 		});
 
@@ -331,6 +385,13 @@
 		});
 
 		module("Rendering");
+
+		test("BackgroundDesign", function() {
+			ok(jQuery("#Layout1").hasClass("sapUiFormBackgrTranslucent"), "Form1: translucent design per default");
+			ok(!jQuery("#Layout2").hasClass("sapUiFormBackgrTranslucent"), "Form2: no translucent design");
+			ok(!jQuery("#Layout2").hasClass("sapUiFormBackgrSolid"), "Form2: no solid design");
+			ok(jQuery("#Layout3").hasClass("sapUiFormBackgrSolid"), "Form1: solid design");
+		});
 
 		test("Container rendering", function() {
 			ok(jQuery.sap.domById("F1"), "Form1 is rendered");
@@ -368,23 +429,36 @@
 
 		test("Fields Rendering", function() {
 			ok(jQuery.sap.domById(sap.ui.getCore().byId("F1C1E1").getLabelControl().getId()), "Label1 rendered");
-			ok(jQuery.sap.domById("F1C1E1_T1"), "TextField1 rendered");
+			ok(jQuery.sap.domById("F1C1E1_T1"), "Input1 rendered");
 
 			ok(jQuery.sap.domById(sap.ui.getCore().byId("F2C1E1").getLabelControl().getId()), "Form2: Label rendered");
-			ok(jQuery.sap.domById("F2C1E1_T1"), "Form2: TextField1 rendered");
-			ok(jQuery.sap.domById("F2C1E1_T2"), "Form2: TextField2 rendered");
+			ok(jQuery.sap.domById("F2C1E1_T1"), "Form2: Input1 rendered");
+			ok(jQuery.sap.domById("F2C1E1_T2"), "Form2: Input2 rendered");
 
-			ok(!jQuery.sap.domById("F3C2E3_T1"), "Form3: invisible Element - TextField not rendered");
-			ok(!jQuery.sap.domById("F3C5E1_T1"), "Form3: invisible Container - TextField not rendered");
+			ok(!jQuery.sap.domById("F3C2E3_T1"), "Form3: invisible Element - Input not rendered");
+			ok(!jQuery.sap.domById("F3C5E1_T1"), "Form3: invisible Container - Input not rendered");
 		});
 
 		test("Aria", function() {
-			equal(jQuery("#F1C1--Grid").attr("role"), "form", "Container-F1C1: role \"form\" set on grid level");
+			ok(!jQuery("#F1C1--Grid").attr("role"), "Container-F1C1: role \"form\" not set on grid level");
 			ok(!jQuery("#F1C1--Grid").attr("aria-labelledby"), "Container-F1C1: aria-labelledby not set on grid level");
 			equal(jQuery("#F2C1---Panel").attr("role"), "form", "Container-F2C1: role \"form\" set on panel level");
 			ok(!jQuery("#F2C1--Grid").attr("role"), "Container-F2C1: role \"form\" not set on grid level");
 			equal(jQuery("#F2C1---Panel").attr("aria-labelledby"), "F2C1--title", "Container-F2C1: aria-labelledby set");
 			equal(jQuery("#F3C1---Panel").attr("aria-labelledby"), "F3C1T", "Container-F3C1: aria-labelledby set");
+			equal(jQuery("#F3C6--Grid").attr("role"), "form", "Container-F3C6: role \"form\" set on grid level");
+
+			equal(jQuery("#F6").attr("aria-labelledby"), "F6-Title", "Form6: aria-labelledby set");
+			equal(jQuery("#F6C1---Panel").attr("aria-labelledby"), "F6C1-Title", "Container-F6C1: aria-labelledby set");
+			equal(jQuery("#F6C2---Panel").attr("aria-labelledby"), "F6-TB3", "Container-F6C2: aria-labelledby default set");
+		});
+
+		test("Toolbar", function() {
+			ok(!jQuery.sap.domById("F6-T"), "Form6: Title not rendered");
+			ok(jQuery.sap.domById("F6-TB1"), "Form6: Toolbar rendered");
+			ok(!jQuery.sap.domById("F6-C1T"), "Form6: Title of Container1 not rendered");
+			ok(jQuery.sap.domById("F6-TB2"), "Form6: Toolbar of Container1 rendered");
+			ok(jQuery.sap.domById("F6-TB3"), "Form6: Toolbar of Container2 rendered");
 		});
 
 		module("Interaction");
@@ -396,8 +470,8 @@
 						formElements: [
 							new sap.ui.layout.form.FormElement("F3C4E1",{
 									label: "Label",
-									fields: [new sap.ui.commons.TextField("F3C4E1_T1",{value: "Text"}),
-									         new sap.ui.commons.TextField("F3C4E1_T2",{value: "Text"})]
+									fields: [new sap.m.Input("F3C4E1_T1",{value: "Text"}),
+									         new sap.m.Input("F3C4E1_T2",{value: "Text"})]
 								})
 							]
 					})
@@ -406,7 +480,7 @@
 			ok(jQuery.sap.domById("F3C4---Panel"), "Form3: new Container Panel rendered (because title)");
 			ok(jQuery.sap.domById("F3C4--Grid"), "Form3: new Container Grid rendered");
 			ok(jQuery.sap.domById(sap.ui.getCore().byId("F3C4E1").getLabelControl().getId()), "Form3: new Label1 rendered");
-			ok(jQuery.sap.domById("F3C4E1_T1"), "Form3: new TextField1 rendered");
+			ok(jQuery.sap.domById("F3C4E1_T1"), "Form3: new Input1 rendered");
 		});
 
 		test("add element", function() {
@@ -414,20 +488,20 @@
 			oContainer.addFormElement(
 					new sap.ui.layout.form.FormElement("F3C4E2",{
 						label: "Label",
-						fields: [new sap.ui.commons.TextField("F3C4E2_T1",{value: "Text"})]
+						fields: [new sap.m.Input("F3C4E2_T1",{value: "Text"})]
 					})
 				);
 			sap.ui.getCore().applyChanges();
 			ok(jQuery.sap.domById(sap.ui.getCore().byId("F3C4E2").getLabelControl().getId()), "Form3: new Label2 rendered");
-			ok(jQuery.sap.domById("F3C4E2_T1"), "Form3: new TextField1 rendered");
+			ok(jQuery.sap.domById("F3C4E2_T1"), "Form3: new Input1 rendered");
 		});
 
 		test("add field", function() {
 			var oElement = sap.ui.getCore().byId("F3C4E2");
-			oElement.addField(new sap.ui.commons.TextField("F3C4E2_T2",{value: "Text"}));
+			oElement.addField(new sap.m.Input("F3C4E2_T2",{value: "Text"}));
 			sap.ui.getCore().applyChanges();
-			ok(jQuery.sap.domById("F3C4E2_T1"), "Form3: new still TextField1 rendered");
-			ok(jQuery.sap.domById("F3C4E2_T2"), "Form3: new TextField2 rendered");
+			ok(jQuery.sap.domById("F3C4E2_T1"), "Form3: new still Input1 rendered");
+			ok(jQuery.sap.domById("F3C4E2_T2"), "Form3: new Input2 rendered");
 		});
 
 		test("make Element invisible", function() {
@@ -435,7 +509,7 @@
 			oElement.setVisible(false);
 			sap.ui.getCore().applyChanges();
 			ok(!jQuery.sap.domById(sap.ui.getCore().byId("F3C4E2").getLabelControl().getId()), "Form3: Label2 not longer rendered");
-			ok(!jQuery.sap.domById("F3C4E2_T1"), "Form3: TextField1 not longer rendered");
+			ok(!jQuery.sap.domById("F3C4E2_T1"), "Form3: Input1 not longer rendered");
 		});
 
 		test("make Element visible", function() {
@@ -443,7 +517,7 @@
 			oElement.setVisible(true);
 			sap.ui.getCore().applyChanges();
 			ok(jQuery.sap.domById(sap.ui.getCore().byId("F3C4E2").getLabelControl().getId()), "Form3: Label2 rendered");
-			ok(jQuery.sap.domById("F3C4E2_T1"), "Form3: TextField1 rendered");
+			ok(jQuery.sap.domById("F3C4E2_T1"), "Form3: Input1 rendered");
 		});
 
 		test("make Container invisible", function() {
@@ -453,7 +527,7 @@
 			ok(!sap.ui.getCore().byId("F3C4---Panel"), "Form3: Containers Panel does not exist any more.");
 			ok(!sap.ui.getCore().byId("F3C4--Grid"), "Form3: Grid for Container content does not exist any more.");
 			ok(!jQuery.sap.domById(sap.ui.getCore().byId("F3C4E2").getLabelControl().getId()), "Form3: Label2 not longer rendered");
-			ok(!jQuery.sap.domById("F3C4E2_T1"), "Form3: TextField1 not longer rendered");
+			ok(!jQuery.sap.domById("F3C4E2_T1"), "Form3: Input1 not longer rendered");
 		});
 
 		test("make Container visible", function() {
@@ -465,7 +539,7 @@
 			ok(jQuery.sap.domById("F3C4---Panel"), "Form3: Containers Panel rendered");
 			ok(jQuery.sap.domById("F3C4--Grid"), "Form3: Containers Grid rendered");
 			ok(jQuery.sap.domById(sap.ui.getCore().byId("F3C4E2").getLabelControl().getId()), "Form3: Label2 rendered");
-			ok(jQuery.sap.domById("F3C4E2_T1"), "Form3: TextField1 rendered");
+			ok(jQuery.sap.domById("F3C4E2_T1"), "Form3: Input1 rendered");
 		});
 
 		test("destroy and add container new", function() {
@@ -482,7 +556,7 @@
 			ok(jQuery.sap.domById("F3C4---Panel"), "Form3: Container Panel still rendered");
 			ok(jQuery.sap.domById("F3C4--Grid"), "Form3: Container Grid still rendered");
 			ok(jQuery.sap.domById(sap.ui.getCore().byId("F3C4E1").getLabelControl().getId()), "Form3: Label1 still rendered");
-			ok(jQuery.sap.domById("F3C4E1_T1"), "Form3: TextField1 still rendered");
+			ok(jQuery.sap.domById("F3C4E1_T1"), "Form3: Input1 still rendered");
 		});
 
 		test("destroy and add element new", function() {
@@ -492,19 +566,19 @@
 			oContainer.addFormElement(
 					new sap.ui.layout.form.FormElement("F3C4E2",{
 						label: "Label",
-						fields: [new sap.ui.commons.TextField("F3C4E2_T1",{value: "Text"})]
+						fields: [new sap.m.Input("F3C4E2_T1",{value: "Text"})]
 					})
 				);
 			sap.ui.getCore().applyChanges();
 			ok(jQuery.sap.domById(sap.ui.getCore().byId("F3C4E2").getLabelControl().getId()), "Form3: Label2 still rendered");
-			ok(jQuery.sap.domById("F3C4E2_T1"), "Form3: TextField1 still rendered");
+			ok(jQuery.sap.domById("F3C4E2_T1"), "Form3: Input1 still rendered");
 		});
 
 		test("remove field", function() {
 			var oElement = sap.ui.getCore().byId("F3C4E2");
 			oElement.removeField("F3C4E2_T1");
 			sap.ui.getCore().applyChanges();
-			ok(!jQuery.sap.domById("F3C4E2_T1"), "Form4: new TextField1 not longer rendered");
+			ok(!jQuery.sap.domById("F3C4E2_T1"), "Form4: new Input1 not longer rendered");
 		});
 
 		test("remove element", function() {
@@ -512,7 +586,7 @@
 			oContainer.removeFormElement("F3C4E2");
 			sap.ui.getCore().applyChanges();
 			ok(!jQuery.sap.domById(sap.ui.getCore().byId("F3C4E2").getLabelControl().getId()), "Form4: new Label2 not longer rendered");
-			ok(!jQuery.sap.domById("F3C4E2_T1"), "Form4: new TextField1 not longer rendered");
+			ok(!jQuery.sap.domById("F3C4E2_T1"), "Form4: new Input1 not longer rendered");
 		});
 
 		test("remove container", function() {
@@ -521,7 +595,7 @@
 			ok(!jQuery.sap.domById("F3C4---Panel"), "Form3: new Container Panel not longer rendered rendered");
 			ok(!jQuery.sap.domById("F3C4--Grid"), "Form3: new Container Grid not longer rendered");
 			ok(!jQuery.sap.domById(sap.ui.getCore().byId("F3C4E1").getLabelControl().getId()), "Form4: new Label1 not longer rendered");
-			ok(!jQuery.sap.domById("F3C4E1_T1"), "Form4: new TextField1 not longer rendered rendered");
+			ok(!jQuery.sap.domById("F3C4E1_T1"), "Form4: new Input1 not longer rendered rendered");
 			ok(!oLayout3.mContainers["F3C4"], "Container not longer in the layout control data");
 			ok(!sap.ui.getCore().byId("F3C4--Grid"), "Container Grid destroyed");
 			ok(!sap.ui.getCore().byId("F3C4---Panel"), "Panel destroyed");
@@ -565,6 +639,8 @@
 	<div id="uiArea4"></div>
 	<br>
 	<div id="uiArea5"></div>
+	<br>
+	<div id="uiArea6"></div>
 
 </body>
 </html>

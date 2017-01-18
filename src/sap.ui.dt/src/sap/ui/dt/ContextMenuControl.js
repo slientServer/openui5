@@ -10,7 +10,7 @@ sap.ui.define([
 
 	/**
 	 * Constructor for a new sap.ui.dt.ContextMenuControl control.
-	 * 
+	 *
 	 * @class Context - Menu for Design time
 	 * @extends sap.ui.unified.Menu
 	 * @author SAP SE
@@ -34,7 +34,7 @@ sap.ui.define([
 
 	/**
 	 * Initialize the context menu
-	 * 
+	 *
 	 * @private
 	 */
 	ContextMenuControl.prototype.init = function() {
@@ -57,7 +57,7 @@ sap.ui.define([
 
 	/**
 	 * Set overlay which invoked the context menu
-	 * 
+	 *
 	 * @param {sap.ui.core.Element} oOverlay variable object instance of the overlay
 	 */
 	ContextMenuControl.prototype.setOverlayDomRef = function(oOverlay) {
@@ -66,7 +66,7 @@ sap.ui.define([
 
 	/**
 	 * Creates the context menu items based on the currently associated element
-	 * 
+	 *
 	 * @param {array} aMenuItems array with menu item settings
 	 * @param {string} aMenuItems.id id, which corresponds to the text key
 	 * @param {string} aMenuItems.text menu item text (translated)
@@ -76,36 +76,40 @@ sap.ui.define([
 	 *        opened is passed, default true
 	 * @param {function} aMenuItems.enabled? function to determine if the menu entry should be enabled, the element for which the menu should be
 	 *        opened is passed, default true
-	 * @param {object} oElement element for which the menu should be opened
+	 * @param {object} oTargetOverlay overlay for which the menu should be opened
 	 * @private
 	 */
-	ContextMenuControl.prototype.setMenuItems = function(aMenuItems, oElement) {
-		var that = this;
-
+	ContextMenuControl.prototype.setMenuItems = function(aMenuItems, oTargetOverlay) {
 		this.destroyItems();
 
 		aMenuItems.forEach(function(oItem) {
-			if (!oItem.available || oItem.available(oElement)) {
-				var bEnabled = !oItem.enabled || oItem.enabled(oElement);
+			if (!oItem.available || oItem.available(oTargetOverlay)) {
+				var bEnabled = !oItem.enabled || oItem.enabled(oTargetOverlay);
+
+				var sText = oItem.text;
+				if (typeof oItem.text === "function") {
+					sText = oItem.text(oTargetOverlay);
+				}
+
 				var oMenuItem = new MenuItem({
-					text: oItem.text,
+					text: sText,
 					enabled: bEnabled
 				});
 				oMenuItem.data({
 					id: oItem.id
 				});
-				if ((oItem.startSection && typeof (oItem.startSection) === "boolean" ) || (typeof (oItem.startSection) === "function" && oItem.startSection(oElement))) {
+				if ((oItem.startSection && typeof (oItem.startSection) === "boolean" ) || (typeof (oItem.startSection) === "function" && oItem.startSection(oTargetOverlay.getElementInstance()))) {
 					oMenuItem.setStartsSection(true);
 				}
-				that.addItem(oMenuItem);
+				this.addItem(oMenuItem);
 			}
-		});
+		}, this);
 		return this;
 	};
 
 	/**
 	 * Method for calculating the x, y-offset for opening the context menu at the current mouse position
-	 * 
+	 *
 	 * @param {number} iPageX mouse x position
 	 * @param {number} iPageY mouse y position
 	 */
@@ -147,7 +151,7 @@ sap.ui.define([
 
 	/**
 	 * Handler Method for event open menu
-	 * 
+	 *
 	 * @param {object} oContextInfo Information on the context
 	 */
 	ContextMenuControl.prototype.openMenu = function(oContextInfo) {
@@ -156,7 +160,7 @@ sap.ui.define([
 
 	/**
 	 * Handle keydown event
-	 * 
+	 *
 	 * @param {sap.ui.base.Event} oEvent event object
 	 * @private
 	 */
@@ -173,7 +177,7 @@ sap.ui.define([
 
 	/**
 	 * Handle Context Menu
-	 * 
+	 *
 	 * @param {sap.ui.base.Event} oEvent event object
 	 * @private
 	 */

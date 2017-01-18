@@ -1,20 +1,20 @@
 <!DOCTYPE HTML>
 <html>
 	<head>
-		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
 		<title>Grid - sap.ui.layout</title>
 
-		<script id="sap-ui-bootstrap" 
-			type="text/javascript"
+		<script src="../shared-config.js"></script>
+		<script id="sap-ui-bootstrap"
 			src="../../../../../resources/sap-ui-core.js"
 			data-sap-ui-theme="sap_bluecrystal"
 			data-sap-ui-noConflict="true"
 			data-sap-ui-libs="sap.ui.layout" >
 		</script>
-		<link rel="stylesheet" href="../../../../../resources/sap/ui/thirdparty/qunit.css" type="text/css" media="screen" />
-		<script type="text/javascript" src="../../../../../resources/sap/ui/thirdparty/qunit.js"></script>
-		<script type="text/javascript" src="../../../../../resources/sap/ui/qunit/qunit-junit.js"></script>
-		<script type="text/javascript" src="../../../../../resources/sap/ui/qunit/QUnitUtils.js"></script>
+		<link rel="stylesheet" href="../../../../../resources/sap/ui/thirdparty/qunit.css" type="text/css" media="screen">
+		<script src="../../../../../resources/sap/ui/thirdparty/qunit.js"></script>
+		<script src="../../../../../resources/sap/ui/qunit/qunit-junit.js"></script>
+		<script src="../../../../../resources/sap/ui/qunit/QUnitUtils.js"></script>
 		<script language="javascript">
 			try{
 				sap.ui.getCore().loadLibrary("sap.ui.commons");
@@ -32,7 +32,7 @@
 					layoutData : new sap.ui.layout.GridData({
 						indent : "L1",
 						visibleOnSmall : false,
-						moveBwd : "l1 m2" // test if still works correctly with lower case
+						moveBackwards : "l1 m2" // test if still works correctly with lower case
 					})
 				}),
 				new sap.ui.commons.TextField("tf1", {
@@ -58,23 +58,23 @@
 					width : "100%",
 					layoutData : new sap.ui.layout.GridData({
 						indent : "L1",
-						moveFwd : "L1 M2 S1"
+						moveForward : "L1 M2 S1"
 					})
-				}), 
+				}),
 				new sap.ui.commons.TextField("tf3", {
 					value : 'TextField',
 					width : "100%",
 					layoutData : new sap.ui.layout.GridData({
 						span : "L4 S10"
 					})
-				}), 
+				}),
 				new sap.ui.commons.Button("btn2", {
 					text : 'Button',
 					width : "100%",
 					layoutData : new sap.ui.layout.GridData({
 						indent : "L1"
 					})
-				}), 
+				}),
 				new sap.ui.commons.TextField("tf4", {
 					value : 'One more TextField',
 					width : "100%",
@@ -102,11 +102,33 @@
 					ok(!!jQuery("#label2").parent("sapUiGridIndentL0.sapUiGridIndentM0.sapUiGridIndentS0"), "CSS classes for default indent 0");
 				});
 				test("moveOK", function(){
-					ok(!!jQuery("#label1").parent("sapUiGridSpanBwdL1.sapUiGridSpanBwdM2"), "CSS classes for moveBwd parameters");
-					ok(!!jQuery("#label2").parent("sapUiGridSpanFwdL1.sapUiGridSpanFwdM2.sapUiGridSpanFwdS1"), "CSS classes for moveFwd parameters");
+					ok(!!jQuery("#label1").parent("sapUiGridSpanBwdL1.sapUiGridSpanBwdM2"), "CSS classes for moveBackwards parameters");
+					ok(!!jQuery("#label2").parent("sapUiGridSpanFwdL1.sapUiGridSpanFwdM2.sapUiGridSpanFwdS1"), "CSS classes for moveForward parameters");
 				});
 				test("visibilityOK", function(){
 					ok(!!jQuery("#tf4").parent(".sapUiGridHiddenM.sapUiGridHiddenL"), "CSS class for hidden on large and medium screens");
+				});
+
+				module("Accessibility");
+
+				test("getAccessibilityInfo", function() {
+					var oLayout = new sap.ui.layout.Grid({
+						content: [
+							new sap.ui.layout.Grid(),
+							new sap.ui.layout.Grid()
+						]
+					});
+					ok(!!oLayout.getAccessibilityInfo, "Grid has a getAccessibilityInfo function");
+					var oInfo = oLayout.getAccessibilityInfo();
+					ok(!!oInfo, "getAccessibilityInfo returns a info object");
+					ok(oInfo.role === undefined || oInfo.editable === null, "AriaRole");
+					ok(oInfo.type === undefined || oInfo.editable === null, "Type");
+					ok(oInfo.description === undefined || oInfo.editable === null, "Description");
+					ok(oInfo.focusable === undefined || oInfo.editable === null, "Focusable");
+					ok(oInfo.enabled === undefined || oInfo.editable === null, "Enabled");
+					ok(oInfo.editable === undefined || oInfo.editable === null, "Editable");
+					ok(oInfo.children && oInfo.children.length == 2, "Children");
+					oLayout.destroy();
 				});
 			} else {
 				if (window.console){

@@ -3,18 +3,47 @@
  */
 
 sap.ui.define([
+	"jquery.sap.global",
+	"sap/ui/Device",
+	"sap/ui/core/Component",
+	"sap/ui/core/UIComponent",
+	"sap/ui/core/routing/History",
 	"sap/ui/core/mvc/Controller",
-	"sap/ui/demokit/EntityInfo"
-], function (Controller, EntityInfo) {
+	"sap/ui/model/json/JSONModel",
+	"sap/ui/demokit/EntityInfo",
+	"sap/ui/demokit/util/JSDocUtil",
+	"../util/ObjectSearch",
+	"../util/ToggleFullScreenHandler",
+	"../data",
+	"sap/ui/demokit/explored/view/base.controller"
+], function (jQuery, Device, Component, UIComponent, History, Controller, JSONModel, EntityInfo, JSDocUtil, ObjectSearch, ToggleFullScreenHandler, data, Base) {
 	"use strict";
 
-	return Controller.extend("sap.ui.demokit.explored.view.entity", {
+	return Base.extend("sap.ui.demokit.explored.view.entity", {
+
+		descriptionText: function (text) {
+			var html;
+			if (text) {
+				html = "<span>" + text + "</span>";
+			}
+			return html;
+		},
 
 		// ====== event handling ====================================================================
 		onInit: function () {
-			this.router = sap.ui.core.UIComponent.getRouterFor(this);
+			this.router = UIComponent.getRouterFor(this);
 			this.router.attachRoutePatternMatched(this.onRouteMatched, this);
-			this._component = sap.ui.core.Component.getOwnerComponentFor(this.getView());
+			this._component = Component.getOwnerComponentFor(this.getView());
+			// click handler for @link tags in JSdoc fragments
+			this.getView().attachBrowserEvent("click", this.onJSDocLinkClick, this);
+
+			this.getView().addEventDelegate({
+				onBeforeFirstShow: jQuery.proxy(this._applyViewConfigurations, this)
+			});
+		},
+
+		onExit: function() {
+			this.getView().detachBrowserEvent("click", this.onJSDocLinkClick, this);
 		},
 
 		onTypeLinkPress: function (oEvt) {
@@ -28,6 +57,29 @@ sap.ui.define([
 
 			// notify master of selection change
 			this._component.getEventBus().publish("app", "selectEntity", {id: sType});
+		},
+
+		onJSDocLinkClick: function (oEvt) {
+
+			// get target
+			var sType = oEvt.target.getAttribute("data-sap-ui-target");
+			if ( sType && sType.indexOf('#') >= 0 ) {
+				sType = sType.slice(0, sType.indexOf('#'));
+			}
+
+			if ( sType ) {
+
+				this.router.navTo("entity", {
+					id: sType,
+					part: "samples"
+				}, false);
+
+				// notify master of selection change
+				this._component.getEventBus().publish("app", "selectEntity", {id: sType});
+
+				oEvt.preventDefault();
+			}
+
 		},
 
 		onIntroLinkPress: function (oEvt) {
@@ -60,7 +112,7 @@ sap.ui.define([
 			});
 		},
 
-		_TAB_KEYS: ["sampes", "about", "properties", "aggregations", "associations", "events", "methods"],
+		_TAB_KEYS: ["samples", "about", "properties", "aggregations", "associations", "events", "methods"],
 
 		onRouteMatched: function (oEvt) {
 
@@ -76,14 +128,14 @@ sap.ui.define([
 			// find entity in index
 			// (can be null if the entity is not in the index, e.g. for base classes and types)
 			var oEntModel = this.getView().getModel("entity");
-			var sPath = sap.ui.demokit.explored.util.ObjectSearch.getEntityPath(oEntModel.getData(), sNewId);
+			var sPath = ObjectSearch.getEntityPath(oEntModel.getData(), sNewId);
 			var oEntity = (sPath) ? oEntModel.getProperty(sPath) : null;
 
 			// set nav button visibility
 			var bEntityIsInIndex = !!sPath;
-			var oHistory = sap.ui.core.routing.History.getInstance();
+			var oHistory = History.getInstance();
 			var oPrevHash = oHistory.getPreviousHash();
-			var bShowNavButton = sap.ui.Device.system.phone || (!bEntityIsInIndex && !!oPrevHash);
+			var bShowNavButton = Device.system.phone || (!bEntityIsInIndex && !!oPrevHash);
 			this.getView().byId("page").setShowNavButton(bShowNavButton);
 
 			// set data model
@@ -103,7 +155,7 @@ sap.ui.define([
 				oData = this._getViewData(sNewId, oDoc, oEntity);
 
 				// set view model
-				var oModel = new sap.ui.model.json.JSONModel(oData);
+				var oModel = new JSONModel(oData);
 				this.getView().setModel(oModel);
 
 				// set also the binding context for entity data
@@ -113,9 +165,10 @@ sap.ui.define([
 				this._sId = sNewId;
 
 			} else {
-
+				var oModel = this.getView().getModel();
+				oModel.refresh(true);
 				// get existing data model
-				oData = this.getView().getModel().getData();
+				oData = oModel.getData();
 			}
 
 			// handle unknown tab
@@ -133,7 +186,7 @@ sap.ui.define([
 		},
 
 		onToggleFullScreen: function (oEvt) {
-			sap.ui.demokit.explored.util.ToggleFullScreenHandler.updateMode(oEvt, this.getView());
+			ToggleFullScreenHandler.updateMode(oEvt, this.getView());
 		},
 
 		// ========= internal ===========================================================================
@@ -213,6 +266,8 @@ sap.ui.define([
 			var methodsCount = 0,
 				eventsCount = 0;
 
+			var sBaseName = sId.slice(sId.lastIndexOf('.') + 1);
+
 			// no documentation !
 			if (!oDoc) {
 				return oData;
@@ -224,7 +279,7 @@ sap.ui.define([
 				if (oDoc.properties.hasOwnProperty(key) && key.indexOf("_") !== 0) {
 					var oProp = oDoc.properties[key];
 					oProp.name = key;
-					oProp.deprecatedDescription = this._formatDeprecatedDescription(oProp.deprecation);
+					oProp.deprecatedDescription = this._formatDeprecatedSinceDescription(oProp.deprecation, oProp.deprecationSince);
 					oProp.deprecated = this._formatDeprecated(oProp.deprecation);
 					oProp.doc = this._wrapInSpanTag(oProp.doc);
 					oProp.typeText = this._formatTypeText(oProp.type);
@@ -260,9 +315,9 @@ sap.ui.define([
 				}
 			}
 			for (key in oDoc.methods) {
-				if (oDoc.methods.hasOwnProperty(key) && key.indexOf("_") !== 0) {
+				if (oDoc.methods.hasOwnProperty(key) && key.indexOf("_") !== 0 && !oDoc.methods[key].synthetic ) {
 					var oMethod = oDoc.methods[key];
-					oMethod.name = key;
+					oMethod.name = oDoc.methods[key].static ? sBaseName + "." + key : key;
 					oMethod.deprecatedDescription = this._formatDeprecatedDescription(oMethod.deprecation);
 					oMethod.deprecated = this._formatDeprecated(oMethod.deprecation);
 					oMethod.doc = this._wrapInSpanTag(oMethod.doc);
@@ -352,7 +407,27 @@ sap.ui.define([
 		 * @private
 		 */
 		_wrapInSpanTag: function (sText) {
-			return '<span class="fs0875">' + sText + '</span>';
+			return '<span class="fs0875">' + JSDocUtil.formatTextBlock(sText, {
+				linkFormatter: function (target, text) {
+
+					var p;
+
+					target = target.trim().replace(/\.prototype\./g, "#");
+					p = target.indexOf("#");
+					if ( p === 0 ) {
+						// a relative reference - we can't support that
+						return "<code>" + target.slice(1) + "</code>";
+					}
+
+					if ( p > 0 ) {
+						text = text || target; // keep the full target in the fallback text
+						target = target.slice(0, p);
+					}
+
+					return "<a class=\"jsdoclink\" href=\"#\" data-sap-ui-target=\"" + target + "\">" + (text || target) + "</a>";
+
+				}
+			}) + '</span>';
 		},
 
 		/**
@@ -366,7 +441,21 @@ sap.ui.define([
 		 * Adds the string "Deprecated" in front of the deprecation description.
 		 */
 		_formatDeprecatedDescription: function (sDeprecation) {
-			return (sDeprecation && sDeprecation.length > 0 ) ? (this._createDeprecatedMark(sDeprecation) + ": " + sDeprecation) : null;
+			return (this._isDeprecated(sDeprecation)) ? (this._createDeprecatedMark(sDeprecation) + ": " + sDeprecation) : null;
+		},
+
+		/**
+		 * Adds "Deprecated Since" release in front of the deprecation description.
+		 */
+		_formatDeprecatedSinceDescription: function (sDeprecation, sDeprecationSince) {
+			return (this._isDeprecated(sDeprecation)) ? (this._createDeprecatedSinceMark() + " " + sDeprecationSince + ": " + sDeprecation) : null;
+		},
+
+		/**
+		 * Checks if object is deprecated.
+		 */
+		_isDeprecated: function (sDeprecation) {
+			return (sDeprecation && sDeprecation.length > 0);
 		},
 
 		/**
@@ -400,7 +489,21 @@ sap.ui.define([
 		 * Converts the deprecated boolean to a human readable text
 		 */
 		_createDeprecatedMark: function (sDeprecated) {
-			return (sDeprecated) ? this.getView().getModel("i18n").getProperty("deprecated") : "";
+			return (sDeprecated) ? this._getI18nModel().getProperty("deprecated") : "";
+		},
+
+		/**
+		 * Fetch deprecatedSince translatable label
+		 */
+		_createDeprecatedSinceMark: function () {
+			return this._getI18nModel().getProperty("deprecatedSince");
+		},
+
+		/**
+		 * Get i18n model
+		 */
+		_getI18nModel: function () {
+			return this.getView().getModel("i18n");
 		},
 
 		/**
@@ -437,9 +540,10 @@ sap.ui.define([
 		 * @return {string} sActualControlComponent
 		 */
 		_takeControlComponent: function (controlName) {
-			var oLibComponentModel = sap.ui.demokit.explored.data.libComponentInfos;
+			var oLibComponentModel = data.libComponentInfos;
 			jQuery.sap.require("sap.ui.core.util.LibraryInfo");
-			var oLibInfo = new sap.ui.core.util.LibraryInfo();
+			var LibraryInfo = sap.ui.require("sap/ui/core/util/LibraryInfo");
+			var oLibInfo = new LibraryInfo();
 			var sActualControlComponent = oLibInfo._getActualComponent(oLibComponentModel, controlName);
 			return sActualControlComponent;
 		}

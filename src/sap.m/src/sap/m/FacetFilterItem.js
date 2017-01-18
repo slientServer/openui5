@@ -10,13 +10,13 @@ sap.ui.define(['jquery.sap.global', './ListItemBase', './library'],
 
 
 	/**
-	 * Constructor for a new FacetFilterItem.
+	 * Constructor for a new <code>FacetFilterItem</code>.
 	 *
-	 * @param {string} [sId] ID for the new control, generated automatically if no id is given
+	 * @param {string} [sId] ID for the new control, generated automatically if no ID is given
 	 * @param {object} [mSettings] Initial settings for the new control
 	 *
 	 * @class
-	 * Represents a value for the FacetFilterList control.
+	 * Represents a value for the {@link sap.m.FacetfilterList} control.
 	 * @extends sap.m.ListItemBase
 	 * @version ${version}
 	 *
@@ -42,8 +42,7 @@ sap.ui.define(['jquery.sap.global', './ListItemBase', './library'],
 
 			/**
 			 * Defines the number of objects that match this item in the target data set.
-			 * @deprecated Since version 7.20.0.
-			 * Use setCounter instead.
+			 * @deprecated Since version 1.18.11. Use setCounter instead.
 			 */
 			count : {type : "int", group : "Misc", defaultValue : null, deprecated: true}
 		}
@@ -51,23 +50,27 @@ sap.ui.define(['jquery.sap.global', './ListItemBase', './library'],
 
 	/**
 	 * Sets count for the FacetFilterList.
-	 * @param {integer} iCount The counter to be set to
+	 * @param {int} iCount The counter to be set to
+	 * @returns {sap.m.FacetFilterItem} this for chaining
 	 */
 	FacetFilterItem.prototype.setCount = function(iCount) {
 
 		 // App dev can still call setCounter on ListItemBase, so we have redundancy here.
 		this.setProperty("count", iCount);
 		this.setProperty("counter", iCount);
+		return this;
 	};
 
 	/**
 	 * Sets counter for the FacetFilter list.
-	 * @param {integer} iCount The counter to be set to
+	 * @param {int} iCount The counter to be set to
+	 * @returns {sap.m.FacetFilterItem} this for chaining
 	 */
 	FacetFilterItem.prototype.setCounter = function(iCount) {
 
 		this.setProperty("count", iCount);
 		this.setProperty("counter", iCount);
+		return this;
 	};
 
 	/**

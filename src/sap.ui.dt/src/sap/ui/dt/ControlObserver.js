@@ -14,7 +14,7 @@ function(jQuery, ManagedObjectObserver) {
 	/**
 	 * Constructor for a new ControlObserver.
 	 *
-	 * @param {string} [sId] id for the new object, generated automatically if no id is given 
+	 * @param {string} [sId] id for the new object, generated automatically if no id is given
 	 * @param {object} [mSettings] initial settings for the new object
 	 *
 	 * @class
@@ -38,7 +38,7 @@ function(jQuery, ManagedObjectObserver) {
 			// ---- control specific ----
 			library : "sap.ui.dt",
 			properties : {
-				
+
 			},
 			associations : {
 				/**
@@ -52,7 +52,7 @@ function(jQuery, ManagedObjectObserver) {
 			 * Fired when the DOM of the observed control is changed
 			 */
 			events : {
-				"domChanged" : {}
+				"afterRendering" : {}
 			}
 		}
 	});
@@ -62,79 +62,43 @@ function(jQuery, ManagedObjectObserver) {
 	 */
 	ControlObserver.prototype.init = function() {
 		ManagedObjectObserver.prototype.init.apply(this, arguments);
-		this._fnFireDomChanged = this.fireDomChanged.bind(this);
+
 		this._oControlDelegate = {
-			onAfterRendering : this._onAfterRendering,
-			onBeforeRendering : this._onBeforeRendering
+			onAfterRendering : this._onAfterRendering
 		};
 	};
 
 	/**
 	 * Starts observing the target control.
-	 * @param {sap.ui.core.Control} oControl The target to observe	
+	 * @param {sap.ui.core.Control} oControl The target to observe
 	 * @override
 	 */
 	ControlObserver.prototype.observe = function(oControl) {
 		ManagedObjectObserver.prototype.observe.apply(this, arguments);
-		jQuery(window).on("resize", this._fnFireDomChanged);
-		this._startMutationObserver();
-		oControl.addEventDelegate(this._oControlDelegate, this);	
+
+		oControl.addEventDelegate(this._oControlDelegate, this);
 	};
 
 	/**
 	 * Stops observing the target control.
-	 * @param {sap.ui.core.Control} oControl The target to unobserve	
+	 * @param {sap.ui.core.Control} oControl The target to unobserve
 	 * @override
 	 */
-	ControlObserver.prototype.unobserve = function(oControl) {
+	ControlObserver.prototype.unobserve = function() {
+		var oControl = this.getTargetInstance();
+		if (oControl) {
+			oControl.removeDelegate(this._oControlDelegate, this);
+		}
+
 		ManagedObjectObserver.prototype.unobserve.apply(this, arguments);
-		this._stopMutationObserver();
-		jQuery(window).off("resize", this._fnFireDomChanged);
-		oControl.removeDelegate(this._oControlDelegate, this);
 	};
 
-	/**
-	 * @private
-	 */
-	ControlObserver.prototype._startMutationObserver = function() {
-		var that = this;
-		var MutationObserver = window.MutationObserver || window.WebKitMutationObserver;
-		var oDomRef = this.getTargetInstance().getDomRef();
-		if (MutationObserver && oDomRef) {
-			this.oMutationObserver = new MutationObserver(function(aMutations) {
-				that.fireDomChanged();
-			});
-			this.oMutationObserver.observe(oDomRef, {
-				childList : true,
-				subtree : true,
-				attributes : true
-			});
-		}
-	};
-
-	/**
-	 * @private
-	 */
-	ControlObserver.prototype._stopMutationObserver = function() {
-		if (this.oMutationObserver) {
-			this.oMutationObserver.disconnect();
-			this.oMutationObserver = null;
-		}
-	};
-
-	/**
-	 * @private
-	 */
-	ControlObserver.prototype._onBeforeRendering = function() {
-		this._stopMutationObserver();
-	};
-	
 	/**
 	 * @private
 	 */
 	ControlObserver.prototype._onAfterRendering = function() {
-		this._startMutationObserver();
-		this.fireDomChanged();
+		this.fireAfterRendering();
+
 	};
 
 	return ControlObserver;

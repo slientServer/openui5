@@ -1,7 +1,8 @@
 <html>
 <head>
 	<title>TestSuite for demoapps and samples in sap.m</title>
-	<script type="text/javascript" src="../../../../../resources/sap/ui/qunit/qunit-redirect.js"></script>
+	<script src="../../../../../resources/sap/ui/qunit/qunit-redirect.js"></script>
+	<script src="../../shared-config.js"></script>
 	<script src="../../../../../resources/sap-ui-core.js"></script>
 	<script>
 
@@ -16,11 +17,15 @@
 			// Cart Application
 			suite.addTestPage(contextPath + "/test-resources/sap/m/demokit/cart/test/opaTestsWithIFrame.qunit.html");
 			suite.addTestPage(contextPath + "/test-resources/sap/m/demokit/cart/test/opaTestsWithComponent.qunit.html");
+			suite.addTestPage(contextPath + "/test-resources/sap/m/demokit/cart/test/opaTestsWithGherkin.qunit.html");
+			suite.addTestPage(contextPath + "/test-resources/sap/m/demokit/cart/test/opaTestsWithGherkinAndComponent.qunit.html");
 
 			// Worklist application
 			suite.addTestPage(contextPath + "/test-resources/sap/m/demokit/worklist/webapp/test/testsuite.qunit.html");
 			// Master-Detail application
 			suite.addTestPage(contextPath + "/test-resources/sap/m/demokit/master-detail/webapp/test/testsuite.qunit.html");
+			// Order browser application
+			suite.addTestPage(contextPath + "/test-resources/sap/m/demokit/orderbrowser/webapp/test/testsuite.qunit.html");
 			// Test tutorial
 			suite.addTestPage(contextPath + "/test-resources/sap/m/demokit/tutorial/testing/01/webapp/test/unit/unitTests.qunit.html");
 			suite.addTestPage(contextPath + "/test-resources/sap/m/demokit/tutorial/testing/01/webapp/test/integration/opaTests.qunit.html");
@@ -42,10 +47,13 @@
 			suite.addTestPage(contextPath + "/test-resources/sap/m/demokit/tutorial/testing/11/webapp/test/unit/unitTests.qunit.html");
 			suite.addTestPage(contextPath + "/test-resources/sap/m/demokit/tutorial/testing/12/webapp/test/integration/opaTests.qunit.html");
 			suite.addTestPage(contextPath + "/test-resources/sap/m/demokit/tutorial/testing/12/webapp/test/unit/unitTests.qunit.html");
-			suite.addTestPage(contextPath + "/test-resources/sap/m/demokit/tutorial/testing/13/webapp/test/integration/opaTests.qunit.html");
 			suite.addTestPage(contextPath + "/test-resources/sap/m/demokit/tutorial/testing/13/webapp/test/unit/unitTests.qunit.html");
 			suite.addTestPage(contextPath + "/test-resources/sap/m/demokit/tutorial/testing/14/webapp/test/integration/opaTests.qunit.html");
 			suite.addTestPage(contextPath + "/test-resources/sap/m/demokit/tutorial/testing/14/webapp/test/unit/unitTests.qunit.html");
+			suite.addTestPage(contextPath + "/test-resources/sap/m/demokit/tutorial/testing/15/webapp/test/integration/opaTests.qunit.html");
+			suite.addTestPage(contextPath + "/test-resources/sap/m/demokit/tutorial/testing/15/webapp/test/unit/unitTests.qunit.html");
+			suite.addTestPage(contextPath + "/test-resources/sap/m/demokit/tutorial/testing/16/webapp/test/integration/opaTests.qunit.html");
+			suite.addTestPage(contextPath + "/test-resources/sap/m/demokit/tutorial/testing/16/webapp/test/unit/unitTests.qunit.html");
 
 			return suite;
 		}

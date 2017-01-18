@@ -1,27 +1,26 @@
 <!DOCTYPE HTML>
 
-<!-- 
+<!--
   Tested class: sap.ui.core.FocusHandler
-  Author: d046314
 -->
 
 <html>
 <head>
-	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
-	<script id="sap-ui-bootstrap" 
-		type="text/javascript"
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<script src="../shared-config.js"></script>
+	<script id="sap-ui-bootstrap"
 		src="../../../../../resources/sap-ui-core.js"
 		data-sap-ui-theme="sap_bluecrystal"
 		data-sap-ui-noConflict="true"
 		data-sap-ui-libs="sap.ui.commons">
 	</script>
-	<link rel="stylesheet" href="../../../../../resources/sap/ui/thirdparty/qunit.css" type="text/css" media="screen" />
-	<script type="text/javascript" src="../../../../../resources/sap/ui/thirdparty/qunit.js"></script>
-	<script type="text/javascript" src="../../../../../resources/sap/ui/qunit/qunit-junit.js"></script>
-	<script type="text/javascript" src="../../../../../resources/sap/ui/qunit/QUnitUtils.js"></script>
+	<link rel="stylesheet" href="../../../../../resources/sap/ui/thirdparty/qunit.css" type="text/css" media="screen">
+	<script src="../../../../../resources/sap/ui/thirdparty/qunit.js"></script>
+	<script src="../../../../../resources/sap/ui/qunit/qunit-junit.js"></script>
+	<script src="../../../../../resources/sap/ui/qunit/QUnitUtils.js"></script>
 
 	<!-- Initialization -->
-	<script language="javascript">
+	<script>
 		var oFocusHandler = null;
 		var oPlugin = {};
 		oPlugin.startPlugin = function(oCore, bInit){
@@ -30,9 +29,9 @@
 		oPlugin.stopPlugin = function(oCore){};
 		sap.ui.getCore().registerPlugin(oPlugin);
 	</script>
-	
+
 	<!-- Control initialization -->
-	<script language="javascript">
+	<script>
 		var oControls = {};
 
 		var initControl = function(idx){
@@ -46,14 +45,14 @@
 		initControl(2);
 		initControl(3);
 	</script>
-	
+
 	<!-- Test functions -->
-	<script language="javascript">
+	<script>
 
 		qutils.delayTestStart();
 
 		module("Basic");
-	
+
 		test("Check FocusHandler initialized", function() {
 			ok(oFocusHandler, "FocusHandler initialized");
 		});
@@ -80,7 +79,7 @@
 			equal(oFocusHandler.oCurrent, "oControl2", "Value 'Current' after control focus:");
 			jQuery("#customInput").get(0).focus();
 			equal(oFocusHandler.oCurrent, null, "Value 'Current' after outer focus:");
-			oControls["oControl3"].focus(); 
+			oControls["oControl3"].focus();
 			equal(oFocusHandler.oCurrent, "oControl3", "Value 'Current' after control focus:");
 		});
 
@@ -157,7 +156,7 @@
 		});
 
 	</script>
-  
+
 </head>
 <body>
 	<h1 id="qunit-header">QUnit tests: sap.ui.core.FocusHandler</h1>
@@ -169,6 +168,6 @@
 	<div id="uiArea1"></div>
 	<div id="uiArea2"></div>
 	<div id="uiArea3"></div>
-	<input id="customInput" type="text"></input>
+	<input id="customInput" type="text">
 </body>
 </html>

@@ -6,7 +6,7 @@ test("InitialCheck", 6, function() {
 	jQuery.sap.require("sap.ui.core.mvc.JSONView");
 	jQuery.sap.require("sap.ui.core.mvc.JSView");
 	jQuery.sap.require("sap.ui.core.mvc.XMLView");
-	jQuery.sap.require("sap.ui.core.mvc.HTMLView")
+	jQuery.sap.require("sap.ui.core.mvc.HTMLView");
 	ok(sap.ui.core.mvc.Controller, "sap.ui.core.mvc.Controller must be defined");
 	ok(sap.ui.core.mvc.JSONView, "sap.ui.core.mvc.JSONView must be defined");
 	ok(sap.ui.core.mvc.JSView, "sap.ui.core.mvc.JSView must be defined");
@@ -60,7 +60,7 @@ function testsuite(oConfig, sCaption, fnViewFactory, bCheckViewData) {
 			window.onAfterRenderingCalled = false;
 		}
 
-		if (!!sap.ui.Device.browser.safari) {
+		if (sap.ui.Device.browser.safari) {
 			stop();
 			setTimeout(function() {
 				start();
@@ -116,8 +116,9 @@ function testsuite(oConfig, sCaption, fnViewFactory, bCheckViewData) {
 		equal(oLabel.getLabelFor(), oXMLView.createId("Button1"), "Association has been adapted");
 	});
 
-	asyncTest("Eventhandling", 2, function() {
+	asyncTest("Eventhandling", 4, function() {
 		qutils.triggerMouseEvent(jQuery.sap.byId(view.createId("Button1")), "click", 1, 1, 1, 1);
+		qutils.triggerMouseEvent(jQuery.sap.byId(view.createId("ButtonX")), "click", 1, 1, 1, 1);
 		setTimeout(function() {
 			start();
 		}, 500);
@@ -137,7 +138,7 @@ function testsuite(oConfig, sCaption, fnViewFactory, bCheckViewData) {
 			}
 		}
 
-		if (!!sap.ui.Device.browser.safari) {
+		if (sap.ui.Device.browser.safari) {
 			stop();
 			setTimeout(function() {
 				start();
@@ -194,6 +195,29 @@ function testsuite(oConfig, sCaption, fnViewFactory, bCheckViewData) {
 			var $ = jQuery.sap.byId(view.createId(oConfig.idsToBeChecked[i]));
 			equal($.length, 0, "Content " + oConfig.idsToBeChecked[i] + " should no longer be there");
 		}
+	});
+
+	test("Cloning: Event listeners are called on the correct controller instance", 12, function() {
+		var oTmpl, oClone;
+		oTmpl = fnViewFactory();
+		if (!oTmpl.sViewName) {
+			// Cloning views created from string or object (via viewContent) currently fails for HTML and JSON views
+			//	We will address this in a separate change, until then we skip testing those cases
+			expect(6);
+			ok(true, "Skipping clone of views created from string of object");
+			return;
+		}
+		oClone = oTmpl.clone();
+
+		oTmpl.fireBeforeRendering();
+		ok(window.onBeforeRenderingCalled === oTmpl.getController(), "Event is called on correct controller instance");
+
+		oClone.fireBeforeRendering();
+		ok(window.onBeforeRenderingCalled === oClone.getController(), "Event is called on correct controller instance");
+
+		// Cleanup
+		oTmpl.destroy();
+		oClone.destroy();
 	});
 
 

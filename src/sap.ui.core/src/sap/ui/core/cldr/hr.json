@@ -524,8 +524,8 @@
 		"sux": "sumerski",
 		"sv": "švedski",
 		"sw": "svahili",
+		"sw_CD": "kongoanski swahili",
 		"swb": "komorski",
-		"swc": "kongoanski swahili",
 		"syc": "klasični sirski",
 		"syr": "sirijski",
 		"szl": "szl",
@@ -622,6 +622,7 @@
 		"zza": "zazaki"
 	},
 	"scripts": {
+		"Adlm": "Adlm",
 		"Afak": "afaka pismo",
 		"Aghb": "Aghb",
 		"Ahom": "Ahom",
@@ -635,6 +636,7 @@
 		"Bass": "bassa vah pismo",
 		"Batk": "batak pismo",
 		"Beng": "bengalsko pismo",
+		"Bhks": "Bhks",
 		"Blis": "blissymbols",
 		"Bopo": "bopomofo pismo",
 		"Brah": "brahmi pismo",
@@ -667,6 +669,7 @@
 		"Grek": "grčko pismo",
 		"Gujr": "gudžaratsko pismo",
 		"Guru": "gurmukhi pismo",
+		"Hanb": "Hanb",
 		"Hang": "hangul pismo",
 		"Hani": "han pismo",
 		"Hano": "hanunoo pismo",
@@ -683,6 +686,7 @@
 		"Hung": "staro mađarsko pismo",
 		"Inds": "indijsko pismo",
 		"Ital": "staro talijansko pismo",
+		"Jamo": "Jamo",
 		"Java": "javansko pismo",
 		"Jpan": "japansko pismo",
 		"Jurc": "jurchen pismo",
@@ -711,6 +715,7 @@
 		"Mahj": "Mahj",
 		"Mand": "mandai pismo",
 		"Mani": "manihejsko pismo",
+		"Marc": "Marc",
 		"Maya": "majanski hijeroglifi",
 		"Mend": "mende pismo",
 		"Merc": "meroitski kurziv",
@@ -725,6 +730,7 @@
 		"Mymr": "mjanmarsko pismo",
 		"Narb": "staro sjevernoarapsko pismo",
 		"Nbat": "nabatejsko pismo",
+		"Newa": "Newa",
 		"Nkgb": "naxi geba pismo",
 		"Nkoo": "n’ko pismo",
 		"Nshu": "nushu pismo",
@@ -732,6 +738,7 @@
 		"Olck": "ol chiki pismo",
 		"Orkh": "orkhon pismo",
 		"Orya": "orijsko pismo",
+		"Osge": "Osge",
 		"Osma": "osmanya pismo",
 		"Palm": "palmyrene pismo",
 		"Pauc": "Pauc",
@@ -837,6 +844,7 @@
 		"Yiii": "Yi pismo",
 		"Zinh": "nasljedno pismo",
 		"Zmth": "matematičko znakovlje",
+		"Zsye": "Zsye",
 		"Zsym": "simboli",
 		"Zxxx": "jezik bez pismenosti",
 		"Zyyy": "zajedničko pismo",
@@ -881,7 +889,6 @@
 		"AI": "Angvila",
 		"AL": "Albanija",
 		"AM": "Armenija",
-		"AN": "Nizozemski Antili",
 		"AO": "Angola",
 		"AQ": "Antarktika",
 		"AR": "Argentina",
@@ -2418,11 +2425,427 @@
 			"235": "H"
 		}
 	},
+	"ca-persian": {
+		"dateFormats": {
+			"full": "EEEE, d. MMMM y. G",
+			"long": "d. MMMM y. G",
+			"medium": "d. MMM y. G",
+			"short": "dd.MM.y. GGGGG"
+		},
+		"timeFormats": {
+			"full": "HH:mm:ss zzzz",
+			"long": "HH:mm:ss z",
+			"medium": "HH:mm:ss",
+			"short": "HH:mm"
+		},
+		"dateTimeFormats": {
+			"full": "{1} 'u' {0}",
+			"long": "{1} 'u' {0}",
+			"medium": "{1} {0}",
+			"short": "{1} {0}",
+			"availableFormats": {
+				"d": "d.",
+				"E": "ccc",
+				"Ed": "E, d.",
+				"Ehm": "E h:mm a",
+				"EHm": "E HH:mm",
+				"Ehms": "E h:mm:ss a",
+				"EHms": "E HH:mm:ss",
+				"Gy": "y. G",
+				"GyMMM": "LLL y. G",
+				"GyMMMd": "d. MMM y. G",
+				"GyMMMEd": "E, d. MMM y. G",
+				"h": "hh a",
+				"H": "HH",
+				"hm": "hh:mm a",
+				"Hm": "HH:mm",
+				"hms": "hh:mm:ss a",
+				"Hms": "HH:mm:ss",
+				"M": "L.",
+				"Md": "dd.MM.",
+				"MEd": "E, dd.MM.",
+				"MMM": "LLL",
+				"MMMd": "d. MMM",
+				"MMMEd": "E, d. MMM",
+				"MMMMd": "d. MMMM",
+				"MMMMEd": "E, d. MMMM",
+				"ms": "mm:ss",
+				"y": "y. G",
+				"yyyy": "y. G",
+				"yyyyM": "MM.y. GGGGG",
+				"yyyyMd": "dd.MM.y. GGGGG",
+				"yyyyMEd": "E, dd.MM.y. GGGGG",
+				"yyyyMMM": "LLL y. G",
+				"yyyyMMMd": "d. MMM y. G",
+				"yyyyMMMEd": "E, d. MMM y. G",
+				"yyyyMMMM": "LLLL y. G",
+				"yyyyQQQ": "QQQ y. G",
+				"yyyyQQQQ": "QQQQ y. G"
+			},
+			"appendItems": {
+				"Day": "{0} ({2}: {1})",
+				"Day-Of-Week": "{0} {1}",
+				"Era": "{1} {0}",
+				"Hour": "{0} ({2}: {1})",
+				"Minute": "{0} ({2}: {1})",
+				"Month": "{0} ({2}: {1})",
+				"Quarter": "{0} ({2}: {1})",
+				"Second": "{0} ({2}: {1})",
+				"Timezone": "{0} {1}",
+				"Week": "{0} ({2}: {1})",
+				"Year": "{1} {0}"
+			},
+			"intervalFormats": {
+				"intervalFormatFallback": "{0} – {1}",
+				"d": {
+					"d": "dd. – dd."
+				},
+				"h": {
+					"a": "h a – h a",
+					"h": "h – h'h' a"
+				},
+				"H": {
+					"H": "HH – HH'h'"
+				},
+				"hm": {
+					"a": "h:mm a – h:mm a",
+					"h": "h:mm–h:mm a",
+					"m": "h:mm–h:mm a"
+				},
+				"Hm": {
+					"H": "HH:mm–HH:mm",
+					"m": "HH:mm–HH:mm"
+				},
+				"hmv": {
+					"a": "h:mm a – h:mm a v",
+					"h": "h:mm–h:mm a v",
+					"m": "h:mm–h:mm a v"
+				},
+				"Hmv": {
+					"H": "HH:mm–HH:mm v",
+					"m": "HH:mm–HH:mm v"
+				},
+				"hv": {
+					"a": "h a – h a v",
+					"h": "h – h 'h' a v"
+				},
+				"Hv": {
+					"H": "HH – HH 'h' v"
+				},
+				"M": {
+					"M": "MM. – MM."
+				},
+				"Md": {
+					"d": "dd.MM. – dd.MM.",
+					"M": "dd.MM. – dd.MM."
+				},
+				"MEd": {
+					"d": "E, dd.MM. – E, dd.MM.",
+					"M": "E, dd.MM. – E, dd.MM."
+				},
+				"MMM": {
+					"M": "LLL – LLL"
+				},
+				"MMMd": {
+					"d": "d. – d. MMM",
+					"M": "dd. MMM – dd. MMM"
+				},
+				"MMMEd": {
+					"d": "E, dd. – E, dd. MMM",
+					"M": "E, dd. MMM – E, dd. MMM"
+				},
+				"y": {
+					"y": "y. – y. G"
+				},
+				"yM": {
+					"M": "MM.y. – MM.y. G",
+					"y": "MM.y. – MM.y. G"
+				},
+				"yMd": {
+					"d": "dd.MM.y. – dd.MM.y. G",
+					"M": "dd.MM.y. – dd.MM.y. G",
+					"y": "dd.MM.y. – dd.MM.y. G"
+				},
+				"yMEd": {
+					"d": "E, dd.MM.y. – E, dd.MM.y. G",
+					"M": "E, dd.MM.y. – E, dd.MM.y. G",
+					"y": "E, dd.MM.y. – E, dd.MM.y. G"
+				},
+				"yMMM": {
+					"M": "LLL – LLL y. G",
+					"y": "LLL y. – LLL y. G"
+				},
+				"yMMMd": {
+					"d": "dd. – dd. MMM y. G",
+					"M": "dd. MMM – dd. MMM y. G",
+					"y": "dd. MMM y. – dd. MMM y. G"
+				},
+				"yMMMEd": {
+					"d": "E, dd. – E, dd. MMM y. G",
+					"M": "E, dd. MMM – E, dd. MMM y. G",
+					"y": "E, dd. MMM y. – E, dd. MMM y. G"
+				},
+				"yMMMM": {
+					"M": "LLLL – LLLL y. G",
+					"y": "LLLL y. – LLLL y. G"
+				}
+			}
+		},
+		"months": {
+			"format": {
+				"abbreviated": [
+					"Farvardin",
+					"Ordibehesht",
+					"Khordad",
+					"Tir",
+					"Mordad",
+					"Shahrivar",
+					"Mehr",
+					"Aban",
+					"Azar",
+					"Dey",
+					"Bahman",
+					"Esfand"
+				],
+				"narrow": [
+					"1",
+					"2",
+					"3",
+					"4",
+					"5",
+					"6",
+					"7",
+					"8",
+					"9",
+					"10",
+					"11",
+					"12"
+				],
+				"wide": [
+					"Farvardin",
+					"Ordibehesht",
+					"Khordad",
+					"Tir",
+					"Mordad",
+					"Shahrivar",
+					"Mehr",
+					"Aban",
+					"Azar",
+					"Dey",
+					"Bahman",
+					"Esfand"
+				]
+			},
+			"stand-alone": {
+				"abbreviated": [
+					"Farvardin",
+					"Ordibehesht",
+					"Khordad",
+					"Tir",
+					"Mordad",
+					"Shahrivar",
+					"Mehr",
+					"Aban",
+					"Azar",
+					"Dey",
+					"Bahman",
+					"Esfand"
+				],
+				"narrow": [
+					"1.",
+					"2.",
+					"3.",
+					"4.",
+					"5.",
+					"6.",
+					"7.",
+					"8.",
+					"9.",
+					"10.",
+					"11.",
+					"12."
+				],
+				"wide": [
+					"Farvardin",
+					"Ordibehesht",
+					"Khordad",
+					"Tir",
+					"Mordad",
+					"Shahrivar",
+					"Mehr",
+					"Aban",
+					"Azar",
+					"Dey",
+					"Bahman",
+					"Esfand"
+				]
+			}
+		},
+		"days": {
+			"format": {
+				"abbreviated": [
+					"ned",
+					"pon",
+					"uto",
+					"sri",
+					"čet",
+					"pet",
+					"sub"
+				],
+				"narrow": [
+					"N",
+					"P",
+					"U",
+					"S",
+					"Č",
+					"P",
+					"S"
+				],
+				"short": [
+					"ned",
+					"pon",
+					"uto",
+					"sri",
+					"čet",
+					"pet",
+					"sub"
+				],
+				"wide": [
+					"nedjelja",
+					"ponedjeljak",
+					"utorak",
+					"srijeda",
+					"četvrtak",
+					"petak",
+					"subota"
+				]
+			},
+			"stand-alone": {
+				"abbreviated": [
+					"ned",
+					"pon",
+					"uto",
+					"sri",
+					"čet",
+					"pet",
+					"sub"
+				],
+				"narrow": [
+					"n",
+					"p",
+					"u",
+					"s",
+					"č",
+					"p",
+					"s"
+				],
+				"short": [
+					"ned",
+					"pon",
+					"uto",
+					"sri",
+					"čet",
+					"pet",
+					"sub"
+				],
+				"wide": [
+					"nedjelja",
+					"ponedjeljak",
+					"utorak",
+					"srijeda",
+					"četvrtak",
+					"petak",
+					"subota"
+				]
+			}
+		},
+		"quarters": {
+			"format": {
+				"abbreviated": [
+					"1kv",
+					"2kv",
+					"3kv",
+					"4kv"
+				],
+				"narrow": [
+					"1.",
+					"2.",
+					"3.",
+					"4."
+				],
+				"wide": [
+					"1. kvartal",
+					"2. kvartal",
+					"3. kvartal",
+					"4. kvartal"
+				]
+			},
+			"stand-alone": {
+				"abbreviated": [
+					"1kv",
+					"2kv",
+					"3kv",
+					"4kv"
+				],
+				"narrow": [
+					"1.",
+					"2.",
+					"3.",
+					"4."
+				],
+				"wide": [
+					"1. kvartal",
+					"2. kvartal",
+					"3. kvartal",
+					"4. kvartal"
+				]
+			}
+		},
+		"dayPeriods": {
+			"format": {
+				"abbreviated": [
+					"AM",
+					"PM"
+				],
+				"narrow": [
+					"AM",
+					"PM"
+				],
+				"wide": [
+					"AM",
+					"PM"
+				]
+			},
+			"stand-alone": {
+				"abbreviated": [
+					"AM",
+					"PM"
+				],
+				"narrow": [
+					"AM",
+					"PM"
+				],
+				"wide": [
+					"AM",
+					"PM"
+				]
+			}
+		},
+		"era-wide": {
+			"0": "AP"
+		},
+		"era-abbreviated": {
+			"0": "AP"
+		},
+		"era-narrow": {
+			"0": "AP"
+		}
+	},
 	"dateFields": {
 		"era": {
 			"displayName": "era"
 		},
-		"year": {
+		"year-wide": {
 			"displayName": "godina",
 			"relative-type--1": "prošle godine",
 			"relative-type-0": "ove godine",
@@ -2438,7 +2861,39 @@
 				"relativeTimePattern-count-other": "prije {0} godina"
 			}
 		},
-		"quarter": {
+		"year-short": {
+			"displayName": "g.",
+			"relative-type--1": "prošle god.",
+			"relative-type-0": "ove god.",
+			"relative-type-1": "sljedeće god.",
+			"relativeTime-type-future": {
+				"relativeTimePattern-count-one": "za {0} g.",
+				"relativeTimePattern-count-few": "za {0} g.",
+				"relativeTimePattern-count-other": "za {0} g."
+			},
+			"relativeTime-type-past": {
+				"relativeTimePattern-count-one": "prije {0} g.",
+				"relativeTimePattern-count-few": "prije {0} g.",
+				"relativeTimePattern-count-other": "prije {0} g."
+			}
+		},
+		"year-narrow": {
+			"displayName": "g.",
+			"relative-type--1": "prošle g.",
+			"relative-type-0": "ove g.",
+			"relative-type-1": "sljedeće g.",
+			"relativeTime-type-future": {
+				"relativeTimePattern-count-one": "+{0} g.",
+				"relativeTimePattern-count-few": "+{0} g.",
+				"relativeTimePattern-count-other": "+{0} g."
+			},
+			"relativeTime-type-past": {
+				"relativeTimePattern-count-one": "-{0} g.",
+				"relativeTimePattern-count-few": "-{0} g.",
+				"relativeTimePattern-count-other": "-{0} g."
+			}
+		},
+		"quarter-wide": {
 			"displayName": "kvartal",
 			"relative-type--1": "prošli kvartal",
 			"relative-type-0": "ovaj kvartal",
@@ -2454,7 +2909,39 @@
 				"relativeTimePattern-count-other": "prije {0} kvartala"
 			}
 		},
-		"month": {
+		"quarter-short": {
+			"displayName": "kv.",
+			"relative-type--1": "prošli kv.",
+			"relative-type-0": "ovaj kv.",
+			"relative-type-1": "sljedeći kv.",
+			"relativeTime-type-future": {
+				"relativeTimePattern-count-one": "za {0} kv.",
+				"relativeTimePattern-count-few": "za {0} kv.",
+				"relativeTimePattern-count-other": "za {0} kv."
+			},
+			"relativeTime-type-past": {
+				"relativeTimePattern-count-one": "prije {0} kv.",
+				"relativeTimePattern-count-few": "prije {0} kv.",
+				"relativeTimePattern-count-other": "prije {0} kv."
+			}
+		},
+		"quarter-narrow": {
+			"displayName": "kv.",
+			"relative-type--1": "prošli kv.",
+			"relative-type-0": "ovaj kv.",
+			"relative-type-1": "sljedeći kv.",
+			"relativeTime-type-future": {
+				"relativeTimePattern-count-one": "+{0} kv.",
+				"relativeTimePattern-count-few": "+{0} kv.",
+				"relativeTimePattern-count-other": "+{0} kv."
+			},
+			"relativeTime-type-past": {
+				"relativeTimePattern-count-one": "-{0} kv.",
+				"relativeTimePattern-count-few": "-{0} kv.",
+				"relativeTimePattern-count-other": "-{0} kv."
+			}
+		},
+		"month-wide": {
 			"displayName": "mjesec",
 			"relative-type--1": "prošli mjesec",
 			"relative-type-0": "ovaj mjesec",
@@ -2470,7 +2957,39 @@
 				"relativeTimePattern-count-other": "prije {0} mjeseci"
 			}
 		},
-		"week": {
+		"month-short": {
+			"displayName": "mj.",
+			"relative-type--1": "prošli mj.",
+			"relative-type-0": "ovaj mj.",
+			"relative-type-1": "sljedeći mj.",
+			"relativeTime-type-future": {
+				"relativeTimePattern-count-one": "za {0} mj.",
+				"relativeTimePattern-count-few": "za {0} mj.",
+				"relativeTimePattern-count-other": "za {0} mj."
+			},
+			"relativeTime-type-past": {
+				"relativeTimePattern-count-one": "prije {0} mj.",
+				"relativeTimePattern-count-few": "prije {0} mj.",
+				"relativeTimePattern-count-other": "prije {0} mj."
+			}
+		},
+		"month-narrow": {
+			"displayName": "m.",
+			"relative-type--1": "prošli mj.",
+			"relative-type-0": "ovaj mj.",
+			"relative-type-1": "sljedeći mj.",
+			"relativeTime-type-future": {
+				"relativeTimePattern-count-one": "+{0} mj.",
+				"relativeTimePattern-count-few": "+{0} mj.",
+				"relativeTimePattern-count-other": "+{0} mj."
+			},
+			"relativeTime-type-past": {
+				"relativeTimePattern-count-one": "-{0} mj.",
+				"relativeTimePattern-count-few": "-{0} mj.",
+				"relativeTimePattern-count-other": "-{0} mj."
+			}
+		},
+		"week-wide": {
 			"displayName": "tjedan",
 			"relative-type--1": "prošli tjedan",
 			"relative-type-0": "ovaj tjedan",
@@ -2486,7 +3005,39 @@
 				"relativeTimePattern-count-other": "prije {0} tjedana"
 			}
 		},
-		"day": {
+		"week-short": {
+			"displayName": "tj.",
+			"relative-type--1": "prošli tj.",
+			"relative-type-0": "ovaj tj.",
+			"relative-type-1": "sljedeći tj.",
+			"relativeTime-type-future": {
+				"relativeTimePattern-count-one": "za {0} tj.",
+				"relativeTimePattern-count-few": "za {0} tj.",
+				"relativeTimePattern-count-other": "za {0} tj."
+			},
+			"relativeTime-type-past": {
+				"relativeTimePattern-count-one": "prije {0} tj.",
+				"relativeTimePattern-count-few": "prije {0} tj.",
+				"relativeTimePattern-count-other": "prije {0} tj."
+			}
+		},
+		"week-narrow": {
+			"displayName": "tj.",
+			"relative-type--1": "prošli tj.",
+			"relative-type-0": "ovaj tj.",
+			"relative-type-1": "sljedeći tj.",
+			"relativeTime-type-future": {
+				"relativeTimePattern-count-one": "+{0} tj.",
+				"relativeTimePattern-count-few": "+{0} tj.",
+				"relativeTimePattern-count-other": "+{0} tj."
+			},
+			"relativeTime-type-past": {
+				"relativeTimePattern-count-one": "-{0} tj.",
+				"relativeTimePattern-count-few": "-{0} tj.",
+				"relativeTimePattern-count-other": "-{0} tj."
+			}
+		},
+		"day-wide": {
 			"displayName": "dan",
 			"relative-type--2": "prekjučer",
 			"relative-type--1": "jučer",
@@ -2504,10 +3055,46 @@
 				"relativeTimePattern-count-other": "prije {0} dana"
 			}
 		},
+		"day-short": {
+			"displayName": "d.",
+			"relative-type--2": "prekjučer",
+			"relative-type--1": "jučer",
+			"relative-type-0": "danas",
+			"relative-type-1": "sutra",
+			"relative-type-2": "prekosutra",
+			"relativeTime-type-future": {
+				"relativeTimePattern-count-one": "za {0} dan",
+				"relativeTimePattern-count-few": "za {0} dana",
+				"relativeTimePattern-count-other": "za {0} dana"
+			},
+			"relativeTime-type-past": {
+				"relativeTimePattern-count-one": "prije {0} dan",
+				"relativeTimePattern-count-few": "prije {0} dana",
+				"relativeTimePattern-count-other": "prije {0} dana"
+			}
+		},
+		"day-narrow": {
+			"displayName": "d.",
+			"relative-type--2": "prekjučer",
+			"relative-type--1": "jučer",
+			"relative-type-0": "danas",
+			"relative-type-1": "sutra",
+			"relative-type-2": "prekosutra",
+			"relativeTime-type-future": {
+				"relativeTimePattern-count-one": "za {0} d",
+				"relativeTimePattern-count-few": "za {0} d",
+				"relativeTimePattern-count-other": "za {0} d"
+			},
+			"relativeTime-type-past": {
+				"relativeTimePattern-count-one": "prije {0} d",
+				"relativeTimePattern-count-few": "prije {0} d",
+				"relativeTimePattern-count-other": "prije {0} d"
+			}
+		},
 		"weekday": {
 			"displayName": "dan u tjednu"
 		},
-		"hour": {
+		"hour-wide": {
 			"displayName": "sat",
 			"relativeTime-type-future": {
 				"relativeTimePattern-count-one": "za {0} sat",
@@ -2520,7 +3107,33 @@
 				"relativeTimePattern-count-other": "prije {0} sati"
 			}
 		},
-		"minute": {
+		"hour-short": {
+			"displayName": "h",
+			"relativeTime-type-future": {
+				"relativeTimePattern-count-one": "za {0} h",
+				"relativeTimePattern-count-few": "za {0} h",
+				"relativeTimePattern-count-other": "za {0} h"
+			},
+			"relativeTime-type-past": {
+				"relativeTimePattern-count-one": "prije {0} h",
+				"relativeTimePattern-count-few": "prije {0} h",
+				"relativeTimePattern-count-other": "prije {0} h"
+			}
+		},
+		"hour-narrow": {
+			"displayName": "h",
+			"relativeTime-type-future": {
+				"relativeTimePattern-count-one": "+{0} h",
+				"relativeTimePattern-count-few": "+{0} h",
+				"relativeTimePattern-count-other": "+{0} h"
+			},
+			"relativeTime-type-past": {
+				"relativeTimePattern-count-one": "-{0} h",
+				"relativeTimePattern-count-few": "-{0} h",
+				"relativeTimePattern-count-other": "-{0} h"
+			}
+		},
+		"minute-wide": {
 			"displayName": "minuta",
 			"relativeTime-type-future": {
 				"relativeTimePattern-count-one": "za {0} minutu",
@@ -2533,7 +3146,33 @@
 				"relativeTimePattern-count-other": "prije {0} minuta"
 			}
 		},
-		"second": {
+		"minute-short": {
+			"displayName": "min",
+			"relativeTime-type-future": {
+				"relativeTimePattern-count-one": "za {0} min",
+				"relativeTimePattern-count-few": "za {0} min",
+				"relativeTimePattern-count-other": "za {0} min"
+			},
+			"relativeTime-type-past": {
+				"relativeTimePattern-count-one": "prije {0} min",
+				"relativeTimePattern-count-few": "prije {0} min",
+				"relativeTimePattern-count-other": "prije {0} min"
+			}
+		},
+		"minute-narrow": {
+			"displayName": "min",
+			"relativeTime-type-future": {
+				"relativeTimePattern-count-one": "+{0} min",
+				"relativeTimePattern-count-few": "+{0} min",
+				"relativeTimePattern-count-other": "+{0} min"
+			},
+			"relativeTime-type-past": {
+				"relativeTimePattern-count-one": "-{0} min",
+				"relativeTimePattern-count-few": "-{0} min",
+				"relativeTimePattern-count-other": "-{0} min"
+			}
+		},
+		"second-wide": {
 			"displayName": "sekunda",
 			"relative-type-0": "sada",
 			"relativeTime-type-future": {
@@ -2545,6 +3184,34 @@
 				"relativeTimePattern-count-one": "prije {0} sekundu",
 				"relativeTimePattern-count-few": "prije {0} sekunde",
 				"relativeTimePattern-count-other": "prije {0} sekundi"
+			}
+		},
+		"second-short": {
+			"displayName": "s",
+			"relative-type-0": "sada",
+			"relativeTime-type-future": {
+				"relativeTimePattern-count-one": "za {0} s",
+				"relativeTimePattern-count-few": "za {0} s",
+				"relativeTimePattern-count-other": "za {0} s"
+			},
+			"relativeTime-type-past": {
+				"relativeTimePattern-count-one": "prije {0} s",
+				"relativeTimePattern-count-few": "prije {0} s",
+				"relativeTimePattern-count-other": "prije {0} s"
+			}
+		},
+		"second-narrow": {
+			"displayName": "s",
+			"relative-type-0": "sada",
+			"relativeTime-type-future": {
+				"relativeTimePattern-count-one": "+{0} s",
+				"relativeTimePattern-count-few": "+{0} s",
+				"relativeTimePattern-count-other": "+{0} s"
+			},
+			"relativeTime-type-past": {
+				"relativeTimePattern-count-one": "-{0} s",
+				"relativeTimePattern-count-few": "-{0} s",
+				"relativeTimePattern-count-other": "-{0} s"
 			}
 		},
 		"zone": {
@@ -2638,7 +3305,19 @@
 	},
 	"currencyFormat": {
 		"standard": "#,##0.00 ¤",
-		"accounting": "#,##0.00 ¤"
+		"accounting": "#,##0.00 ¤",
+		"currencySpacing": {
+			"beforeCurrency": {
+				"currencyMatch": "[:^S:]",
+				"surroundingMatch": "[:digit:]",
+				"insertBetween": " "
+			},
+			"afterCurrency": {
+				"currencyMatch": "[:^S:]",
+				"surroundingMatch": "[:digit:]",
+				"insertBetween": " "
+			}
+		}
 	},
 	"symbols-latn-decimal": ",",
 	"symbols-latn-group": ".",
@@ -2670,13 +3349,13 @@
 		"CLP": 0,
 		"COP": 0,
 		"CRC": 0,
-		"CZK": 2,
+		"CZK": 0,
 		"DEFAULT": 2,
 		"DJF": 0,
 		"ESP": 0,
 		"GNF": 0,
 		"GYD": 0,
-		"HUF": 2,
+		"HUF": 0,
 		"IDR": 0,
 		"IQD": 0,
 		"IRR": 0,
@@ -2710,7 +3389,7 @@
 		"TMM": 0,
 		"TND": 3,
 		"TRL": 0,
-		"TWD": 2,
+		"TWD": 0,
 		"TZS": 0,
 		"UGX": 0,
 		"UYI": 0,
@@ -2729,7 +3408,7 @@
 	"weekData-weekendStart": 6,
 	"weekData-weekendEnd": 0,
 	"timeData": {
-		"_allowed": "H",
+		"_allowed": "H hB",
 		"_preferred": "H"
 	},
 	"eras-gregorian": {
@@ -2743,6 +3422,11 @@
 	"eras-islamic": {
 		"0": {
 			"_start": "622-7-15"
+		}
+	},
+	"eras-persian": {
+		"0": {
+			"_start": "622-01-01"
 		}
 	},
 	"eras-japanese": {

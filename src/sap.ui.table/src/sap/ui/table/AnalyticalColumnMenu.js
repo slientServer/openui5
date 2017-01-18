@@ -7,7 +7,8 @@ sap.ui.define(['jquery.sap.global', './ColumnMenu', './library'],
 	function(jQuery, ColumnMenu, library) {
 	"use strict";
 
-
+	// shortcut
+	var GroupEventType = library.GroupEventType;
 
 	/**
 	 * Constructor for a new AnalyticalColumnMenu.
@@ -29,14 +30,12 @@ sap.ui.define(['jquery.sap.global', './ColumnMenu', './library'],
 	 * @alias sap.ui.table.AnalyticalColumnMenu
 	 * @ui5-metamodel This control/element also will be described in the UI5 (legacy) designtime metamodel
 	 */
-	var AnalyticalColumnMenu = ColumnMenu.extend("sap.ui.table.AnalyticalColumnMenu", /** @lends sap.ui.table.AnalyticalColumnMenu.prototype */ { metadata : {
-
-		library : "sap.ui.table"
-	}});
-
-	AnalyticalColumnMenu.prototype.init = function() {
-		ColumnMenu.prototype.init.apply(this);
-	};
+	var AnalyticalColumnMenu = ColumnMenu.extend("sap.ui.table.AnalyticalColumnMenu", /** @lends sap.ui.table.AnalyticalColumnMenu.prototype */ {
+		metadata : {
+			library : "sap.ui.table"
+		},
+		renderer: "sap.ui.table.ColumnMenuRenderer"
+	});
 
 	/**
 	 * Adds the menu items to the menu.
@@ -68,8 +67,9 @@ sap.ui.define(['jquery.sap.global', './ColumnMenu', './library'],
 						bGrouped = oColumn.getGrouped();
 
 					oColumn.setGrouped(!bGrouped);
-					oTable.fireGroup({column: oColumn, groupedColumns: oTable._aGroupedColumns, type: sap.ui.table.GroupEventType.group});
+					oTable.fireGroup({column: oColumn, groupedColumns: oTable._aGroupedColumns, type: GroupEventType.group});
 					oMenuItem.setIcon(!bGrouped ? "sap-icon://accept" : null);
+					oTable._getRowContexts();
 				}, this)
 			);
 			this.addItem(this._oGroupIcon);
@@ -97,6 +97,7 @@ sap.ui.define(['jquery.sap.global', './ColumnMenu', './library'],
 
 					oColumn.setSummed(!bSummed);
 					oMenuItem.setIcon(!bSummed ? "sap-icon://accept" : null);
+					oTable._getRowContexts();
 				}, this)
 			);
 			this.addItem(this._oSumItem);
@@ -114,4 +115,4 @@ sap.ui.define(['jquery.sap.global', './ColumnMenu', './library'],
 
 	return AnalyticalColumnMenu;
 
-}, /* bExport= */ true);
+});

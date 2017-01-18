@@ -27,14 +27,14 @@ Once you have familiarized with the guidelines, you can go to the [Github issue 
 
 ### Quick Checklist for Bug Reports
 
- * Issue report checklist:
+Issue report checklist:
  * Real, current bug
  * No duplicate
  * Reproducible
  * Good summary
  * Well-documented
  * Minimal example
- * Use the [template](http://openui5.org/bugreport_template.txt)
+ * Use the [template](ISSUE_TEMPLATE.md)
 
 
 ### Requirements for a bug report
@@ -61,7 +61,7 @@ These eight requirements are the mandatory base of a good bug report:
  7. Minimal example: it is highly encouraged to provide a minimal example to reproduce in e.g. jsbin: isolate the application code which triggers the issue and strip it down as much as possible as long as the issue still occurs. If several files are required, you can create a gist. This may not always be possible and sometimes be overkill, but it always helps analyzing a bug.
  8. Only one bug per report: open different tickets for different issues
 
-You are encouraged to use [this template](http://openui5.org/bugreport_template.txt).
+You are encouraged to use [this template](ISSUE_TEMPLATE.md).
 
 Please report bugs in English, so all users can understand them.
 
@@ -123,7 +123,7 @@ There are three important things to know:
 
 1.  You must be aware of the Apache License (which describes contributions) and **agree to the Contributors License Agreement**. This is common practice in all major Open Source projects. To make this process as simple as possible, we are using *[CLA assistant](https://cla-assistant.io/)* for individual contributions. CLA assistant is an open source tool that integrates with GitHub very well and enables a one-click-experience for accepting the CLA. For company contributers special rules apply. See the respective section below for details.
 2.  There are **several requirements regarding code style, quality, and product standards** which need to be met (we also have to follow them). The respective section below gives more details on the coding guidelines.
-3.  **Not all proposed contributions can be accepted**. Some features may e.g. just fit a third-party add-on better. The code must fit the overall direction of OpenUI5 and really improve it, so there should be some "bang for the byte". For most bug fixes this is a given, but major feature implementation first need to be discussed with one of the OpenUI5 committers (the top 20 or more of the [Contributors List](https://github.com/SAP/openui5/graphs/contributors)), possibly one who touched the related code recently. The more effort you invest, the better you should clarify in advance whether the contribution fits: the best way would be to just open an enhancement ticket in the issue tracker to discuss the feature you plan to implement. We will then forward the proposal to the respective code owner, this avoids disappointment.
+3.  **Not all proposed contributions can be accepted**. Some features may e.g. just fit a third-party add-on better. The code must fit the overall direction of OpenUI5 and really improve it, so there should be some "bang for the byte". For most bug fixes this is a given, but major feature implementation first need to be discussed with one of the OpenUI5 committers (the top 20 or more of the [Contributors List](https://github.com/SAP/openui5/graphs/contributors)), possibly one who touched the related code recently. The more effort you invest, the better you should clarify in advance whether the contribution fits: the best way would be to just open an enhancement ticket in the issue tracker to discuss the feature you plan to implement (make it clear you intend to contribute). We will then forward the proposal to the respective code owner, this avoids disappointment.
 
 ### Contributor License Agreement
 
@@ -188,7 +188,7 @@ If this list sounds lengthy and hard to achieve - well, that's what WE have to c
     -   When you have several commits, squash them into one (see [this explanation](http://davidwalsh.name/squash-commits-git)) - this also needs to be done when additional changes are required after the code review
 
 4.  In the commit message follow the [commit message guidelines](docs/guidelines.md#git-guidelines)
-5.  If your change fixes an issue reported at GitHub, add the following line to the commit message: 
+5.  If your change fixes an issue reported at GitHub, add the following line to the commit message:
     - ```Fixes https://github.com/SAP/openui5/issues/(issueNumber)```
     - Do NOT add a colon after "Fixes" - this prevents automatic closing.
 	- When your pull request number is known (e.g. because you enhance a pull request after a code review), you can also add the line ```Closes https://github.com/SAP/openui5/pull/(pullRequestNumber)```

@@ -522,8 +522,8 @@
 		"sux": "sumerština",
 		"sv": "švédština",
 		"sw": "svahilština",
+		"sw_CD": "svahilština (Kongo)",
 		"swb": "komorština",
-		"swc": "svahilština (Kongo)",
 		"syc": "syrština (klasická)",
 		"syr": "syrština",
 		"szl": "slezština",
@@ -620,6 +620,7 @@
 		"zza": "zaza"
 	},
 	"scripts": {
+		"Adlm": "Adlm",
 		"Afak": "afaka",
 		"Aghb": "kavkazskoalbánské",
 		"Ahom": "Ahom",
@@ -633,6 +634,7 @@
 		"Bass": "bassa vah",
 		"Batk": "batacké",
 		"Beng": "bengálské",
+		"Bhks": "Bhks",
 		"Blis": "Blissovo písmo",
 		"Bopo": "bopomofo",
 		"Brah": "bráhmí",
@@ -665,6 +667,7 @@
 		"Grek": "řecké",
 		"Gujr": "gudžarátí",
 		"Guru": "gurmukhi",
+		"Hanb": "Hanb",
 		"Hang": "hangul",
 		"Hani": "han",
 		"Hano": "hanunóo",
@@ -681,6 +684,7 @@
 		"Hung": "staromaďarské",
 		"Inds": "harappské",
 		"Ital": "etruské",
+		"Jamo": "Jamo",
 		"Java": "javánské",
 		"Jpan": "japonské",
 		"Jurc": "džürčenské",
@@ -709,6 +713,7 @@
 		"Mahj": "mahádžaní",
 		"Mand": "mandejské",
 		"Mani": "manichejské",
+		"Marc": "Marc",
 		"Maya": "mayské hieroglyfy",
 		"Mend": "mendské",
 		"Merc": "meroitické psací",
@@ -723,6 +728,7 @@
 		"Mymr": "myanmarské",
 		"Narb": "staroseveroarabské",
 		"Nbat": "nabatejské",
+		"Newa": "Newa",
 		"Nkgb": "naxi geba",
 		"Nkoo": "n’ko",
 		"Nshu": "nü-šu",
@@ -730,6 +736,7 @@
 		"Olck": "santálské (ol chiki)",
 		"Orkh": "orchonské",
 		"Orya": "urijské",
+		"Osge": "Osge",
 		"Osma": "osmanské",
 		"Palm": "palmýrské",
 		"Pauc": "pau cin hau",
@@ -835,6 +842,7 @@
 		"Yiii": "yi",
 		"Zinh": "Zinh",
 		"Zmth": "matematický zápis",
+		"Zsye": "Zsye",
 		"Zsym": "symboly",
 		"Zxxx": "bez zápisu",
 		"Zyyy": "obecné",
@@ -879,7 +887,6 @@
 		"AI": "Anguilla",
 		"AL": "Albánie",
 		"AM": "Arménie",
-		"AN": "Nizozemské Antily",
 		"AO": "Angola",
 		"AQ": "Antarktida",
 		"AR": "Argentina",
@@ -2419,11 +2426,431 @@
 			"235": "H"
 		}
 	},
+	"ca-persian": {
+		"dateFormats": {
+			"full": "EEEE d. MMMM y G",
+			"long": "d. MMMM y G",
+			"medium": "d. M. y G",
+			"short": "dd.MM.yy GGGGG"
+		},
+		"timeFormats": {
+			"full": "H:mm:ss zzzz",
+			"long": "H:mm:ss z",
+			"medium": "H:mm:ss",
+			"short": "H:mm"
+		},
+		"dateTimeFormats": {
+			"full": "{1} {0}",
+			"long": "{1} {0}",
+			"medium": "{1} {0}",
+			"short": "{1} {0}",
+			"availableFormats": {
+				"d": "d.",
+				"E": "ccc",
+				"Ed": "E d.",
+				"Ehm": "E h:mm a",
+				"EHm": "E HH:mm",
+				"Ehms": "E h:mm:ss a",
+				"EHms": "E HH:mm:ss",
+				"Gy": "y G",
+				"GyMMM": "LLLL y G",
+				"GyMMMd": "d. M. y G",
+				"GyMMMEd": "E d. M. y G",
+				"GyMMMMd": "d. MMMM y G",
+				"GyMMMMEd": "E d. MMMM y G",
+				"h": "h a",
+				"H": "H",
+				"hm": "h:mm a",
+				"Hm": "H:mm",
+				"hms": "h:mm:ss a",
+				"Hms": "H:mm:ss",
+				"M": "L",
+				"Md": "d. M.",
+				"MEd": "E d. M.",
+				"MMM": "LLL",
+				"MMMd": "d. M.",
+				"MMMEd": "E d. M.",
+				"MMMMd": "d. MMMM",
+				"MMMMEd": "E d. MMMM",
+				"ms": "mm:ss",
+				"y": "y G",
+				"yyyy": "y G",
+				"yyyyM": "M/y GGGGG",
+				"yyyyMd": "d. M. y GGGGG",
+				"yyyyMEd": "E d. M. y GGGGG",
+				"yyyyMMM": "LLLL y G",
+				"yyyyMMMd": "d. M. y G",
+				"yyyyMMMEd": "E d. M. y G",
+				"yyyyMMMM": "LLLL y G",
+				"yyyyMMMMd": "d. MMMM y G",
+				"yyyyMMMMEd": "E d. MMMM y G",
+				"yyyyQQQ": "QQQ y G",
+				"yyyyQQQQ": "QQQQ y G"
+			},
+			"appendItems": {
+				"Day": "{0} ({2}: {1})",
+				"Day-Of-Week": "{0} {1}",
+				"Era": "{1} {0}",
+				"Hour": "{0} ({2}: {1})",
+				"Minute": "{0} ({2}: {1})",
+				"Month": "{0} ({2}: {1})",
+				"Quarter": "{0} ({2}: {1})",
+				"Second": "{0} ({2}: {1})",
+				"Timezone": "{0} {1}",
+				"Week": "{0} ({2}: {1})",
+				"Year": "{1} {0}"
+			},
+			"intervalFormats": {
+				"intervalFormatFallback": "{0} – {1}",
+				"d": {
+					"d": "d.–d."
+				},
+				"h": {
+					"a": "h a – h a",
+					"h": "h–h a"
+				},
+				"H": {
+					"H": "H–H"
+				},
+				"hm": {
+					"a": "h:mm a – h:mm a",
+					"h": "h:mm–h:mm a",
+					"m": "h:mm–h:mm a"
+				},
+				"Hm": {
+					"H": "H:mm–H:mm",
+					"m": "H:mm–H:mm"
+				},
+				"hmv": {
+					"a": "h:mm a – h:mm a v",
+					"h": "h:mm–h:mm a v",
+					"m": "h:mm–h:mm a v"
+				},
+				"Hmv": {
+					"H": "H:mm–H:mm v",
+					"m": "H:mm–H:mm v"
+				},
+				"hv": {
+					"a": "h a – h a v",
+					"h": "h–h a v"
+				},
+				"Hv": {
+					"H": "H–H v"
+				},
+				"M": {
+					"M": "M–M"
+				},
+				"Md": {
+					"d": "d. M. – d. M.",
+					"M": "d. M. – d. M."
+				},
+				"MEd": {
+					"d": "E d. M. – E d. M.",
+					"M": "E d. M. – E d. M."
+				},
+				"MMM": {
+					"M": "MMM–MMM"
+				},
+				"MMMd": {
+					"d": "d.–d. M.",
+					"M": "d. M. – d. M."
+				},
+				"MMMEd": {
+					"d": "E d. M. – E d. M.",
+					"M": "E d. M. – E d. M."
+				},
+				"y": {
+					"y": "y–y G"
+				},
+				"yM": {
+					"M": "M/y – M/y G",
+					"y": "M/y – M/y G"
+				},
+				"yMd": {
+					"d": "dd.MM.y – dd.MM.y G",
+					"M": "dd.MM.y – dd.MM.y G",
+					"y": "dd.MM.y – dd.MM.y G"
+				},
+				"yMEd": {
+					"d": "E dd.MM.y – E dd.MM.y G",
+					"M": "E dd.MM.y – E dd.MM.y G",
+					"y": "E dd.MM.y – E dd.MM.y G"
+				},
+				"yMMM": {
+					"M": "MMM–MMM y G",
+					"y": "MMM y – MMM y G"
+				},
+				"yMMMd": {
+					"d": "d.–d. M. y G",
+					"M": "d. M. – d. M. y G",
+					"y": "d. M. y – d. M. y G"
+				},
+				"yMMMEd": {
+					"d": "E d. M. – E d. M. y G",
+					"M": "E d. M. – E d. M. y G",
+					"y": "E d. M. y – E d. M. y G"
+				},
+				"yMMMM": {
+					"M": "LLLL–LLLL y G",
+					"y": "LLLL y – LLLL y G"
+				}
+			}
+		},
+		"months": {
+			"format": {
+				"abbreviated": [
+					"Farvardin",
+					"Ordibehesht",
+					"Khordad",
+					"Tir",
+					"Mordad",
+					"Shahrivar",
+					"Mehr",
+					"Aban",
+					"Azar",
+					"Dey",
+					"Bahman",
+					"Esfand"
+				],
+				"narrow": [
+					"1",
+					"2",
+					"3",
+					"4",
+					"5",
+					"6",
+					"7",
+					"8",
+					"9",
+					"10",
+					"11",
+					"12"
+				],
+				"wide": [
+					"Farvardin",
+					"Ordibehesht",
+					"Khordad",
+					"Tir",
+					"Mordad",
+					"Shahrivar",
+					"Mehr",
+					"Aban",
+					"Azar",
+					"Dey",
+					"Bahman",
+					"Esfand"
+				]
+			},
+			"stand-alone": {
+				"abbreviated": [
+					"Farvardin",
+					"Ordibehesht",
+					"Khordad",
+					"Tir",
+					"Mordad",
+					"Shahrivar",
+					"Mehr",
+					"Aban",
+					"Azar",
+					"Dey",
+					"Bahman",
+					"Esfand"
+				],
+				"narrow": [
+					"1",
+					"2",
+					"3",
+					"4",
+					"5",
+					"6",
+					"7",
+					"8",
+					"9",
+					"10",
+					"11",
+					"12"
+				],
+				"wide": [
+					"Farvardin",
+					"Ordibehesht",
+					"Khordad",
+					"Tir",
+					"Mordad",
+					"Shahrivar",
+					"Mehr",
+					"Aban",
+					"Azar",
+					"Dey",
+					"Bahman",
+					"Esfand"
+				]
+			}
+		},
+		"days": {
+			"format": {
+				"abbreviated": [
+					"ne",
+					"po",
+					"út",
+					"st",
+					"čt",
+					"pá",
+					"so"
+				],
+				"narrow": [
+					"N",
+					"P",
+					"Ú",
+					"S",
+					"Č",
+					"P",
+					"S"
+				],
+				"short": [
+					"ne",
+					"po",
+					"út",
+					"st",
+					"čt",
+					"pá",
+					"so"
+				],
+				"wide": [
+					"neděle",
+					"pondělí",
+					"úterý",
+					"středa",
+					"čtvrtek",
+					"pátek",
+					"sobota"
+				]
+			},
+			"stand-alone": {
+				"abbreviated": [
+					"ne",
+					"po",
+					"út",
+					"st",
+					"čt",
+					"pá",
+					"so"
+				],
+				"narrow": [
+					"N",
+					"P",
+					"Ú",
+					"S",
+					"Č",
+					"P",
+					"S"
+				],
+				"short": [
+					"ne",
+					"po",
+					"út",
+					"st",
+					"čt",
+					"pá",
+					"so"
+				],
+				"wide": [
+					"neděle",
+					"pondělí",
+					"úterý",
+					"středa",
+					"čtvrtek",
+					"pátek",
+					"sobota"
+				]
+			}
+		},
+		"quarters": {
+			"format": {
+				"abbreviated": [
+					"Q1",
+					"Q2",
+					"Q3",
+					"Q4"
+				],
+				"narrow": [
+					"1",
+					"2",
+					"3",
+					"4"
+				],
+				"wide": [
+					"1. čtvrtletí",
+					"2. čtvrtletí",
+					"3. čtvrtletí",
+					"4. čtvrtletí"
+				]
+			},
+			"stand-alone": {
+				"abbreviated": [
+					"Q1",
+					"Q2",
+					"Q3",
+					"Q4"
+				],
+				"narrow": [
+					"1",
+					"2",
+					"3",
+					"4"
+				],
+				"wide": [
+					"1. čtvrtletí",
+					"2. čtvrtletí",
+					"3. čtvrtletí",
+					"4. čtvrtletí"
+				]
+			}
+		},
+		"dayPeriods": {
+			"format": {
+				"abbreviated": [
+					"dop.",
+					"odp."
+				],
+				"narrow": [
+					"dop.",
+					"odp."
+				],
+				"wide": [
+					"dop.",
+					"odp."
+				]
+			},
+			"stand-alone": {
+				"abbreviated": [
+					"dop.",
+					"odp."
+				],
+				"narrow": [
+					"dop.",
+					"odp."
+				],
+				"wide": [
+					"dop.",
+					"odp."
+				]
+			}
+		},
+		"era-wide": {
+			"0": "AP"
+		},
+		"era-abbreviated": {
+			"0": "AP"
+		},
+		"era-narrow": {
+			"0": "AP"
+		}
+	},
 	"dateFields": {
 		"era": {
 			"displayName": "letopočet"
 		},
-		"year": {
+		"year-wide": {
 			"displayName": "rok",
 			"relative-type--1": "minulý rok",
 			"relative-type-0": "tento rok",
@@ -2441,7 +2868,43 @@
 				"relativeTimePattern-count-other": "před {0} lety"
 			}
 		},
-		"quarter": {
+		"year-short": {
+			"displayName": "r.",
+			"relative-type--1": "minulý rok",
+			"relative-type-0": "tento rok",
+			"relative-type-1": "příští rok",
+			"relativeTime-type-future": {
+				"relativeTimePattern-count-one": "za {0} r.",
+				"relativeTimePattern-count-few": "za {0} r.",
+				"relativeTimePattern-count-many": "za {0} r.",
+				"relativeTimePattern-count-other": "za {0} l."
+			},
+			"relativeTime-type-past": {
+				"relativeTimePattern-count-one": "před {0} r.",
+				"relativeTimePattern-count-few": "před {0} r.",
+				"relativeTimePattern-count-many": "před {0} r.",
+				"relativeTimePattern-count-other": "před {0} l."
+			}
+		},
+		"year-narrow": {
+			"displayName": "r.",
+			"relative-type--1": "minulý rok",
+			"relative-type-0": "tento rok",
+			"relative-type-1": "příští rok",
+			"relativeTime-type-future": {
+				"relativeTimePattern-count-one": "za {0} r.",
+				"relativeTimePattern-count-few": "za {0} r.",
+				"relativeTimePattern-count-many": "za {0} r.",
+				"relativeTimePattern-count-other": "za {0} l."
+			},
+			"relativeTime-type-past": {
+				"relativeTimePattern-count-one": "před {0} r.",
+				"relativeTimePattern-count-few": "před {0} r.",
+				"relativeTimePattern-count-many": "před {0} r.",
+				"relativeTimePattern-count-other": "před {0} l."
+			}
+		},
+		"quarter-wide": {
 			"displayName": "čtvrtletí",
 			"relative-type--1": "minulé čtvrtletí",
 			"relative-type-0": "toto čtvrtletí",
@@ -2459,7 +2922,43 @@
 				"relativeTimePattern-count-other": "před {0} čtvrtletími"
 			}
 		},
-		"month": {
+		"quarter-short": {
+			"displayName": "Q",
+			"relative-type--1": "minulé čtvrtletí",
+			"relative-type-0": "toto čtvrtletí",
+			"relative-type-1": "příští čtvrtletí",
+			"relativeTime-type-future": {
+				"relativeTimePattern-count-one": "+{0} Q",
+				"relativeTimePattern-count-few": "+{0} Q",
+				"relativeTimePattern-count-many": "+{0} Q",
+				"relativeTimePattern-count-other": "+{0} Q"
+			},
+			"relativeTime-type-past": {
+				"relativeTimePattern-count-one": "-{0} Q",
+				"relativeTimePattern-count-few": "-{0} Q",
+				"relativeTimePattern-count-many": "-{0} Q",
+				"relativeTimePattern-count-other": "-{0} Q"
+			}
+		},
+		"quarter-narrow": {
+			"displayName": "Q",
+			"relative-type--1": "minulé čtvrtletí",
+			"relative-type-0": "toto čtvrtletí",
+			"relative-type-1": "příští čtvrtletí",
+			"relativeTime-type-future": {
+				"relativeTimePattern-count-one": "+{0} Q",
+				"relativeTimePattern-count-few": "+{0} Q",
+				"relativeTimePattern-count-many": "+{0} Q",
+				"relativeTimePattern-count-other": "+{0} Q"
+			},
+			"relativeTime-type-past": {
+				"relativeTimePattern-count-one": "-{0} Q",
+				"relativeTimePattern-count-few": "-{0} Q",
+				"relativeTimePattern-count-many": "-{0} Q",
+				"relativeTimePattern-count-other": "-{0} Q"
+			}
+		},
+		"month-wide": {
 			"displayName": "měsíc",
 			"relative-type--1": "minulý měsíc",
 			"relative-type-0": "tento měsíc",
@@ -2477,7 +2976,43 @@
 				"relativeTimePattern-count-other": "před {0} měsíci"
 			}
 		},
-		"week": {
+		"month-short": {
+			"displayName": "měs.",
+			"relative-type--1": "minulý měsíc",
+			"relative-type-0": "tento měsíc",
+			"relative-type-1": "příští měsíc",
+			"relativeTime-type-future": {
+				"relativeTimePattern-count-one": "za {0} měs.",
+				"relativeTimePattern-count-few": "za {0} měs.",
+				"relativeTimePattern-count-many": "za {0} měs.",
+				"relativeTimePattern-count-other": "za {0} měs."
+			},
+			"relativeTime-type-past": {
+				"relativeTimePattern-count-one": "před {0} měs.",
+				"relativeTimePattern-count-few": "před {0} měs.",
+				"relativeTimePattern-count-many": "před {0} měs.",
+				"relativeTimePattern-count-other": "před {0} měs."
+			}
+		},
+		"month-narrow": {
+			"displayName": "měs.",
+			"relative-type--1": "minulý měsíc",
+			"relative-type-0": "tento měsíc",
+			"relative-type-1": "příští měsíc",
+			"relativeTime-type-future": {
+				"relativeTimePattern-count-one": "za {0} měs.",
+				"relativeTimePattern-count-few": "za {0} měs.",
+				"relativeTimePattern-count-many": "za {0} měs.",
+				"relativeTimePattern-count-other": "za {0} měs."
+			},
+			"relativeTime-type-past": {
+				"relativeTimePattern-count-one": "před {0} měs.",
+				"relativeTimePattern-count-few": "před {0} měs.",
+				"relativeTimePattern-count-many": "před {0} měs.",
+				"relativeTimePattern-count-other": "před {0} měs."
+			}
+		},
+		"week-wide": {
 			"displayName": "týden",
 			"relative-type--1": "minulý týden",
 			"relative-type-0": "tento týden",
@@ -2495,7 +3030,83 @@
 				"relativeTimePattern-count-other": "před {0} týdny"
 			}
 		},
-		"day": {
+		"week-short": {
+			"displayName": "týd.",
+			"relative-type--1": "minulý týd.",
+			"relative-type-0": "tento týd.",
+			"relative-type-1": "příští týd.",
+			"relativeTime-type-future": {
+				"relativeTimePattern-count-one": "za {0} týd.",
+				"relativeTimePattern-count-few": "za {0} týd.",
+				"relativeTimePattern-count-many": "za {0} týd.",
+				"relativeTimePattern-count-other": "za {0} týd."
+			},
+			"relativeTime-type-past": {
+				"relativeTimePattern-count-one": "před {0} týd.",
+				"relativeTimePattern-count-few": "před {0} týd.",
+				"relativeTimePattern-count-many": "před {0} týd.",
+				"relativeTimePattern-count-other": "před {0} týd."
+			}
+		},
+		"week-narrow": {
+			"displayName": "týd.",
+			"relative-type--1": "minulý týd.",
+			"relative-type-0": "tento týd.",
+			"relative-type-1": "příští týd.",
+			"relativeTime-type-future": {
+				"relativeTimePattern-count-one": "za {0} týd.",
+				"relativeTimePattern-count-few": "za {0} týd.",
+				"relativeTimePattern-count-many": "za {0} týd.",
+				"relativeTimePattern-count-other": "za {0} týd."
+			},
+			"relativeTime-type-past": {
+				"relativeTimePattern-count-one": "před {0} týd.",
+				"relativeTimePattern-count-few": "před {0} týd.",
+				"relativeTimePattern-count-many": "před {0} týd.",
+				"relativeTimePattern-count-other": "před {0} týd."
+			}
+		},
+		"day-wide": {
+			"displayName": "den",
+			"relative-type--2": "předevčírem",
+			"relative-type--1": "včera",
+			"relative-type-0": "dnes",
+			"relative-type-1": "zítra",
+			"relative-type-2": "pozítří",
+			"relativeTime-type-future": {
+				"relativeTimePattern-count-one": "za {0} den",
+				"relativeTimePattern-count-few": "za {0} dny",
+				"relativeTimePattern-count-many": "za {0} dne",
+				"relativeTimePattern-count-other": "za {0} dní"
+			},
+			"relativeTime-type-past": {
+				"relativeTimePattern-count-one": "před {0} dnem",
+				"relativeTimePattern-count-few": "před {0} dny",
+				"relativeTimePattern-count-many": "před {0} dnem",
+				"relativeTimePattern-count-other": "před {0} dny"
+			}
+		},
+		"day-short": {
+			"displayName": "den",
+			"relative-type--2": "předevčírem",
+			"relative-type--1": "včera",
+			"relative-type-0": "dnes",
+			"relative-type-1": "zítra",
+			"relative-type-2": "pozítří",
+			"relativeTime-type-future": {
+				"relativeTimePattern-count-one": "za {0} den",
+				"relativeTimePattern-count-few": "za {0} dny",
+				"relativeTimePattern-count-many": "za {0} dne",
+				"relativeTimePattern-count-other": "za {0} dní"
+			},
+			"relativeTime-type-past": {
+				"relativeTimePattern-count-one": "před {0} dnem",
+				"relativeTimePattern-count-few": "před {0} dny",
+				"relativeTimePattern-count-many": "před {0} dnem",
+				"relativeTimePattern-count-other": "před {0} dny"
+			}
+		},
+		"day-narrow": {
 			"displayName": "den",
 			"relative-type--2": "předevčírem",
 			"relative-type--1": "včera",
@@ -2518,7 +3129,7 @@
 		"weekday": {
 			"displayName": "den v týdnu"
 		},
-		"hour": {
+		"hour-wide": {
 			"displayName": "hodina",
 			"relativeTime-type-future": {
 				"relativeTimePattern-count-one": "za {0} hodinu",
@@ -2533,7 +3144,37 @@
 				"relativeTimePattern-count-other": "před {0} hodinami"
 			}
 		},
-		"minute": {
+		"hour-short": {
+			"displayName": "h",
+			"relativeTime-type-future": {
+				"relativeTimePattern-count-one": "za {0} h",
+				"relativeTimePattern-count-few": "za {0} h",
+				"relativeTimePattern-count-many": "za {0} h",
+				"relativeTimePattern-count-other": "za {0} h"
+			},
+			"relativeTime-type-past": {
+				"relativeTimePattern-count-one": "před {0} h",
+				"relativeTimePattern-count-few": "před {0} h",
+				"relativeTimePattern-count-many": "před {0} h",
+				"relativeTimePattern-count-other": "před {0} h"
+			}
+		},
+		"hour-narrow": {
+			"displayName": "h",
+			"relativeTime-type-future": {
+				"relativeTimePattern-count-one": "za {0} h",
+				"relativeTimePattern-count-few": "za {0} h",
+				"relativeTimePattern-count-many": "za {0} h",
+				"relativeTimePattern-count-other": "za {0} h"
+			},
+			"relativeTime-type-past": {
+				"relativeTimePattern-count-one": "před {0} h",
+				"relativeTimePattern-count-few": "před {0} h",
+				"relativeTimePattern-count-many": "před {0} h",
+				"relativeTimePattern-count-other": "před {0} h"
+			}
+		},
+		"minute-wide": {
 			"displayName": "minuta",
 			"relativeTime-type-future": {
 				"relativeTimePattern-count-one": "za {0} minutu",
@@ -2548,7 +3189,37 @@
 				"relativeTimePattern-count-other": "před {0} minutami"
 			}
 		},
-		"second": {
+		"minute-short": {
+			"displayName": "min",
+			"relativeTime-type-future": {
+				"relativeTimePattern-count-one": "za {0} min",
+				"relativeTimePattern-count-few": "za {0} min",
+				"relativeTimePattern-count-many": "za {0} min",
+				"relativeTimePattern-count-other": "za {0} min"
+			},
+			"relativeTime-type-past": {
+				"relativeTimePattern-count-one": "před {0} min",
+				"relativeTimePattern-count-few": "před {0} min",
+				"relativeTimePattern-count-many": "před {0} min",
+				"relativeTimePattern-count-other": "před {0} min"
+			}
+		},
+		"minute-narrow": {
+			"displayName": "min",
+			"relativeTime-type-future": {
+				"relativeTimePattern-count-one": "za {0} min",
+				"relativeTimePattern-count-few": "za {0} min",
+				"relativeTimePattern-count-many": "za {0} min",
+				"relativeTimePattern-count-other": "za {0} min"
+			},
+			"relativeTime-type-past": {
+				"relativeTimePattern-count-one": "před {0} min",
+				"relativeTimePattern-count-few": "před {0} min",
+				"relativeTimePattern-count-many": "před {0} min",
+				"relativeTimePattern-count-other": "před {0} min"
+			}
+		},
+		"second-wide": {
 			"displayName": "sekunda",
 			"relative-type-0": "nyní",
 			"relativeTime-type-future": {
@@ -2562,6 +3233,38 @@
 				"relativeTimePattern-count-few": "před {0} sekundami",
 				"relativeTimePattern-count-many": "před {0} sekundou",
 				"relativeTimePattern-count-other": "před {0} sekundami"
+			}
+		},
+		"second-short": {
+			"displayName": "s",
+			"relative-type-0": "nyní",
+			"relativeTime-type-future": {
+				"relativeTimePattern-count-one": "za {0} s",
+				"relativeTimePattern-count-few": "za {0} s",
+				"relativeTimePattern-count-many": "za {0} s",
+				"relativeTimePattern-count-other": "za {0} s"
+			},
+			"relativeTime-type-past": {
+				"relativeTimePattern-count-one": "před {0} s",
+				"relativeTimePattern-count-few": "před {0} s",
+				"relativeTimePattern-count-many": "před {0} s",
+				"relativeTimePattern-count-other": "před {0} s"
+			}
+		},
+		"second-narrow": {
+			"displayName": "s",
+			"relative-type-0": "nyní",
+			"relativeTime-type-future": {
+				"relativeTimePattern-count-one": "za {0} s",
+				"relativeTimePattern-count-few": "za {0} s",
+				"relativeTimePattern-count-many": "za {0} s",
+				"relativeTimePattern-count-other": "za {0} s"
+			},
+			"relativeTime-type-past": {
+				"relativeTimePattern-count-one": "před {0} s",
+				"relativeTimePattern-count-few": "před {0} s",
+				"relativeTimePattern-count-many": "před {0} s",
+				"relativeTimePattern-count-other": "před {0} s"
 			}
 		},
 		"zone": {
@@ -2679,7 +3382,19 @@
 	},
 	"currencyFormat": {
 		"standard": "#,##0.00 ¤",
-		"accounting": "#,##0.00 ¤"
+		"accounting": "#,##0.00 ¤",
+		"currencySpacing": {
+			"beforeCurrency": {
+				"currencyMatch": "[:^S:]",
+				"surroundingMatch": "[:digit:]",
+				"insertBetween": " "
+			},
+			"afterCurrency": {
+				"currencyMatch": "[:^S:]",
+				"surroundingMatch": "[:digit:]",
+				"insertBetween": " "
+			}
+		}
 	},
 	"symbols-latn-decimal": ",",
 	"symbols-latn-group": " ",
@@ -2729,13 +3444,13 @@
 		"CLP": 0,
 		"COP": 0,
 		"CRC": 0,
-		"CZK": 2,
+		"CZK": 0,
 		"DEFAULT": 2,
 		"DJF": 0,
 		"ESP": 0,
 		"GNF": 0,
 		"GYD": 0,
-		"HUF": 2,
+		"HUF": 0,
 		"IDR": 0,
 		"IQD": 0,
 		"IRR": 0,
@@ -2769,7 +3484,7 @@
 		"TMM": 0,
 		"TND": 3,
 		"TRL": 0,
-		"TWD": 2,
+		"TWD": 0,
 		"TZS": 0,
 		"UGX": 0,
 		"UYI": 0,
@@ -2802,6 +3517,11 @@
 	"eras-islamic": {
 		"0": {
 			"_start": "622-7-15"
+		}
+	},
+	"eras-persian": {
+		"0": {
+			"_start": "622-01-01"
 		}
 	},
 	"eras-japanese": {

@@ -18,14 +18,6 @@
 	line-height: 22px;
 }
 
-// Related to sap.ui.commons.Button icon position
-html[data-sap-ui-browser="ie9"],
-html[data-sap-ui-browser="ie10"] {
-	.sapUiTbCont .sapUiBtn {
-		line-height: normal;
-	}
-}
-
 .sapUiTbStandalone .sapUiTbCont {
 	border-color: transparent;
 	border-width: 0px;
@@ -87,4 +79,33 @@ html[data-sap-ui-browser="ie10"] {
 
 .sapUiTbInner > * , .sapUiTbInnerRight > * {
 	margin-right: 6px;
+}
+
+/* Toolbar inside of Form as Form- and Container- header */
+.sapUiGrid.sapUiFormToolbar .sapUiGridTitle > th > .sapUiTb,
+.sapUiFormToolbar > div:first-child.sapUiTb{
+	border-bottom-width: 0.0625rem;
+	padding-top: 10px;
+}
+
+.sapUiGridTitle > th > .sapUiTb > .sapUiTbInnerRight > *:last-child,
+.sapUiFormToolbar > .sapUiTb > .sapUiTbInnerRight > *:last-child,
+.sapUiFormContainerToolbar > .sapUiTb > .sapUiTbInnerRight > *:last-child{
+	margin-right: 0;
+}
+
+.sapUiRGLContainer.sapUiFormContainerToolbar > .sapUiTb > .sapUiTbInnerRight > *:last-child{
+	margin-right: 0.25rem;
+}
+
+.sapUiGridTitle > th > .sapUiTb > .sapUiTbCont,
+.sapUiRLContainer.sapUiFormContainerToolbar > .sapUiTb > .sapUiTbCont{
+	padding-left: 0;
+	padding-right: 0;
+}
+
+.sapUiGridTitle > th > .sapUiTb > .sapUiTbInnerRight,
+.sapUiFormResLayout.sapUiFormToolbar > .sapUiTb > .sapUiTbInnerRight,
+.sapUiFormResGrid.sapUiFormToolbar > .sapUiTb > .sapUiTbInnerRight{
+	right: 1rem;
 }

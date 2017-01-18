@@ -22,22 +22,21 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/core/support/Plugin'],
 		var LocalStorage = Plugin.extend("sap.ui.core.support.plugins.LocalStorage", {
 			constructor : function(oSupportStub) {
 				Plugin.apply(this, ["sapUiSupportLocalStorage", "", oSupportStub]);
-				
-				if (this.isToolPlugin()) {
-					throw Error(); // only for application side
-				}
 
 				this._oStub = oSupportStub;
 				this._aEventIds = [this.getId() + "GetItem", this.getId() + "SetItem"];
 			}
 		});
 
+		LocalStorage.prototype.isToolPlugin = function(){
+			return false;
+		};
 
 		/**
 		 * Handler for sapUiSupportLocalStorageGetItem event
 		 * Calls the callback in any case with a string (might be an empty one if error occurred or item does not exist)
 		 * and passes on the "passThroughData" event parameter to the callback
-		 * 
+		 *
 		 * @param {sap.ui.base.Event} oEvent the event
 		 * @private
 		 */
@@ -65,7 +64,7 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/core/support/Plugin'],
 
 		/**
 		 * Handler for sapUiSupportLocalStorageSetItem event
-		 * 
+		 *
 		 * @param {sap.ui.base.Event} oEvent the event
 		 * @private
 		 */

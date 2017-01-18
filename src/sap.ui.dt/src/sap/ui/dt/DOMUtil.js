@@ -4,10 +4,9 @@
 
 // Provides object sap.ui.dt.DOMUtil.
 sap.ui.define([
-	'jquery.sap.global',
-	'sap/ui/dt/ElementUtil'
+	'jquery.sap.global'
 ],
-function(jQuery, ElementUtil) {
+function(jQuery) {
 	"use strict";
 
 	/**
@@ -32,9 +31,10 @@ function(jQuery, ElementUtil) {
 	 *
 	 */
 	DOMUtil.getSize = function(oDomRef) {
+		var oClientRec = oDomRef.getBoundingClientRect();
 		return {
-			width : oDomRef.offsetWidth,
-			height : oDomRef.offsetHeight
+			width: oClientRec.width,
+			height: oClientRec.height
 		};
 	};
 
@@ -69,6 +69,21 @@ function(jQuery, ElementUtil) {
 	/**
 	 *
 	 */
+	DOMUtil.hasScrollBar = function(oDomRef) {
+		var $DomRef = jQuery(oDomRef);
+
+		var bOverflowYScroll = $DomRef.css("overflow-y") === "auto" || $DomRef.css("overflow-y") === "scroll";
+		var bOverflowXScroll = $DomRef.css("overflow-x") === "auto" || $DomRef.css("overflow-x") === "scroll";
+
+		var bHasYScroll = bOverflowYScroll && $DomRef.get(0).scrollHeight > $DomRef.height();
+		var bHasXScroll = bOverflowXScroll && $DomRef.get(0).scrollWidth > $DomRef.width();
+
+		return bHasYScroll || bHasXScroll;
+	};
+
+	/**
+	 *
+	 */
 	DOMUtil.getOverflows = function(oDomRef) {
 		var oOverflows;
 		var $ElementDomRef = jQuery(oDomRef);
@@ -83,12 +98,19 @@ function(jQuery, ElementUtil) {
 	/**
 	 *
 	 */
-	DOMUtil.getGeometry = function(oDomRef) {
+	DOMUtil.getGeometry = function(oDomRef, bUseWindowOffset) {
 		if (oDomRef) {
+			var oOffset = jQuery(oDomRef).offset();
+			if (bUseWindowOffset) {
+				oOffset.left = oOffset.left - jQuery(window).scrollLeft();
+				oOffset.top = oOffset.top - jQuery(window).scrollTop();
+			}
+
 			return {
 				domRef : oDomRef,
 				size : this.getSize(oDomRef),
-				position :  jQuery(oDomRef).offset()
+				position :  oOffset,
+				visible : this.isVisible(oDomRef)
 			};
 		}
 	};
@@ -114,21 +136,38 @@ function(jQuery, ElementUtil) {
 	};
 
 	/**
-	 *
+	 * returns jQuery object found in oDomRef for sCSSSelector
+	 * @param  {Element|jQuery} oDomRef to search in
+	 * @param  {string} sCSSSelector jQuery (CSS-like) selector to look for
+	 * @return {jQuery} found domRef
 	 */
 	DOMUtil.getDomRefForCSSSelector = function(oDomRef, sCSSSelector) {
-		if (!sCSSSelector) {
-			return false;
-		}
+		if (sCSSSelector && oDomRef) {
+			var $domRef = jQuery(oDomRef);
 
-		if (sCSSSelector === ":sap-domref") {
-			return oDomRef;
+			if (sCSSSelector === ":sap-domref") {
+				return $domRef;
+			}
+
+			// ":sap-domref > sapMPage" scenario
+			if (sCSSSelector.indexOf(":sap-domref") > -1) {
+				return $domRef.find(sCSSSelector.replace(/:sap-domref/g, ""));
+			}
+
+			// normal selector
+			return $domRef.find(sCSSSelector);
+		} else {
+			// empty jQuery object for typing
+			return jQuery();
 		}
-		// ":sap-domref > sapMPage" scenario
-		if (sCSSSelector.indexOf(":sap-domref") > -1) {
-			return document.querySelector(sCSSSelector.replace(":sap-domref", "#" + this.getEscapedString(oDomRef.id)));
-		}
-		return oDomRef ? oDomRef.querySelector(sCSSSelector) : undefined;
+	};
+
+	/**
+	 *
+	 */
+	DOMUtil.isVisible = function(oDomRef) {
+		// mimic the jQuery 1.11.1 impl of the ':visible' selector as the jQuery 2.2.0 selector no longer reports empty SPANs etc. as 'hidden'
+		return oDomRef ? oDomRef.offsetWidth > 0 || oDomRef.offsetHeight > 0 : false;
 	};
 
 	/**
@@ -148,69 +187,91 @@ function(jQuery, ElementUtil) {
 	};
 
 	/**
+	 * Copy the given styles object to a destination DOM node.
 	 *
+	 * @param {Object} oStyles A styles object, which is retrieved from window.getComputedStyle
+	 * @param {Element} oDest The element to which the styles should be copied.
+	 * @private
 	 */
-	DOMUtil.copyComputedStyle = function(oSrc, oDest) {
-		var fnCopyStylesTo = function(mStyles, oDest) {
-			for ( var sStyle in mStyles ) {
-				try {
-					// Do not use `hasOwnProperty`, nothing will get copied
-					if ( typeof sStyle == "string" && sStyle != "cssText" && !/\d/.test(sStyle) && sStyle.indexOf("margin") === -1 ) {
-						oDest.style[sStyle] = mStyles[sStyle];
-						// `fontSize` comes before `font` If `font` is empty, `fontSize` gets
-						// overwritten.  So make sure to reset this property. (hackyhackhack)
-						// Other properties may need similar treatment
-						if ( sStyle == "font" ) {
-							oDest.style.fontSize = mStyles.fontSize;
-						}
-					}
-				/*eslint-disable no-empty */
-				} catch (exc) {
-					// readonly properties must not through an error
-				}
-				/*eslint-enable no-empty */
-			}
-		};
+	DOMUtil._copyStylesTo = function(oStyles, oDest) {
+		var sStyles = "";
+		var sStyle = "";
+		var iLength = oStyles.length;
+		// Styles is an array, but has some special access functions
+		for (var i = 0; i < iLength; i++) {
+			sStyle = oStyles[i];
+			sStyles = sStyles + sStyle + ":" + oStyles.getPropertyValue(sStyle) + ";";
+		}
 
-		oSrc = jQuery(oSrc).get(0);
-		oDest = jQuery(oDest).get(0);
+		oDest.style.cssText = sStyles;
+	};
 
-		var mStyles = window.getComputedStyle(oSrc);
-		fnCopyStylesTo(mStyles, oDest);
-
-		// copy styles fro pseudo elements as well, if they exist (have content)
-		// pseudo elements can't be inserted via js, so we should create a real elements, which copy pseudo styling
-		mStyles = window.getComputedStyle(oSrc, ":after");
+	DOMUtil._copyPseudoElement = function(sPseudoElement, oSrc, oDest) {
+		var mStyles = window.getComputedStyle(oSrc, sPseudoElement);
 		var sContent = mStyles.getPropertyValue("content");
 		if (sContent && sContent !== "none") {
-			var oAfterElement = jQuery("<span></span>").appendTo(oDest);
+			sContent = jQuery.trim(sContent);
+			if (sContent.indexOf("attr(") === 0) {
+				sContent = sContent.replace("attr(", "");
+				if (sContent.length) {
+					sContent = sContent.substring(0, sContent.length - 1);
+				}
+				sContent = oSrc.getAttribute(sContent);
+			}
+
+			// pseudo elements can't be inserted via js, so we should create a real elements, which copy pseudo styling
+			var oAfterElement = jQuery("<span></span>");
+			if (sPseudoElement === ":after") {
+				oAfterElement.appendTo(oDest);
+			} else {
+				oAfterElement.prependTo(oDest);
+			}
+
 			oAfterElement.text(sContent.replace(/\"/g, ""));
-			fnCopyStylesTo(mStyles, oAfterElement.get(0));
+			DOMUtil._copyStylesTo(mStyles, oAfterElement.get(0));
 			oAfterElement.css("display", "inline");
 		}
-
-		mStyles = window.getComputedStyle(oSrc, ":before");
-		sContent = mStyles.getPropertyValue("content");
-		if (sContent && sContent !== "none") {
-			var oBeforeElement = jQuery("<span></span>").prependTo(oDest);
-			oBeforeElement.text(sContent.replace(/\"/g, ""));
-			fnCopyStylesTo(mStyles, oBeforeElement.get(0));
-			oBeforeElement.css("display", "inline");
-		}
-
 	};
 
 	/**
 	 *
 	 */
-	DOMUtil.copyComputedStylesForDOM = function(oSrc, oDest) {
+	DOMUtil.copyComputedStyle = function(oSrc, oDest) {
+		oSrc = jQuery(oSrc).get(0);
+		oDest = jQuery(oDest).get(0);
+		var mStyles = window.getComputedStyle(oSrc);
+
+		if (mStyles.getPropertyValue("display") == "none") {
+			oDest.style.display = "none";
+			return;
+		}
+
+		DOMUtil._copyStylesTo(mStyles, oDest);
+
+		this._copyPseudoElement(":after", oSrc, oDest);
+		this._copyPseudoElement(":before", oSrc, oDest);
+	};
+
+	/**
+	 *
+	 */
+	DOMUtil.copyComputedStyles = function(oSrc, oDest) {
 		oSrc = jQuery(oSrc).get(0);
 		oDest = jQuery(oDest).get(0);
 
 		for (var i = 0; i < oSrc.children.length; i++) {
-			this.copyComputedStylesForDOM(oSrc.children[i], oDest.children[i]);
+			this.copyComputedStyles(oSrc.children[i], oDest.children[i]);
 		}
+
+		// we shouldn't copy classes because they can affect styling
 		jQuery(oDest).removeClass();
+		// remove all special attributes, which can affect app behaviour
+		jQuery(oDest).attr("id", "");
+		jQuery(oDest).attr("role", "");
+		jQuery(oDest).attr("data-sap-ui", "");
+		jQuery(oDest).attr("for", "");
+
+		jQuery(oDest).attr("tabIndex", -1);
 		this.copyComputedStyle(oSrc, oDest);
 	};
 
@@ -219,14 +280,11 @@ function(jQuery, ElementUtil) {
 	 */
 	DOMUtil.cloneDOMAndStyles = function(oNode, oTarget) {
 		oNode = jQuery(oNode).get(0);
-		oTarget = jQuery(oTarget).get(0);
 
 		var oCopy = oNode.cloneNode(true);
-		this.copyComputedStylesForDOM(oNode, oCopy);
+		this.copyComputedStyles(oNode, oCopy);
 
-		var $copy = jQuery(oCopy);
-
-		jQuery(oTarget).append($copy);
+		jQuery(oTarget).append(oCopy);
 	};
 
 	return DOMUtil;

@@ -299,6 +299,19 @@ sap.ui.define(['jquery.sap.global', './Button', './Dialog', './List', './SearchF
 		this._iListUpdateRequested = 0; // to only show the busy indicator when we initiated the change
 	};
 
+	SelectDialog.prototype.setBusy = function () {
+		// Overwrite setBusy as it should be handled in the "real" dialog
+		this._oDialog.setBusy.apply(this._oDialog, arguments);
+
+		// Should return "this" (sap.m.SelectDialog)
+		return this;
+	};
+
+	SelectDialog.prototype.getBusy = function () {
+		// Overwrite getBusy as it should be handled in the "real" dialog
+		return this._oDialog.getBusy.apply(this._oDialog, arguments);
+	};
+
 	/**
 	 * Destroys the control
 	 * @private
@@ -638,7 +651,7 @@ sap.ui.define(['jquery.sap.global', './Button', './Dialog', './List', './SearchF
 	 * @private
 	 * @param {string} sFunctionName The name of the function to be called
 	 * @param {string} sAggregationName The name of the aggregation asociated
-	 * @returns {mixed} The return type of the called function
+	 * @returns {any} The return type of the called function
 	 */
 	SelectDialog.prototype._callMethodInManagedObject = function (sFunctionName, sAggregationName) {
 		var aArgs = Array.prototype.slice.call(arguments);
@@ -722,7 +735,7 @@ sap.ui.define(['jquery.sap.global', './Button', './Dialog', './List', './SearchF
 	};
 
 	SelectDialog.prototype.getBindingContext = function (sModelName) {
-		return this._oList.getBindingContext(sModelName);
+		return this._oList && this._oList.getBindingContext(sModelName);
 	};
 
 	/*
@@ -814,15 +827,9 @@ sap.ui.define(['jquery.sap.global', './Button', './Dialog', './List', './SearchF
 	SelectDialog.prototype._setBusy = function (bBusy) {
 		if (this._iListUpdateRequested) { // check if the event was caused by our control
 			if (bBusy) {
-				if (this._bFirstRequest) { // also disable the search field for the first request
-					this._oSearchField.setEnabled(false);
-				}
 				this._oList.addStyleClass('sapMSelectDialogListHide');
 				this._oBusyIndicator.$().css('display', 'inline-block');
 			} else {
-				if (this._bFirstRequest) { // also enable the search field again for the first request
-					this._oSearchField.setEnabled(true);
-				}
 				this._oList.removeStyleClass('sapMSelectDialogListHide');
 				this._oBusyIndicator.$().css('display', 'none');
 			}
@@ -974,7 +981,7 @@ sap.ui.define(['jquery.sap.global', './Button', './Dialog', './List', './SearchF
 			oInfoBar = this._oList.getInfoToolbar();
 
 		// update the selection label
-		oInfoBar.setVisible(!!iSelectedContexts);
+		oInfoBar.setVisible(!!iSelectedContexts && this.getMultiSelect());
 		oInfoBar.getContent()[0].setText(this._oRb.getText("TABLESELECTDIALOG_SELECTEDITEMS", [iSelectedContexts]));
 	};
 

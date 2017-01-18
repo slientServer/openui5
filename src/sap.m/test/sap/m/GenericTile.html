@@ -1,18 +1,18 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-<meta http-equiv="X-UA-Compatible" content="IE=edge" />
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta charset="utf-8">
 
 <title>sap.m.GenericTile</title>
 
-<script src="../../../resources/sap-ui-core.js" type="text/javascript"
+<script src="shared-config.js"></script>
+<script src="../../../resources/sap-ui-core.js"
 	id="sap-ui-bootstrap"
-	data-sap-ui-libs="sap.m, sap.ui.layout"
-	data-sap-ui-theme="sap_bluecrystal">
+	data-sap-ui-libs="sap.m, sap.ui.layout">
 </script>
 
-<script type="text/javascript">
+<script>
 	function setBackgroundColor(oAnyObject) {
 		var oColors = {
 			white : "#FFFFFF",
@@ -35,92 +35,70 @@
 	}
 </script>
 
-<script type="text/javascript">
+<script>
 	jQuery.sap.initMobile();
 
 	var oGenericTileData = {
+		mode : sap.m.GenericTileMode.ContentMode,
 		subheader : "Expenses By Region",
 		header : "Comparative Annual Totals",
+		tooltip : "",
 		footerNum : "Actual and Target",
 		footerComp : "Compare across regions",
 		scale : "MM",
 		unit : "EUR",
-		value : 7777,
-		size : "Auto",
-		frameType : "OneByOne",
+		value : "17Ñç",
+		frameType : sap.m.FrameType.OneByOne,
 		state : sap.m.LoadState.Loaded,
+		scope : sap.m.GenericTileScope.Display,
 		valueColor : sap.m.ValueColor.Error,
-		indicator : sap.m.DeviationIndicator.None,
+		indicator : sap.m.DeviationIndicator.Up,
 		title : "US Profit Margin",
 		footer : "Current Quarter",
 		description : "Maximum deviation",
 		imageDescription : "",
-		data : [{
-			title : "Americas",
-			value : 10,
-			color : "Good"
-		}, {
-			title : "EMEA",
-			value : 50,
-			color : "Good"
-		}, {
-			title : "APAC",
-			value : -20,
-			color : "Error"
+		backgroundImage : "images/NewsImage1.png",
+		newsTileContent : [{
+			footer : "August 21, 2013",
+			contentText : "SAP Unveils Powerful New Player Comparison Tool Exclusively on NFL.com",
+			subheader : "SAP News"
 		}],
-		cc4 : [{
-			title : "Americas",
-			value : 10,
-			color : "Good"
-		}, {
-			title : "EMEA",
-			value : 50,
-			color : "Good"
-		}, {
-			title : "China",
-			value : 10,
-			color : "Neutral"
-		}, {
-			title : "Global",
-			value : 50,
-			color : "Error"
+		feedTileContent : [{
+			footer : "New Notifications",
+			contentText : "@@notify Great outcome of the Presentation today. New functionality well received.",
+			subheader : "About 1 minute ago in Computer Market"
 		}],
-		hbmc : {
-			total : 360,
-			totalLabel : "360",
-			totalScale : "Mrd",
-			formattedLabel : false,
-			showTotal : true,
-			showFractions : true,
-			width : "100%",
-			items : [{
-				fraction : 130,
-				color : sap.m.ValueColor.Good,
-				fractionLabel : "130",
-				fractionScale : "Mln",
-				formattedLabel : false
-			}]
-		},
-		dmc : {
-			value1 : 20,
-			value2 : 200,
-			title1 : "May 2014",
-			title2 : "Apr 2014",
-			displayValue1 : "8833 Mio",
-			displayValue2 : "8888 Mio",
-			deltaDisplayValue : "5555 Mio"
-		},
-		dmc2x1 : {
-			value1 : 20,
-			value2 : 200,
-			title1 : "May 2014",
-			title2 : "Apr 2014",
-			displayValue1 : "8833 Mio",
-			displayValue2 : "8888 Mio",
-			deltaDisplayValue : "5555 Mio",
-			width : "100%"
+		frameTypes : Object.keys(sap.m.FrameType),
+		indicators: Object.keys(sap.m.DeviationIndicator),
+		modes : Object.keys(sap.m.GenericTileMode),
+		states : Object.keys(sap.m.LoadState),
+		scopes : Object.keys(sap.m.GenericTileScope)
+	};
+
+	var fnPress = function(oEvent) {
+		if (oEvent.getParameter("scope") === sap.m.GenericTileScope.Actions &&
+			oEvent.getParameter("action") === "Press") {
+			var oActionSheet = new sap.m.ActionSheet({
+				title : "Choose Your Action",
+				showCancelButton : true,
+				placement : "Bottom",
+				buttons : [
+					new sap.m.Button({
+						text : "Move"
+					}),
+					new sap.m.Button({
+						text : "Whatever"
+					})
+				],
+				afterClose : function () {
+					oActionSheet.destroy();
+				}
+			});
+			oActionSheet.openBy(oEvent.getParameter("domRef"));
+		} else {
+			sap.m.MessageToast.show("Action " + oEvent.getParameter("action") + " on " + oEvent.getSource().getId() + " pressed.");
 		}
-	}
+	};
 
 	var oGenericTileModel = new sap.ui.model.json.JSONModel(oGenericTileData);
 
@@ -128,41 +106,37 @@
 		value : "{/value}",
 		scale : "{/scale}",
 		indicator : "{/indicator}",
-		size : "{/size}",
 		formatterValue : "{/isFormatterValue}",
 		truncateValueTo : "{/truncateValueTo}",
-		valueColor : "{/valueColor}",
+		valueColor : "{/valueColor}"
 	});
 
 	var oNVConfS = new sap.m.TileContent("numeric-tile-cont-l", {
 		unit : "{/unit}",
-		size : "{/size}",
 		footer : "{/footerNum}",
-		content : oNVConfContS,
+		content : oNVConfContS
 	});
 
-	var fnPress = function(oEvent) {
-		sap.m.MessageToast.show("The Generic Tile is pressed.");
-	};
-
 	var oGenericTile1 = new sap.m.GenericTile({
+		mode : "{/mode}",
 		subheader : "{/subheader}",
 		frameType : "{/frameType}",
-		size : "{/size}",
 		header : "{/header}",
+		tooltip : "{/tooltip}",
 		state : "{/state}",
+		scope : "{/scope}",
 		headerImage : "{/headerImage}",
 		imageDescription : "{/imageDescription}",
 		press : fnPress,
 		failedText : "{/failedText}",
 		tileContent : [oNVConfS]
 	});
+	oGenericTile1.addStyleClass("sapUiSmallMargin");
 
 	var oNumCnt2x1 = new sap.m.NumericContent("numeric-cont-2x1", {
 		value : "-431.241.621,5",
 		scale : "MM",
-		indicator : "Up",
-		size : "{/size}",
+		indicator : "{/indicator}",
 		truncateValueTo : 14,
 		valueColor : "{/valueColor}",
 		width : "100%"
@@ -170,36 +144,97 @@
 
 	var oTc2x1 = new sap.m.TileContent("comp-tile-cont-2x1", {
 		unit : "{/unit}",
-		size : "{/size}",
 		footer : "{/footerComp}",
-		frameType : "TwoByOne",
-		content : oNumCnt2x1,
+		frameType : sap.m.FrameType.TwoByOne,
+		content : oNumCnt2x1
 	});
 
-	var oGenericTile3 = new sap.m.GenericTile({
+	var oGenericTile2 = new sap.m.GenericTile({
+		mode : "{/mode}",
+		tooltip : "{/tooltip}",
 		subheader : "{/subheader}",
-		frameType : "TwoByOne",
-		size : "{/size}",
+		frameType : sap.m.FrameType.TwoByOne,
 		header : "{/header}",
 		state : "{/state}",
+		scope : "{/scope}",
 		headerImage : "{/headerImage}",
 		imageDescription : "{/imageDescription}",
 		press : fnPress,
 		failedText : "{/failedText}",
 		tileContent : [oTc2x1]
 	});
+	oGenericTile2.addStyleClass("sapUiSmallMargin");
 
-	var oFlexBox = new sap.m.FlexBox("flexbox", {
-		items : [oGenericTile1, oGenericTile3],
-		alignItems: "Start",
-		justifyContent: "SpaceAround"
+	var oNewsTileContent = new sap.m.TileContent("news-tile-cont-2x1",{
+		footer : "{footer}",
+		frameType : sap.m.FrameType.TwoByOne,
+		content : new sap.m.NewsContent({
+			contentText : "{contentText}",
+			subheader : "{subheader}"
+		})
 	});
 
-	var oPage = new sap.m.Page("initial-page", {
-		showHeader : false,
-		content : [oFlexBox]
+	var oGenericTile3 = new sap.m.GenericTile({
+		mode : "{/mode}",
+		tooltip : "{/tooltip}",
+		frameType : sap.m.FrameType.TwoByOne,
+		state : "{/state}",
+		scope : "{/scope}",
+		headerImage : "{/headerImage}",
+		imageDescription : "{/imageDescription}",
+		backgroundImage : "{/backgroundImage}",
+		press : fnPress,
+		failedText : "{/failedText}",
+		tileContent : {
+			template : oNewsTileContent,
+			path : "/newsTileContent"
+		}
 	});
-	oPage.setModel(oGenericTileModel);
+	oGenericTile3.addStyleClass("sapUiSmallMargin");
+
+	var oFeedTileContent = new sap.m.TileContent("feed-tile-cont-2x1", {
+		footer : "{footer}",
+		frameType : sap.m.FrameType.TwoByOne,
+		content : new sap.m.FeedContent({
+			contentText : "{contentText}",
+			subheader : "{subheader}"
+		})
+	});
+
+	var oGenericTile4 = new sap.m.GenericTile({
+		mode : "{/mode}",
+		tooltip : "{/tooltip}",
+		header : "{/header}",
+		subheader : "{/subheader}",
+		frameType : sap.m.FrameType.TwoByOne,
+		state : "{/state}",
+		scope : "{/scope}",
+		headerImage : "{/headerImage}",
+		imageDescription : "{/imageDescription}",
+		press : fnPress,
+		failedText : "{/failedText}",
+		tileContent : {
+			template : oFeedTileContent,
+			path : "/feedTileContent"
+		}
+	});
+	oGenericTile4.addStyleClass("sapUiSmallMargin");
+
+	var oModeLabel = new sap.m.Label({
+		id: "mode-label",
+		text: "Mode"
+	});
+
+	var oModeSelect = new sap.m.Select({
+		items: {
+			path: "/modes",
+			template: new sap.ui.core.Item({
+				key: "{}",
+				text: "{}"
+			})
+		},
+		selectedKey: "{/mode}"
+	});
 
 	var oTitleLbl = new sap.m.Label({
 		text : "Header",
@@ -216,6 +251,28 @@
 		text : "Subheader",
 		labelFor : "desc-value"
 	});
+
+	var oTooltipLbl = new sap.m.Label({
+		text : "Tooltip",
+		labelFor : "tooltip-value"
+	});
+
+	var oTooltipInput = new sap.m.Input("tooltip-value", {
+		type : sap.m.InputType.Text,
+		placeholder : 'Enter tooltip ...'
+	});
+	oTooltipInput.bindValue("/tooltip");
+
+	var oUpdateValueLbl = new sap.m.Label({
+		text : "Update Value",
+		labelFor : "update-value"
+	});
+
+	var oUpdateValueInput = new sap.m.Input("update-value", {
+		type : sap.m.InputType.Text,
+		placeholder : 'Enter value for update ...'
+	});
+	oUpdateValueInput.bindValue("/value");
 
 	var oDescInput = new sap.m.Input("desc-value", {
 		type : sap.m.InputType.Text,
@@ -251,48 +308,20 @@
 	});
 	oUnitInput.bindValue("/unit");
 
-	var oSizeLbl = new sap.m.Label({
-		text : "Size",
-		labelFor : "size-value"
-	});
-
-	var oSizeSlct = new sap.m.Select("size-value", {
-		change : function(oE) {
-			var selectedItem = oE.getParameter("selectedItem");
-			oGenericTileData.size = selectedItem.getKey();
-			oGenericTileModel.checkUpdate();
-		},
-		items : [new sap.ui.core.Item({
-			key : "Auto",
-			text : "Auto"
-		}), new sap.ui.core.Item({
-			key : "S",
-			text : "Small"
-		}), new sap.ui.core.Item({
-			key : "M",
-			text : "Middle"
-		})]
-	});
-
-	var oFtLbl = new sap.m.Label({
+	var oFrameTypeLabel = new sap.m.Label({
 		text : "Frame Type",
 		labelFor : "ft-value"
 	});
 
-	var oFtSlct = new sap.m.Select("ft-value", {
-		change : function(oE) {
-			var sSelectedKey = oE.getParameter("selectedItem").getKey();
-			oGenericTileData.frameType = sSelectedKey;
-			var bTwo = (sSelectedKey == "TwoByOne");
-			oGenericTileModel.checkUpdate();
+	var oFrameTypeSelect = new sap.m.Select("ft-value", {
+		items: {
+			path: "/frameTypes",
+			template: new sap.ui.core.Item({
+				key: "{}",
+				text: "{}"
+			})
 		},
-		items : [new sap.ui.core.Item({
-			key : "OneByOne",
-			text : "OneByOne"
-		}), new sap.ui.core.Item({
-			key : "TwoByOne",
-			text : "TwoByOne"
-		})]
+		selectedKey: "{/frameType}"
 	});
 
 	var oPictureLbl = new sap.m.Label({
@@ -301,9 +330,9 @@
 	});
 
 	var oPictureSlct = new sap.m.Select("picture-value", {
-		change : function(oE) {
-			var selectedItem = oE.getParameter("selectedItem");
-			oGenericTileData.headerImage = selectedItem.getKey();
+		change : function(oEvent) {
+			var oSelectedItem = oEvent.getParameter("selectedItem");
+			oGenericTileData.headerImage = oSelectedItem.getKey();
 			oGenericTileModel.checkUpdate();
 		},
 		items : [new sap.ui.core.Item("picture-item-1", {
@@ -324,7 +353,7 @@
 		}), new sap.ui.core.Item("picture-item-6", {
 			key : "sap-icon://customer-financial-fact-sheet",
 			text : "Icon2"
-		}), ],
+		}) ],
 		selectedItem : "picture-item-1"
 	});
 
@@ -339,30 +368,36 @@
 		value : "{/imageDescription}"
 	});
 
-	var oTriggerLoadLbl = new sap.m.Label({
+	var oStateLabel = new sap.m.Label({
 		text : "State",
 		labelFor : "loading-state"
 	});
 
-	var oTriggerLoadSlct = new sap.m.Select("loading-state", {
-		change : function(oE) {
-			var selectedItem = oE.getParameter("selectedItem");
-			oGenericTileData.state = selectedItem.getProperty("key");
-			oGenericTileModel.checkUpdate();
+	var oStateSelect = new sap.m.Select("loading-state", {
+		items: {
+			path: "/states",
+			template: new sap.ui.core.Item({
+				key: "{}",
+				text: "{}"
+			})
 		},
-		items : [new sap.ui.core.Item({
-			key : "Loaded",
-			text : "Loaded"
-		}), new sap.ui.core.Item({
-			key : "Loading",
-			text : "Loading"
-		}), new sap.ui.core.Item({
-			key : "Failed",
-			text : "Failed"
-		}), new sap.ui.core.Item({
-			key : "Disabled",
-			text : "Disabled"
-		})]
+		selectedKey: "{/state}"
+	});
+
+	var oScopeLabel = new sap.m.Label({
+		text : "Scope",
+		labelFor : "scope"
+	});
+
+	var oScopeSelect = new sap.m.Select({
+		items: {
+			path: "/scopes",
+			template: new sap.ui.core.Item({
+				key: "{}",
+				text: "{}"
+			})
+		},
+		selectedKey: "{/scope}"
 	});
 
 	var oPressLbl = new sap.m.Label({
@@ -373,16 +408,34 @@
 	var oPressSwtch = new sap.m.Switch({
 		id : "press-action",
 		state : true,
-		change : function(oE) {
-			var bState = oE.getParameter("state");
+		change : function(oEvent) {
+			var bState = oEvent.getParameter("state");
 			if (bState) {
 				oGenericTile1.attachPress(fnPress);
+				oGenericTile2.attachPress(fnPress);
 				oGenericTile3.attachPress(fnPress);
 			} else {
 				oGenericTile1.detachPress(fnPress);
+				oGenericTile2.detachPress(fnPress);
 				oGenericTile3.detachPress(fnPress);
 			}
 		}
+	});
+
+	var oIndicatorLabel = new sap.m.Label({
+		id: "indicator-label",
+		text: "Indicator"
+	});
+
+	var oIndicatorSelect = new sap.m.Select({
+		items: {
+			path: "/indicators",
+			template: new sap.ui.core.Item({
+				key: "{}",
+				text: "{}"
+			})
+		},
+		selectedKey: "{/indicator}"
 	});
 
 	var oFailedLabel = new sap.m.Label({
@@ -396,16 +449,45 @@
 	});
 	oFailedInput.bindValue("/failedText");
 
+	var oSizeLbl = new sap.m.Label({
+		text : "Size",
+		labelFor : "size-button"
+	});
+
+	var bBtnEnabled = (window.innerWidth < 375) ? false: true;
+	var oSizeBtn = new sap.m.Button("size-button", {
+		press : function(oEvent) {
+			var sTheme = sap.ui.getCore().getConfiguration().getTheme();
+			sap.ui.getCore().applyTheme(sTheme);
+			var url = window.location.href;
+			window.open(url, "", "height=900,width=370,top=0,left=0,toolbar=no,menubar=no");
+		},
+		enabled: bBtnEnabled,
+		text: "Open new page with small screen size",
+		width: "300px"
+	});
+
+	var oControlForm = new sap.ui.layout.Grid("numeric-content-form", {
+		defaultSpan : "XL4 L4 M6 S12",
+		content : [oGenericTile1, oGenericTile2, oGenericTile3, oGenericTile4]
+	});
+
 	var editableSimpleForm = new sap.ui.layout.form.SimpleForm("controls", {
 		maxContainerCols : 2,
 		editable : true,
 		content : [new sap.ui.core.Title({ // this starts a new group
 			text : "Modify Tile"
-		}), oTitleLbl, oTitleInput, oTitleDscr, oDescInput, oTitleFoot, oFooterInputNum, oFooterInputComp, oTitleUnit,
-				oUnitInput, oFailedLabel, oFailedInput, oSizeLbl, oSizeSlct, oFtLbl, oFtSlct, oPictureLbl, oPictureSlct,
-				oImageDescLbl, oImageDescInput, oTriggerLoadLbl, oTriggerLoadSlct, oPressLbl, oPressSwtch]
+		}), oModeLabel, oModeSelect, oTitleLbl, oTitleInput, oTitleDscr, oDescInput, oTitleFoot, oFooterInputNum, oFooterInputComp, oTooltipLbl, oTooltipInput, oUpdateValueLbl, oUpdateValueInput, oTitleUnit,
+				oUnitInput, oFailedLabel, oFailedInput, oFrameTypeLabel, oFrameTypeSelect, oPictureLbl, oPictureSlct,oImageDescLbl, oImageDescInput, oStateLabel, oStateSelect, oScopeLabel, oScopeSelect, oPressLbl,
+				oPressSwtch, oIndicatorLabel, oIndicatorSelect, oSizeLbl, oSizeBtn]
 	});
-	oPage.addContent(editableSimpleForm);
+
+	var oPage = new sap.m.Page("initial-page", {
+		showHeader : false,
+		content : [oControlForm, editableSimpleForm]
+	});
+	oPage.setModel(oGenericTileModel);
+
 	//create a mobile App embedding the page and place the App into the HTML document
 	var app = new sap.m.App("myApp", {
 		pages : [oPage]

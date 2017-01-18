@@ -2,17 +2,17 @@
 <html>
 <head>
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta charset="UTF-8">
+<meta charset="utf-8">
 <title>Test Page for sap.m.Toolbar</title>
+<script src="../shared-config.js"></script>
 <script id="sap-ui-bootstrap"
 		data-sap-ui-noConflict="true"
 		src="../../../../resources/sap-ui-core.js"
-		data-sap-ui-libs="sap.m"
-		data-sap-ui-theme="sap_bluecrystal">
+		data-sap-ui-libs="sap.m">
 </script>
-<link rel="stylesheet" href="../../../../resources/sap/ui/thirdparty/qunit.css" type="text/css" media="screen" />
+<link rel="stylesheet" href="../../../../resources/sap/ui/thirdparty/qunit.css" type="text/css" media="screen">
 <script src="../../../../resources/sap/ui/thirdparty/qunit.js"></script>
-<script type="text/javascript" src="../../../../resources/sap/ui/qunit/qunit-junit.js"></script>
+<script src="../../../../resources/sap/ui/qunit/qunit-junit.js"></script>
 <script src="../../../../resources/sap/ui/thirdparty/sinon.js"></script>
 <script src="../../../../resources/sap/ui/thirdparty/sinon-qunit.js"></script>
 <script src="../../../../resources/sap/ui/qunit/QUnitUtils.js"></script>
@@ -61,7 +61,7 @@
 		ok(oTB.$().hasClass("sapMTB"), "Toolbar has correct class name");
 		oTB.setVisible(false);
 		sap.ui.getCore().applyChanges();
-		var $ToolbarPlaceHolder = jQuery.sap.byId(sap.ui.core.RenderPrefixes.Invisible + oTB.getId());
+		var $ToolbarPlaceHolder = jQuery.sap.byId(sap.ui.core.RenderManager.createInvisiblePlaceholderId(oTB));
 		strictEqual(oTB.$().length, 0, "Toolbar is no longer in DOM after setting it to invisible");
 		strictEqual($ToolbarPlaceHolder.length, 1, "Toolbar placeholder is in DOM after setting it to invisible");
 		strictEqual($ToolbarPlaceHolder.css("display"), "none", "Toolbar placeholder should have display none when invisible");
@@ -277,57 +277,6 @@
 
 	});
 
-	test("should detect whether toolbar overflows or not", function() {
-		var sLongText = new Array(1000).join("text ");
-
-		// test wrapper
-		var testOverflow = function(sMessage, bExpected, oConfig) {
-			var oTB = createToolbar(oConfig || {});
-			strictEqual(sap.m.Toolbar.checkOverflow(oTB.$()), bExpected, sMessage);
-			oTB.destroy();
-		};
-
-		// run test
-		testOverflow("101px content in 100px toolbar", true, {
-			Toolbar : {width: "100px"},
-			ToolbarSpacer : {width : "101px"}
-		});
-
-		testOverflow("101% unshrinkable content", true, {
-			Toolbar : {},
-			ToolbarSpacer : {width : "101%"}
-		});
-
-		testOverflow("Long button text", true, {
-			Toolbar : {},
-			Button : {text : sLongText}
-		});
-
-		testOverflow("Should respect min width", true, {
-			Toolbar : {width: "100px"},
-			Label : {text : "t"},
-			ToolbarSpacer : {width : "80px"}
-		});
-
-		testOverflow("Empty toolbar", false, {
-			Toolbar : {}
-		});
-
-		testOverflow("Invisible toolbar", false, {
-			Toolbar : {visible: false}
-		});
-
-		testOverflow("100% unshrinkable content", false, {
-			Toolbar : {},
-			ToolbarSpacer : {width : "100%"}
-		});
-
-		testOverflow("1px content in 100px toolbar", false, {
-			Toolbar : {},
-			ToolbarSpacer : {width : "100%"}
-		});
-	});
-
 	test("controls shoulds return correct original and initial width", function() {
 		var getOrigWidth = sap.m.Toolbar.getOrigWidth;
 
@@ -460,7 +409,6 @@
 	test("should behave correct according to latest flex box support", function() {
 		// stub for latest flex support
 		var spy = this.spy(sap.m.Toolbar.prototype, "_registerContentResize");
-		this.stub(sap.m.Toolbar, "hasFlexBoxSupport", true);
 		this.stub(sap.m.Toolbar, "hasNewFlexBoxSupport", true);
 		var oTB = createToolbar({
 			Toolbar : {},
@@ -476,7 +424,6 @@
 	test("should behave correct according to old flex box support", function() {
 		// stub for latest old flex support
 		var spy = this.spy(sap.m.Toolbar.prototype, "_registerContentResize");
-		this.stub(sap.m.Toolbar, "hasFlexBoxSupport", true);
 		this.stub(sap.m.Toolbar, "hasNewFlexBoxSupport", false);
 		var oTB = createToolbar({
 			Toolbar : {},
@@ -486,22 +433,6 @@
 		ok(oTB._sResizeListenerId, "Toolbar has resize handler");
 		ok(oTB.$().hasClass("sapMTBOldFlex"), "Toolbar has correct sapMTBOldFlex class");
 		strictEqual(oTB.$().find(".sapMLabel").css("display"), "block", "Display is set to block for shrinkable item");
-		strictEqual(spy.callCount, 1, "Content resize handler is registered once");
-		oTB.destroy();
-	});
-
-	test("should behave correct if there is no flex box support", function() {
-		// stub for no flex box support
-		var spy = this.spy(sap.m.Toolbar.prototype, "_registerContentResize");
-		this.stub(sap.m.Toolbar, "hasFlexBoxSupport", false);
-		this.stub(sap.m.Toolbar, "hasNewFlexBoxSupport", false);
-		var oTB = createToolbar({
-			Toolbar : {},
-			Label : {text: "text"}
-		});
-
-		ok(oTB._sResizeListenerId, "Toolbar has resize handler");
-		ok(oTB.$().hasClass("sapMTBNoFlex"), "Toolbar has correct sapMTBNoFlex class");
 		strictEqual(spy.callCount, 1, "Content resize handler is registered once");
 		oTB.destroy();
 	});
@@ -612,7 +543,7 @@
 			var oDomRef = oTB.getDomRef();
 			sMessage += " so Toolbar should not overflow";
 			ok(oDomRef.scrollWidth === oDomRef.clientWidth, sMessage + ".");
-			oTB.setWidth("500px")._reflexie();	// runs the polyfill
+			oTB.setWidth("500px");
 			ok(oDomRef.scrollWidth === oDomRef.clientWidth, sMessage + " even after resize.");
 			oTB.destroy();
 		};
@@ -766,18 +697,18 @@
 
 		// Assert
 		function assertButton (oButton, oWidth) {
-			strictEqual(oButton.$().css("margin-left"), oWidth.left + "px", oButton + " did have the correct left border");
-			strictEqual(oButton.$().css("margin-right"),  oWidth.right + "px", oButton + " did have the correct right border");
+			strictEqual(oButton.$().css("margin-left"), oWidth.left + "px", oButton + " did have the correct left margin");
+			strictEqual(oButton.$().css("margin-right"),  oWidth.right + "px", oButton + " did have the correct right margin");
 		}
 
 		assertButton(oFirstButton, {
 			left: 4,
-			right : 0
+			right : 4
 		});
 
 		assertButton(oMiddleButton, {
 			left: 4,
-			right : 0
+			right : 4
 		});
 
 		assertButton(oLastButton, {
@@ -785,9 +716,13 @@
 			right : 4
 		});
 
+		strictEqual(oTB.$().css("padding-left"), "0px", "The toolbar had the correct left padding");
+		strictEqual(oTB.$().css("padding-right"), "0px", "The toolbar had the correct right padding");
+
 		// Cleanup
 		oTB.destroy();
 	});
+
 
 </script>
 </head>

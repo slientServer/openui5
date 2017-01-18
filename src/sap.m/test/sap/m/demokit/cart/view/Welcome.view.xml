@@ -1,15 +1,11 @@
 <mvc:View
-	controllerName="sap.ui.demo.cart.view.Welcome"
+	controllerName="sap.ui.demo.cart.controller.Welcome"
 	xmlns="sap.m"
 	xmlns:core="sap.ui.core"
 	xmlns:mvc="sap.ui.core.mvc" >
 	<Page
 		title="{i18n>WELCOME_TITLE}"
 		enableScrolling="false">
-		<footer>
-			<Toolbar>
-			</Toolbar>
-		</footer>
 		<content>
 			<Text
 				text="{i18n>WELCOME_TEXT}"

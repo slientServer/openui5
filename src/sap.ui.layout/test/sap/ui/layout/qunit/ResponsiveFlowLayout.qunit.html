@@ -1,25 +1,30 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
 <title>ResponsiveFlowLayout - sap.ui.layout</title>
 
-<script id="sap-ui-bootstrap" type="text/javascript"
-	src="../../../../../resources/sap-ui-core.js"
-	data-sap-ui-theme="sap_bluecrystal" data-sap-ui-noConflict="true"
+<script src="../shared-config.js"></script>
+<script id="sap-ui-bootstrap"
+	src="../../../../../resources/sap-ui-core.js" data-sap-ui-noConflict="true"
+	data-sap-ui-theme="sap_bluecrystal"
 	data-sap-ui-libs="sap.ui.layout, sap.ui.commons">
-	
+
 </script>
 
 <link rel="stylesheet"
 	href="../../../../../resources/sap/ui/thirdparty/qunit.css"
 	type="text/css" media="screen" />
-<script type="text/javascript"
+<script
 	src="../../../../../resources/sap/ui/thirdparty/qunit.js"></script>
-<script type="text/javascript"
+<script
 	src="../../../../../resources/sap/ui/qunit/qunit-junit.js"></script>
-<script type="text/javascript"
+<script
 	src="../../../../../resources/sap/ui/qunit/QUnitUtils.js"></script>
+<script
+	src="../../../../../resources/sap/ui/thirdparty/sinon.js"></script>
+<script
+	src="../../../../../resources/sap/ui/thirdparty/sinon-qunit.js"></script>
 
 <style type="text/css">
 .sampleButtonBox {
@@ -172,36 +177,82 @@
 		}, 100);
 	});
 
-	/* asyncTest("Check Min-Width", function() {
-		expect(2);
+	module("Private functions");
+	test("_getElementRect", function () {
+		//prepare
+		jQuery("#qunit-fixture").append("<div id='myDiv' style='width:25.1412399px;height:30.321564px'/>");
 
-		var $layout = jQuery.sap.byId("uiArea1");
-		$layout.css("width", "141px");
+		//act
+		var oReal = oRFL._getElementRect(jQuery("#myDiv"));
 
-		var oLDBtn1 = oBtn1.getLayoutData();
-		oLDBtn1.setMinWidth(15);
-		oLDBtn1.setWeight(1);
-		oLDBtn1.setMargin(false);
+		//check
+		equal(oReal.height, "30.3", "Height check");
+		equal(oReal.width, "25.1", "Width check");
 
-		var oLDBtn2 = oBtn2.getLayoutData();
-		oLDBtn2.setWeight(9);
-		oLDBtn2.setMinWidth(84);
-		oLDBtn2.setMargin(false);
+		//act and check
+		ok(!oRFL._getElementRect(null), "When null is passed, null should be returned");
+	});
 
+	test("The private render manager is lazy initialized", function() {
+		//prepare
+		var oResponsiveFlowLayout = {};
+		//act
+		sap.ui.layout.ResponsiveFlowLayout.prototype.init.call(oResponsiveFlowLayout);
+		//check
+		ok(!oResponsiveFlowLayout.oRm, "RenderManager should not be created in ResponsiveFlowLayout.prototype.init method, as focus handler is not available yet (no dom yet)");
+
+		//prepare
+		oResponsiveFlowLayout = new sap.ui.layout.ResponsiveFlowLayout();
+		//act
+		oResponsiveFlowLayout.placeAt("qunit-fixture");
+		sap.ui.getCore().applyChanges();
+		//check
+		ok(oResponsiveFlowLayout.oRm, "RenderManager should be created during rendering");
+		//cleanup
+		oResponsiveFlowLayout.destroy();
+	});
+
+	module("destroy on exit");
+	test("Render manager is not created when control is not visible therefore it is not destroyed on exit", function() {
+		var oResponsiveFlowLayout = new rfl({visible: false});
+		var oExitSpy = sinon.spy(sap.ui.layout.ResponsiveFlowLayout.prototype, "exit");
+		//act
+		oResponsiveFlowLayout.placeAt("qunit-fixture");
 		sap.ui.getCore().applyChanges();
 
-		setTimeout(function() {
-			var $Row2 = jQuery.sap.byId("rflLayout-row1");
-			ok($Row2.length === 0, "Buttons in one row (min-width of button1 almost same as percentage-width)");
+		//check
+		ok(!oResponsiveFlowLayout.oRm, "RenderManager should not be created since the control is not visible");
 
-			$layout.css("width", "140px");
-			setTimeout(function() {
-				$Row2 = jQuery.sap.byId("rflLayout-row1");
-				ok($Row2.length > 0, "Min-width of button bigger than percantage-width");
-				start();
-			}, 100);
-		}, 100);
-	}); */
+		// set the RenderManager to null and check on exit if the value will be changed
+		// if it stays the same the destroy function of the RenderManager is not called
+		oResponsiveFlowLayout.oRm = null;
+
+		//cleanup
+		oResponsiveFlowLayout.destroy();
+
+		// Assert
+		strictEqual(oExitSpy.callCount, 1, "exit is called");
+		strictEqual(oResponsiveFlowLayout.oRm, null, "RenderManager is null since the destroy is not called on it");
+	});
+
+	test("Render manager is destroyed on exit of the control", function() {
+		var oResponsiveFlowLayout = new rfl();
+		//act
+		oResponsiveFlowLayout.placeAt("qunit-fixture");
+		sap.ui.getCore().applyChanges();
+
+		var oDestroySpy = sinon.spy(oResponsiveFlowLayout.oRm, "destroy");
+
+		//check
+		ok(oResponsiveFlowLayout.oRm, "RenderManager exists");
+
+		//cleanup
+		oResponsiveFlowLayout.destroy();
+
+		// Assert
+		strictEqual(oDestroySpy.callCount, 1, "destroy is called on the RenderManager");
+		strictEqual(oResponsiveFlowLayout.oRm, undefined, "RenderManager is undefined after destroy");
+	});
 </script>
 
 </head>

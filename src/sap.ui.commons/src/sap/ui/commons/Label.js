@@ -26,6 +26,7 @@ sap.ui.define(['jquery.sap.global', './library', 'sap/ui/core/Control', 'sap/ui/
 	 *
 	 * @constructor
 	 * @public
+	 * @deprecated Since version 1.38. Instead, use the <code>sap.m.Label</code> control.
 	 * @alias sap.ui.commons.Label
 	 * @ui5-metamodel This control/element also will be described in the UI5 (legacy) designtime metamodel
 	 */
@@ -112,8 +113,6 @@ sap.ui.define(['jquery.sap.global', './library', 'sap/ui/core/Control', 'sap/ui/
 				}
 			}
 
-			// attach to change of required flag of labeled control
-			oFor.attachEvent("requiredChanged",this._handleRequiredChanged, this);
 			this._oFor = oFor;
 		}
 	};
@@ -126,7 +125,6 @@ sap.ui.define(['jquery.sap.global', './library', 'sap/ui/core/Control', 'sap/ui/
 		}
 
 		if (this._oFor) {
-			this._oFor.detachEvent("requiredChanged",this._handleRequiredChanged, this);
 			this._oFor = undefined;
 		}
 	};
@@ -138,32 +136,8 @@ sap.ui.define(['jquery.sap.global', './library', 'sap/ui/core/Control', 'sap/ui/
 		}
 
 		if (this._oFor) {
-			this._oFor.detachEvent("requiredChanged",this._handleRequiredChanged, this);
 			this._oFor = undefined;
 		}
-	};
-
-	/**
-	 * Checks whether the Label itself or the associated control is marked as required (they are mutually exclusive).
-	 *
-	 * @protected
-	 * @returns {Boolean} Returns if the Label or the labelled control are required
-	 */
-	Label.prototype.isRequired = function(){
-		// the value of the local required flag is ORed with the result of a "getRequired"
-		// method of the associated "labelFor" control. If the associated control doesn't
-		// have a getRequired method, this is treated like a return value of "false".
-		var oFor = this._getLabeledControl();
-		return this.getRequired() || (oFor && oFor.getRequired && oFor.getRequired() === true);
-
-	};
-
-	/**
-	 * If required flag of labeled control changes after Label is rendered, the Label must be rendered again.
-	 * @private
-	 */
-	Label.prototype._handleRequiredChanged = function(){
-		this.invalidate();
 	};
 
 	/**
@@ -205,6 +179,14 @@ sap.ui.define(['jquery.sap.global', './library', 'sap/ui/core/Control', 'sap/ui/
 			return null;
 		}
 		return sap.ui.getCore().byId(sId);
+	};
+
+	/**
+	 * @see sap.ui.core.Control#getAccessibilityInfo
+	 * @protected
+	 */
+	Label.prototype.getAccessibilityInfo = function() {
+		return {description: this.getText()};
 	};
 
 	//Enrich Label functionality

@@ -6,7 +6,8 @@
 
 <html>
 <head>
-	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<script src="../shared-config.js"></script>
 	<script id="sap-ui-bootstrap"
 		type="text/javascript"
 		src="../../../../../resources/sap-ui-core.js"
@@ -14,13 +15,13 @@
 		data-sap-ui-noConflict="true"
 		data-sap-ui-libs="sap.ui.commons">
 	</script>
-	<link rel="stylesheet" href="../../../../../resources/sap/ui/thirdparty/qunit.css" type="text/css" media="screen" />
-	<script type="text/javascript" src="../../../../../resources/sap/ui/thirdparty/qunit.js"></script>
-	<script type="text/javascript" src="../../../../../resources/sap/ui/qunit/qunit-junit.js"></script>
-	<script type="text/javascript" src="../../../../../resources/sap/ui/qunit/QUnitUtils.js"></script>
+	<link rel="stylesheet" href="../../../../../resources/sap/ui/thirdparty/qunit.css" type="text/css" media="screen">
+	<script src="../../../../../resources/sap/ui/thirdparty/qunit.js"></script>
+	<script src="../../../../../resources/sap/ui/qunit/qunit-junit.js"></script>
+	<script src="../../../../../resources/sap/ui/qunit/QUnitUtils.js"></script>
 
 	<!-- Control initialization -->
-	<script language="javascript">
+	<script>
 
 		var oTV1 = new sap.ui.commons.TextView("TV1");
 		oTV1.setText("This is a simple Text for the qUnit Test.");
@@ -90,7 +91,7 @@
 			oTVDom = jQuery.sap.domById('TV2');
 			equals(oTVDom.clientWidth,165, "Defined width");
 			if( oTVDom.clientWidth < oTVDom.scrollWidth ){
-				var bCut = true; 
+				var bCut = true;
 			}
 			ok(bCut,"Text ist cut: defined true");
 		});
@@ -235,6 +236,8 @@
 
 			oTV1.setTextDirection(sap.ui.core.TextDirection.Inherit);
 			oTV1.setTextAlign(sap.ui.core.TextAlign.Begin);
+
+			oTV1.setAccessibleRole(sap.ui.core.AccessibleRole.Document);
 		});
 
 		test("Null Text", function() {
@@ -257,8 +260,10 @@
 		});
 
 		test("ARIA", function() {
+			oTV1Dom = jQuery.sap.domById('TV1');
 			oTVDom = jQuery.sap.domById('TV2');
-			equals(jQuery(oTVDom).attr("role"),"document","ARIA role");
+			equals(jQuery(oTV1Dom).attr("role"),"document","ARIA role 'document'");
+			equals(jQuery(oTVDom).attr("role"),undefined,"ARIA role default");
 			equals(jQuery(oTVDom).attr("aria-disabled"),"false","ARIA-disabled: for enabled field");
 			equals(jQuery(oTVDom).attr("aria-invalid"),"false","ARIA-invalid: for normal field");
 

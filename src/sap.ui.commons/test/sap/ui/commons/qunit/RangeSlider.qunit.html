@@ -1,25 +1,26 @@
 <!DOCTYPE HTML>
-<!-- 
+<!--
   Tested control/class: sap.ui.commons.RangeSlider
   Author: SAP
 -->
 
 <html>
 <head>
-<meta http-equiv="X-UA-Compatible" content="IE=edge" />
-<script id="sap-ui-bootstrap" type="text/javascript"
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<script src="../shared-config.js"></script>
+<script id="sap-ui-bootstrap"
 	src="../../../../../resources/sap-ui-core.js"
 	data-sap-ui-theme="sap_bluecrystal" data-sap-ui-noConflict="true"
 	data-sap-ui-libs="sap.ui.commons">
 </script>
 
-<link rel="stylesheet" href="../../../../../resources/sap/ui/thirdparty/qunit.css" type="text/css" media="screen" />
-<script type="text/javascript" src="../../../../../resources/sap/ui/thirdparty/qunit.js"></script>
-<script type="text/javascript" src="../../../../../resources/sap/ui/qunit/qunit-junit.js"></script>
-<script type="text/javascript" src="../../../../../resources/sap/ui/qunit/QUnitUtils.js"></script>
+<link rel="stylesheet" href="../../../../../resources/sap/ui/thirdparty/qunit.css" type="text/css" media="screen">
+<script src="../../../../../resources/sap/ui/thirdparty/qunit.js"></script>
+<script src="../../../../../resources/sap/ui/qunit/qunit-junit.js"></script>
+<script src="../../../../../resources/sap/ui/qunit/QUnitUtils.js"></script>
 
 <!-- Control initialization -->
-<script language="javascript">
+<script>
 	var oSlis = {};
 
 	var initSli = function(idx, iWidth, iHeight, fMin, fMax, fVal, fVal2,
@@ -72,7 +73,7 @@
 </script>
 
 <!-- Test functions -->
-<script language="javascript">
+<script>
 	qutils.delayTestStart();
 
 	module("Horizontal: Properties");
@@ -674,7 +675,7 @@
 	});
 
 	test("Mouse Move", function() {
-		// Simulate mousemove using "not real" coordinates. Works, because only difference is used to calculate position  
+		// Simulate mousemove using "not real" coordinates. Works, because only difference is used to calculate position
 		var oSli = oSlis["oSli2"];
 		var oGrip = jQuery.sap.domById('oSli2-grip');
 		var oGrip2 = jQuery.sap.domById('oSli2-grip');
@@ -1511,7 +1512,7 @@
 			} else {
 				setTimeout(function() {
 					ok(
-						iCurrentRepetition > 0, 
+						iCurrentRepetition > 0,
 						"Test was triggered several times ("+ iCurrentRepetition +")"
 					);
 					ok(

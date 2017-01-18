@@ -27,6 +27,9 @@
 		assert.strictEqual(this.oCarousel.getHeight(), '100%', "Default 'height' value is 100%");
 		assert.strictEqual(this.oCarousel.getVisible(), true, "Default 'visible' value is true");
 		assert.strictEqual(this.oCarousel.getActivePage(), null, "Default 'activePage' value is null");
+		assert.strictEqual(this.oCarousel.getShowPageIndicator(), true, "Default 'showPageIndicator' value is true");
+		assert.strictEqual(this.oCarousel.getPageIndicatorPlacement(), sap.m.PlacementType.Bottom, "Default 'pageIndicatorPlacement' value is Bottom");
+		assert.strictEqual(this.oCarousel.getArrowsPlacement(), sap.m.CarouselArrowsPlacement.Content, "Default 'arrowsPlacement' value is 'Content'");
 	});
 
 	//================================================================================
@@ -133,12 +136,13 @@
 		assert.strictEqual(this.oCarousel.$().length, 1, "Carousel should be added to DOM");
 	});
 
-	QUnit.test("#setShowPageIndicator(false) should  make Page Indicator invisible", function (assert) {
+	QUnit.test("#setShowPageIndicator(false) should make Page Indicator invisible", function (assert) {
 		// Act
 		this.oCarousel.setShowPageIndicator(false);
+		sap.ui.getCore().applyChanges();
 
 		// Assert
-		assert.strictEqual(this.oCarousel.$().find(".sapMCrslBulleted").css('display'), 'none', "Page Indicator should be invisible");
+		assert.strictEqual(this.oCarousel.$().find(".sapMCrslBulleted").length, 0, "Page Indicator should be invisible");
 	});
 
 	QUnit.test("#setShowPageIndicator(true) should make Page Indicator visible", function (assert) {
@@ -149,15 +153,16 @@
 		this.oCarousel.setShowPageIndicator(true);
 
 		// Assert
-		assert.strictEqual(this.oCarousel.$().find(".sapMCrslBulleted").css('display'), 'block', "Page Indicator should be visible");
+		assert.strictEqual(this.oCarousel.$().find(".sapMCrslBulleted").css('opacity'), '1', "Page Indicator should be visible");
 	});
 
 	QUnit.test("#setPageIndicatorPlacement() to 'top' position", function (assert) {
 		// Act
 		this.oCarousel.setPageIndicatorPlacement(sap.m.PlacementType.Top);
+		sap.ui.getCore().applyChanges();
 
 		// Assert
-		assert.ok(this.oCarousel.$().children().first().hasClass('sapMCrslBulleted'), "Page Indicator should be on top");
+		assert.ok(this.oCarousel.$().children().first().hasClass('sapMCrslControlsTop'), "Page Indicator should be on top");
 	});
 
 	QUnit.test("#setPageIndicatorPlacement() to 'bottom' position", function (assert) {
@@ -165,7 +170,25 @@
 		this.oCarousel.setPageIndicatorPlacement(sap.m.PlacementType.Bottom);
 
 		// Assert
-		assert.ok(this.oCarousel.$().children().last().hasClass('sapMCrslBulleted'), "Page Indicator should be at bottom");
+		assert.ok(this.oCarousel.$().children().last().hasClass('sapMCrslControlsBottom'), "Page Indicator should be at bottom");
+	});
+
+	QUnit.test("#setArrowsPlacement() to 'Content' position", function (assert) {
+		// Act
+		this.oCarousel.setArrowsPlacement(sap.m.CarouselArrowsPlacement.Content);
+
+		// Assert
+		assert.strictEqual(this.oCarousel.$().find('.sapMCrslHud').length, 1, "Arrows should be rendered next to the image");
+	});
+
+	QUnit.test("#setArrowsPlacement() to 'PageIndicator' position", function (assert) {
+		// Act
+		this.oCarousel.setArrowsPlacement(sap.m.CarouselArrowsPlacement.PageIndicator);
+		sap.ui.getCore().applyChanges();
+
+		// Assert
+		assert.strictEqual(this.oCarousel.$().find('.sapMCrslHud').length, 0, "Arrows hud should not be rendered");
+		assert.strictEqual(this.oCarousel.$().find('.sapMCrslControls ').length, 1, "Arrows should be rendered in the 'controls' area");
 	});
 
 	//================================================================================
@@ -173,12 +196,18 @@
 	//================================================================================
 	QUnit.module("Events", {
 		setup: function () {
-			this.oCarousel = new sap.m.Carousel({
+			//carousel with 9 pages. Page Indicator will be numeric.
+			this.oCarousel = new sap.m.Carousel("myCrsl", {
 				pages: [
 					new sap.m.Page("keyTestPage_1"),
 					new sap.m.Page("keyTestPage_2"),
 					new sap.m.Page("keyTestPage_3"),
-					new sap.m.Page("keyTestPage_4")
+					new sap.m.Page("keyTestPage_4"),
+					new sap.m.Page("keyTestPage_5"),
+					new sap.m.Page("keyTestPage_6"),
+					new sap.m.Page("keyTestPage_7"),
+					new sap.m.Page("keyTestPage_8"),
+					new sap.m.Page("keyTestPage_9")
 				],
 				activePage: "keyTestPage_2"
 			});
@@ -225,6 +254,20 @@
 	QUnit.test("Active page should be set when specified in constructor'", function (assert) {
 		//Assert
 		assert.strictEqual(this.oCarousel.getActivePage(), 'keyTestPage_2', "Active page should be 'keyTestPage_2'");
+	});
+
+	QUnit.test("When 'pageChanged' event is fired the numeric value of the page indicator should change", function (assert) {
+
+		var sTextBetweenNumbers = sap.ui.getCore().getLibraryResourceBundle("sap.m").getText("CAROUSEL_PAGE_INDICATOR_TEXT");
+
+		// Assert
+		assert.strictEqual(document.getElementById("myCrsl-slide-number").innerHTML, "2 " + sTextBetweenNumbers + " 9", "Page indicator should show '2 " + sTextBetweenNumbers + " 9'");
+
+		// Act
+		this.oCarousel.next();
+
+		// Assert
+		assert.strictEqual(document.getElementById("myCrsl-slide-number").innerHTML, "3 " + sTextBetweenNumbers + " 9", "Page indicator should show '3 " + sTextBetweenNumbers + " 9'");
 	});
 
 	//================================================================================
@@ -383,15 +426,15 @@
 		qutils.triggerKeydown(this.oCarousel.$(), jQuery.sap.KeyCodes.ARROW_UP);
 
 		// Assert
-		assert.strictEqual(this.oCarousel.getActivePage(), "keyTestPage3", "active page is keyTestPage3");
+		assert.strictEqual(this.oCarousel.getActivePage(), "keyTestPage1", "active page is keyTestPage1");
 	});
 
-	QUnit.test("Arrow Up last page", function (assert) {
+	QUnit.test("Arrow Down last page", function (assert) {
 		// Arrange
 		this.oCarousel.setActivePage("keyTestPage12");
 
 		// Act
-		qutils.triggerKeydown(this.oCarousel.$(), jQuery.sap.KeyCodes.ARROW_UP);
+		qutils.triggerKeydown(this.oCarousel.$(), jQuery.sap.KeyCodes.ARROW_DOWN);
 
 		// Assert
 		assert.strictEqual(this.oCarousel.getActivePage(), "keyTestPage12", "active page stays keyTestPage12");
@@ -426,15 +469,15 @@
 		qutils.triggerKeydown(this.oCarousel.$(), jQuery.sap.KeyCodes.ARROW_DOWN);
 
 		// Assert
-		assert.strictEqual(this.oCarousel.getActivePage(), "keyTestPage1", "active page is keyTestPage1");
+		assert.strictEqual(this.oCarousel.getActivePage(), "keyTestPage3", "active page is keyTestPage3");
 	});
 
-	QUnit.test("Arrow Down on first page", function (assert) {
+	QUnit.test("Arrow Up on first page", function (assert) {
 		// Arrange
 		this.oCarousel.setActivePage("keyTestPage1");
 
 		// Act
-		qutils.triggerKeydown(this.oCarousel.$(), jQuery.sap.KeyCodes.ARROW_DOWN);
+		qutils.triggerKeydown(this.oCarousel.$(), jQuery.sap.KeyCodes.ARROW_UP);
 
 		// Assert
 		assert.strictEqual(this.oCarousel.getActivePage(), "keyTestPage1", "active page stays keyTestPage1");
@@ -592,17 +635,17 @@
 
 		// Assert
 		assert.strictEqual(this.oCarousel.getActivePage(), "keyTestPage1", "active page is keyTestPage1");
+		this.oCarousel.destroy();
 	});
 
 	//================================================================================
 	// Carousel Keyboard handling
 	//================================================================================
-	QUnit.module("Container Padding Classes");
 	QUnit.test("Container Padding Classes", function (assert) {
 		// System under Test + Act
 		var oContainer = new sap.m.Carousel({
 				pages: [
-					new sap.m.Page("keyTestPage1")
+					new sap.m.Page("keyTestPage20")
 				]
 			}),
 			sContentSelector = ".sapMCrslInner > .sapMCrslItem > .sapMScrollCont > .sapMScrollContScroll",

@@ -1,24 +1,23 @@
 <!DOCTYPE HTML>
 <html>
 	<head>
-		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
 		<title>qUnit Page for sap.m.TablePersoController</title>
 
+		<script src="../shared-config.js"></script>
 		<script id="sap-ui-bootstrap"
-			type="text/javascript"
 			src="../../../../resources/sap-ui-core.js"
-			data-sap-ui-theme="sap_bluecrystal"
 			data-sap-ui-noConflict="true"
 			data-sap-ui-compatVersion="1.16"
 			data-sap-ui-libs="sap.m">
 		</script>
 
-		<link rel="stylesheet" href="../../../../resources/sap/ui/thirdparty/qunit.css" type="text/css" media="screen" />
-		<script type="text/javascript" src="../../../../resources/sap/ui/thirdparty/qunit.js"></script>
-		<script type="text/javascript" src="../../../../resources/sap/ui/qunit/qunit-junit.js"></script>
-		<script type="text/javascript" src="../../../../resources/sap/ui/qunit/QUnitUtils.js"></script>
-		<script type="text/javascript" src="../../../../resources/sap/ui/thirdparty/sinon.js"></script>
-		<script type="text/javascript" src="../../../../resources/sap/ui/thirdparty/sinon-qunit.js"></script>
+		<link rel="stylesheet" href="../../../../resources/sap/ui/thirdparty/qunit.css" type="text/css" media="screen">
+		<script src="../../../../resources/sap/ui/thirdparty/qunit.js"></script>
+		<script src="../../../../resources/sap/ui/qunit/qunit-junit.js"></script>
+		<script src="../../../../resources/sap/ui/qunit/QUnitUtils.js"></script>
+		<script src="../../../../resources/sap/ui/thirdparty/sinon.js"></script>
+		<script src="../../../../resources/sap/ui/thirdparty/sinon-qunit.js"></script>
 
 		<script>
 
@@ -167,7 +166,7 @@
 		});
 
 		var app = new sap.m.App("myApp", {
-			initPage: "myFirstPage"
+			initialPage: "myFirstPage"
 		});
 
 		app.addPage(page).placeAt("content");
@@ -565,9 +564,9 @@
 			strictEqual(actual, expected, 'The focus should be on the first list item.');
 			oTPC.destroy();
 			oTable.destroy();
-				
+
 		});
-		
+
 		test("Test Initial focus with grouping", function () {
 			// arrange
 			var oTable = new sap.m.Table("testInitialFocusTable", {
@@ -606,7 +605,7 @@
 					oDeferred.resolve();
 					return oDeferred.promise();
 				},
-				
+
 				getGroup : function(oColumn) {
 					if(oColumn.getHeader() && oColumn.getHeader().getText) {
 						if( oColumn.getHeader().getText() == "Column 0") {
@@ -638,9 +637,9 @@
 			oTPC.destroy();
 			oTable.destroy();
 		});
-		
-		
-		
+
+
+
 		</script>
 	</head>
 	<body id="body" class="sapUiBody">

@@ -3,30 +3,31 @@
  */
 
 // Provides default renderer for control sap.ui.demokit.HexagonButton
-sap.ui.define(['jquery.sap.global'],
+sap.ui.define(['jquery.sap.encoder'],
 	function(jQuery) {
 	"use strict";
 
 
 	/**
-	 * @class HexagonButton renderer. 
-	 * @static
+	 * HexagonButton renderer.
+	 * @namespace
+	 * @alias sap.ui.demokit.HexagonButtonRenderer
 	 */
-	var HexagonButtonRenderer = function() {
+	var HexagonButtonRenderer = {
 	};
-	
-	
+
+
 	/**
 	 * Renders the HTML for the given control, using the provided {@link sap.ui.core.RenderManager}.
-	 * 
+	 *
 	 * @param {sap.ui.core.RenderManager} oRenderManager the RenderManager that can be used for writing to the Render-Output-Buffer
 	 * @param {sap.ui.core.Control} oControl an object representation of the control that should be rendered
 	 */
 	HexagonButtonRenderer.render = function(oRenderManager, oControl){
 		// convenience variable
 		var rm = oRenderManager;
-		
-		// write the HTML into the render manager  
+
+		// write the HTML into the render manager
 		rm.write("<div ");
 		rm.writeControlData(oControl);
 		rm.addClass("sapUiHexBtn");
@@ -54,7 +55,7 @@ sap.ui.define(['jquery.sap.global'],
 		}
 		rm.write("</div>");
 	};
-	
+
 
 	return HexagonButtonRenderer;
 

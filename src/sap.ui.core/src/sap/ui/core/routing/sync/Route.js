@@ -1,7 +1,7 @@
 /*!
  * ${copyright}
  */
-sap.ui.define([], function() {
+sap.ui.define(['jquery.sap.global'], function(jQuery) {
 	"use strict";
 
 	/**
@@ -23,7 +23,8 @@ sap.ui.define([], function() {
 				oConfig,
 				oEventData,
 				oView = null,
-				oTargetControl = null;
+				oTargetControl = null,
+				oTargetData;
 
 			// Recursively fire matched event and display views of this routes parents
 			if (this._oParent) {
@@ -34,6 +35,10 @@ sap.ui.define([], function() {
 			}
 
 			oConfig =  jQuery.extend({}, oRouter._oConfig, this._oConfig);
+
+			// make a copy of arguments and forward route config to target
+			oTargetData = jQuery.extend({}, oArguments);
+			oTargetData.routeConfig = oConfig;
 
 			oEventData = {
 				name: oConfig.name,
@@ -67,7 +72,7 @@ sap.ui.define([], function() {
 				oEventData.targetControl = oTargetControl;
 			} else {
 				// let targets do the placement + the events
-				oRouter._oTargets._display(this._oConfig.target, oArguments);
+				oRouter._oTargets._display(this._oConfig.target, oTargetData, this._oConfig.titleTarget);
 			}
 
 			if (oConfig.callback) {
@@ -75,18 +80,14 @@ sap.ui.define([], function() {
 				oConfig.callback(this, oArguments, oConfig, oTargetControl, oView);
 			}
 
-			setTimeout(function(){
-				this.fireEvent("matched", oEventData);
-				oRouter.fireRouteMatched(oEventData);
-			}.bind(this), 0);
+			this.fireEvent("matched", oEventData);
+			oRouter.fireRouteMatched(oEventData);
 
 			// skip this event in the recursion
 			if (bInital) {
-				setTimeout(function(){
-					jQuery.sap.log.info("The route named '" + oConfig.name + "' did match with its pattern", this);
-					this.fireEvent("patternMatched", oEventData);
-					oRouter.fireRoutePatternMatched(oEventData);
-				}.bind(this), 0);
+				jQuery.sap.log.info("The route named '" + oConfig.name + "' did match with its pattern", this);
+				this.fireEvent("patternMatched", oEventData);
+				oRouter.fireRoutePatternMatched(oEventData);
 			}
 
 			return oPlaceInfo;

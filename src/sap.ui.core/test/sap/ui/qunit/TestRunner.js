@@ -165,6 +165,7 @@
 					if (parseInt(jQuery("div#reportingHeader span.failed").text()) > 0) {
 						jQuery("div#innerBar")[0].style.backgroundColor = '#ed866f';
 					}
+					jQuery("div#time").text(Math.round((new Date() - window.oStartTime)/1000) + " Seconds");
 					jQuery("#selectedTests").find("option").each(function() {
 						if (jQuery(this).text() === sTestPage) {
 							jQuery(this).remove();
@@ -251,12 +252,13 @@
 				var oContext;
 				var fnCheckSuccess = function() {
 					var doc = $frame[0].contentWindow.document;
-					var sTestName = jQuery(doc).find("h1#qunit-header").text();
-					var $results = jQuery(doc).find("ol#qunit-tests > li");
-					var oResult = doc.getElementById("qunit-testresult");
+					var $doc = jQuery(doc);
+					var sTestName = $doc.find("h1#qunit-header").text();
+					var $results = $doc.find("ol#qunit-tests > li");
+					var $qunitBanner = $doc.find("#qunit-banner");
 
-					if (oResult && jQuery(oResult).text().indexOf("completed") >= 0) {
-						
+					if ($qunitBanner.hasClass("qunit-fail") || $qunitBanner.hasClass("qunit-pass")) {
+
 						//IE workaround for the lack of document.baseURI property
 						baseURI = doc.location.href;
 
@@ -439,7 +441,7 @@
 				var $test = jQuery(aTestResults[i]);
 				var sTestSummary = $test.find("strong").text();
 
-				var m = sTestSummary.match(/^(.*)\((\d+)(?:,\s*(\d+),\s*(\d+))?\)\s*$/);
+				var m = sTestSummary.match(/^([\S\s]*)\((\d+)(?:,\s*(\d+),\s*(\d+))?\)\s*$/);
 				var sTestName;
 				var sNumFailed;
 				var sNumPassed;
@@ -476,7 +478,6 @@
 					sLiClass: sLineItemClass,
 					testmessages: aTestMessages }
 				});
-
 				this.updateResultHeader(sNumAll, sNumPassed, sNumFailed);
 			}
 

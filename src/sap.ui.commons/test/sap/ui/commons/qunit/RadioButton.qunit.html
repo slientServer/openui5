@@ -1,26 +1,26 @@
 <!DOCTYPE HTML>
 <html>
 	<head>
-		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
-	
-<!-- 
-  JSUNIT: 
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+<!--
+  JSUNIT:
     Tested control/class: sap.ui.commons.RadioButton
-    Author: d046011
  -->
 
 		<title>Test Page for sap.ui.commons.RadioButton</title>
+		<script src="../shared-config.js"></script>
 		<script id="sap-ui-bootstrap"
 				data-sap-ui-theme="sap_bluecrystal"
 				data-sap-ui-noConflict="true"
 				data-sap-ui-libs="sap.ui.commons"
 				src="../../../../../resources/sap-ui-core.js">
 		</script>
-		<link rel="stylesheet" href="../../../../../resources/sap/ui/thirdparty/qunit.css" type="text/css" media="screen" />
-		<script type="text/javascript" src="../../../../../resources/sap/ui/thirdparty/qunit.js"></script>
-		<script type="text/javascript" src="../../../../../resources/sap/ui/qunit/qunit-junit.js"></script>
-		<script type="text/javascript" src="../../../../../resources/sap/ui/qunit/QUnitUtils.js"></script>
-		<script type="text/javascript">
+		<link rel="stylesheet" href="../../../../../resources/sap/ui/thirdparty/qunit.css" type="text/css" media="screen">
+		<script src="../../../../../resources/sap/ui/thirdparty/qunit.js"></script>
+		<script src="../../../../../resources/sap/ui/qunit/qunit-junit.js"></script>
+		<script src="../../../../../resources/sap/ui/qunit/QUnitUtils.js"></script>
+		<script>
 
 		var sText = "Hello",
 		 	sTooltip = "tooltip",
@@ -89,10 +89,6 @@
 			assert.ok(!this.oRadioButton1.getSelected(), "RadioButton should not be selected");
 			assert.ok(!this.oRadioButton2.getSelected(), "RadioButton should not be selected");
 			assert.ok(this.oRadioButton3.getSelected(), "RadioButton should be selected");
-
-			// cleanup
-			this.oRadioButton1.destroy();
-			this.oRadioButton2.destroy();
 		});
 
 		QUnit.test("setGroupName", function (assert) {
@@ -116,18 +112,18 @@
 			setup : function() {
 				rb1 = sap.ui.getCore().getControl("rb1");
 				rb2 = sap.ui.getCore().getControl("rb2");
-	
+
 				rb1.setVisible(true);
 				rb1.setEnabled(bEnabled);
 				rb1.setSelected(bSelected);
-				
+
 				rb2.setVisible(true);
 				rb2.setEnabled(bEnabled);
 				rb2.setWidth(sWidth);
 				rb2.setSelected(bSelected);
-				
+
 				sap.ui.getCore().applyChanges();
-	
+
 				ok(rb1, "rb1 should not be null");
 				ok(rb2, "rb2 should not be null");
 			},
@@ -138,7 +134,7 @@
 		});
 
 		// test control properties
-		
+
 		test("TextOk", function() {
 			strictEqual(rb1.getText(), sText, "rb1.getText() returns wrong result");
 			strictEqual(rb2.getText(), sText, "rb2.getText() returns wrong result");
@@ -169,11 +165,11 @@
 			strictEqual(rb2.getSelected(), bSelected, "rb2.getSelected() returns wrong result");
 		});
 
-		
+
 		// test events
-		
-		// TODO: test event handler with event parameters	
-		
+
+		// TODO: test event handler with event parameters
+
 		test("SelectOk", function() {
 			try {
 				rb1.fireSelect();
@@ -202,18 +198,18 @@
 			rb1.attachSelect(foo);
 		});
 
-		// test methods 
-		
-		// TODO 
-		
-		
+		// test methods
+
+		// TODO
+
+
 		// test misc (control interaction, metadata, styles, etc.)
-		
+
 		function isEmpty(oObject) {
 			for(var i in oObject){ return false;}
 			return true;
 		}
-		
+
 		test("MetadataOk", function() {
 			var oMetadata = rb1.getMetadata();
 			ok(oMetadata, "rb1.getMetadata() should not be null");
@@ -264,7 +260,7 @@
 			rb1.setEnabled(true);
 			sap.ui.getCore().applyChanges();
 			sClasses = window.document.getElementById("rb1").className; // after re-rendering it is a NEW HTML element!!
-			
+
 			ok(sClasses.indexOf("sapUiRb") > -1, "rb1 className is missing 'sapUiRb'");
 			ok(sClasses.indexOf("sapUiRbStd") > -1, "rb1 className is missing 'sapUiRbStd'");
 			ok(sClasses.indexOf("sapUiRbDis") == -1, "rb1 className is containing 'sapUiRbDis' after being enabled");
@@ -279,6 +275,20 @@
 			ok(sClasses.indexOf("sapUiRbDis") == -1, "rb1 className is containing 'sapUiRbDis' after being enabled");
 			ok(sClasses.indexOf("sapUiRbRo") > -1, "rb1 className is missing 'sapUiRbRo'");
 		});
+
+			module("GroupName");
+
+			test("_groupNames clean-up", function() {
+				this.oRadioButton = new sap.ui.commons.RadioButton();
+
+				this.oRadioButton.placeAt("qunit-fixture");
+
+				sap.ui.getCore().applyChanges();
+
+				this.oRadioButton.destroy();
+
+				strictEqual(this.oRadioButton._groupNames['sapUiRbDefaultGroup'].length, 0, "RadioButton was removed from _groupNames");
+			});
 		</script>
 	</head>
 	<body>

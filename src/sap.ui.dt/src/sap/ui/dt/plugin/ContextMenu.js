@@ -14,7 +14,7 @@ sap.ui.define([
 	 * @param {string} [sId] id for the new object, generated automatically if no id is given
 	 * @param {object} [mSettings] initial settings for the new object
 	 * @class The ContextMenu registers event handler to open the context menu. Menu entries can dynamically be added
-	 * @extends sap.ui.core.ManagedObject
+	 * @extends sap.ui.dt.Plugin
 	 * @author SAP SE
 	 * @version ${version}
 	 * @constructor
@@ -30,7 +30,11 @@ sap.ui.define([
 
 			// ---- control specific ----
 			library: "sap.ui.dt",
-			properties: {},
+			properties: {
+				contextElement : {
+					type : "object"
+				}
+			},
 			associations: {},
 			events: {
 				openedContextMenu: {},
@@ -68,7 +72,6 @@ sap.ui.define([
 
 	ContextMenu.prototype.exit = function() {
 		delete this._aMenuItems;
-		delete this._oElement;
 		if (this._oContextMenuControl) {
 			this._oContextMenuControl.destroy();
 			delete this._oContextMenuControl;
@@ -94,10 +97,10 @@ sap.ui.define([
 	};
 
 	ContextMenu.prototype.open = function(oOriginalEvent, oTargetOverlay) {
-		this._oElement = oTargetOverlay.getElementInstance();
+		this.setContextElement(oTargetOverlay.getElementInstance());
 
 		this._oContextMenuControl = new ContextMenuControl();
-		this._oContextMenuControl.setMenuItems(this._aMenuItems, this._oElement);
+		this._oContextMenuControl.setMenuItems(this._aMenuItems, oTargetOverlay);
 		this._oContextMenuControl.setOverlayDomRef(oTargetOverlay);
 		this._oContextMenuControl.attachItemSelect(this._onItemSelected, this);
 
@@ -117,14 +120,15 @@ sap.ui.define([
 	 * @private
 	 */
 	ContextMenu.prototype._onItemSelected = function(oEvent) {
-		var that = this;
 		var sId = oEvent.getParameter("item").data("id");
 		this._aMenuItems.some(function(oItem) {
 			if (sId === oItem.id) {
-				oItem.handler(that._oElement);
+				var oDesignTime = this.getDesignTime();
+				var aSelection = oDesignTime.getSelection();
+				oItem.handler(aSelection);
 				return true;
 			}
-		});
+		}, this);
 	};
 
 	/**

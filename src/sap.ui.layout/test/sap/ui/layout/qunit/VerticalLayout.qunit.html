@@ -1,24 +1,23 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!DOCTYPE HTML>
 
-<!-- 
+<!--
   Tested control/class: sap.ui.layout.VerticalLayout
   Author: SAP
 -->
 
 <html>
 <head>
-	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
-	<script id="sap-ui-bootstrap" 
-		type="text/javascript"
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<script src="../shared-config.js"></script>
+	<script id="sap-ui-bootstrap"
 		src="../../../../../resources/sap-ui-core.js"
-		data-sap-ui-theme="sap_bluecrystal"
 		data-sap-ui-noConflict="true"
 		data-sap-ui-libs="sap.ui.layout,sap.ui.commons">
 	</script>
-	<link rel="stylesheet" href="../../../../../resources/sap/ui/thirdparty/qunit.css" type="text/css" media="screen" />
-	<script type="text/javascript" src="../../../../../resources/sap/ui/thirdparty/qunit.js"></script>
-	<script type="text/javascript" src="../../../../../resources/sap/ui/qunit/qunit-junit.js"></script>
-	<script type="text/javascript" src="../../../../../resources/sap/ui/qunit/QUnitUtils.js"></script>
+	<link rel="stylesheet" href="../../../../../resources/sap/ui/thirdparty/qunit.css" type="text/css" media="screen">
+	<script src="../../../../../resources/sap/ui/thirdparty/qunit.js"></script>
+	<script src="../../../../../resources/sap/ui/qunit/qunit-junit.js"></script>
+	<script src="../../../../../resources/sap/ui/qunit/QUnitUtils.js"></script>
 
 	<!-- Control initialization -->
 	<script language="javascript">
@@ -29,10 +28,10 @@
 		          new sap.ui.commons.Image("I1",{src:"http://www.sap.com/global/images/SAPLogo.gif"})]
 	});
 	oLayout1.placeAt("uiArea1");
-		
+
 	oLayout2 = new sap.ui.layout.VerticalLayout("Layout2", {
 		width: "200px",
-		content: [new sap.ui.commons.Slider("S2",{Value:25, tooltip:"Slider tooltip", width: "300px"}),
+		content: [new sap.ui.commons.Slider("S2",{value:25, tooltip:"Slider tooltip", width: "300px"}),
 		          new sap.ui.commons.TextArea("TA2",{value:"Test \n1\n2\n3\n4\n5\n6\n7\n8\n9", width: "250px", height: "150px"}),
 		          new sap.ui.commons.RatingIndicator("RI2",{value: 4}),
 					    new sap.ui.commons.CheckBox("CB2",{text: "Test"})]
@@ -44,7 +43,7 @@
 	<script language="javascript">
 
 	qutils.delayTestStart();
-	
+
 	module("Properties");
 
 	test("Default Values", function() {
@@ -127,7 +126,29 @@
 		// Cleanup
 		oContainer.destroy();
 	});
-	
+
+	module("Accessibility");
+
+	test("getAccessibilityInfo", function() {
+		var oLayout = new sap.ui.layout.VerticalLayout({
+			content: [
+				new sap.ui.layout.VerticalLayout(),
+				new sap.ui.layout.VerticalLayout()
+			]
+		});
+		ok(!!oLayout.getAccessibilityInfo, "VerticalLayout has a getAccessibilityInfo function");
+		var oInfo = oLayout.getAccessibilityInfo();
+		ok(!!oInfo, "getAccessibilityInfo returns a info object");
+		ok(oInfo.role === undefined || oInfo.editable === null, "AriaRole");
+		ok(oInfo.type === undefined || oInfo.editable === null, "Type");
+		ok(oInfo.description === undefined || oInfo.editable === null, "Description");
+		ok(oInfo.focusable === undefined || oInfo.editable === null, "Focusable");
+		ok(oInfo.enabled === undefined || oInfo.editable === null, "Enabled");
+		ok(oInfo.editable === undefined || oInfo.editable === null, "Editable");
+		ok(oInfo.children && oInfo.children.length == 2, "Children");
+		oLayout.destroy();
+	});
+
 	</script>
 
 	<title>qunit Test for VerticalLayout</title>

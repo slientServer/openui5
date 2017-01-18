@@ -523,8 +523,8 @@
 		"sux": "Sümerce",
 		"sv": "İsveççe",
 		"sw": "Svahili",
+		"sw_CD": "Kongo Svahili",
 		"swb": "Komorca",
-		"swc": "Kongo Svahili",
 		"syc": "Klasik Süryanice",
 		"syr": "Süryanice",
 		"szl": "Silezyaca",
@@ -621,6 +621,7 @@
 		"zza": "Zazaca"
 	},
 	"scripts": {
+		"Adlm": "Adlm",
 		"Afak": "Afaka",
 		"Aghb": "Kafkas Albanyası",
 		"Ahom": "Ahom",
@@ -634,6 +635,7 @@
 		"Bass": "Bassa Vah",
 		"Batk": "Batak",
 		"Beng": "Bengal",
+		"Bhks": "Bhks",
 		"Blis": "Blis Sembolleri",
 		"Bopo": "Bopomofo",
 		"Brah": "Brahmi",
@@ -666,6 +668,7 @@
 		"Grek": "Yunan",
 		"Gujr": "Gücerat",
 		"Guru": "Gurmukhi",
+		"Hanb": "Hanb",
 		"Hang": "Hangıl",
 		"Hani": "Han",
 		"Hano": "Hanunoo",
@@ -682,6 +685,7 @@
 		"Hung": "Eski Macar",
 		"Inds": "Indus",
 		"Ital": "Eski İtalyan",
+		"Jamo": "Jamo",
 		"Java": "Cava Dili",
 		"Jpan": "Japon",
 		"Jurc": "Jurchen",
@@ -710,6 +714,7 @@
 		"Mahj": "Mahajani",
 		"Mand": "Manden",
 		"Mani": "Mani",
+		"Marc": "Marc",
 		"Maya": "Maya Hiyeroglifleri",
 		"Mend": "Mende",
 		"Merc": "Meroitik El Yazısı",
@@ -724,6 +729,7 @@
 		"Mymr": "Burma",
 		"Narb": "Eski Kuzey Arap",
 		"Nbat": "Nebati",
+		"Newa": "Newa",
 		"Nkgb": "Naksi Geba",
 		"Nkoo": "N’Ko",
 		"Nshu": "Nüshu",
@@ -731,6 +737,7 @@
 		"Olck": "Ol Chiki",
 		"Orkh": "Orhun",
 		"Orya": "Oriya",
+		"Osge": "Osge",
 		"Osma": "Osmanya",
 		"Palm": "Palmira",
 		"Pauc": "Pau Cin Hau",
@@ -836,6 +843,7 @@
 		"Yiii": "Yi",
 		"Zinh": "Kalıtsal",
 		"Zmth": "Matematiksel Gösterim",
+		"Zsye": "Zsye",
 		"Zsym": "Sembol",
 		"Zxxx": "Yazılı Olmayan",
 		"Zyyy": "Ortak",
@@ -880,7 +888,6 @@
 		"AI": "Anguilla",
 		"AL": "Arnavutluk",
 		"AM": "Ermenistan",
-		"AN": "Hollanda Antilleri",
 		"AO": "Angola",
 		"AQ": "Antarktika",
 		"AR": "Arjantin",
@@ -932,7 +939,7 @@
 		"CV": "Cape Verde",
 		"CW": "Curaçao",
 		"CX": "Christmas Adası",
-		"CY": "Güney Kıbrıs Rum Kesimi",
+		"CY": "Kıbrıs",
 		"CZ": "Çek Cumhuriyeti",
 		"DE": "Almanya",
 		"DG": "Diego Garcia",
@@ -2414,11 +2421,429 @@
 			"235": "H"
 		}
 	},
+	"ca-persian": {
+		"dateFormats": {
+			"full": "G d MMMM y EEEE",
+			"long": "G d MMMM y",
+			"medium": "G d MMM y",
+			"short": "GGGGG d.MM.y"
+		},
+		"timeFormats": {
+			"full": "HH:mm:ss zzzz",
+			"long": "HH:mm:ss z",
+			"medium": "HH:mm:ss",
+			"short": "HH:mm"
+		},
+		"dateTimeFormats": {
+			"full": "{1} {0}",
+			"long": "{1} {0}",
+			"medium": "{1} {0}",
+			"short": "{1} {0}",
+			"availableFormats": {
+				"d": "d",
+				"E": "ccc",
+				"Ed": "d E",
+				"Ehm": "E h:mm a",
+				"EHm": "E HH:mm",
+				"Ehms": "E h:mm:ss a",
+				"EHms": "E HH:mm:ss",
+				"Gy": "G y",
+				"GyMMM": "G MMM y",
+				"GyMMMd": "G d MMM y",
+				"GyMMMEd": "G d MMM y E",
+				"h": "h a",
+				"H": "HH",
+				"hm": "h:mm a",
+				"Hm": "HH:mm",
+				"hms": "h:mm:ss a",
+				"Hms": "HH:mm:ss",
+				"M": "L",
+				"Md": "dd/MM",
+				"MEd": "dd/MM E",
+				"MMM": "LLL",
+				"MMMd": "d MMM",
+				"MMMEd": "d MMM E",
+				"MMMMd": "dd MMMM",
+				"MMMMEd": "dd MMMM E",
+				"mmss": "mm:ss",
+				"ms": "mm:ss",
+				"y": "G y",
+				"yyyy": "G y",
+				"yyyyM": "GGGGG M/y",
+				"yyyyMd": "GGGGG dd.MM.y",
+				"yyyyMEd": "GGGGG dd.MM.y E",
+				"yyyyMM": "MM.y G",
+				"yyyyMMM": "G MMM y",
+				"yyyyMMMd": "G dd MMM y",
+				"yyyyMMMEd": "G d MMM y E",
+				"yyyyMMMM": "G MMMM y",
+				"yyyyQQQ": "G y/QQQ",
+				"yyyyQQQQ": "G y/QQQQ"
+			},
+			"appendItems": {
+				"Day": "{0} ({2}: {1})",
+				"Day-Of-Week": "{0} {1}",
+				"Era": "{1} {0}",
+				"Hour": "{0} ({2}: {1})",
+				"Minute": "{0} ({2}: {1})",
+				"Month": "{0} ({2}: {1})",
+				"Quarter": "{0} ({2}: {1})",
+				"Second": "{0} ({2}: {1})",
+				"Timezone": "{0} {1}",
+				"Week": "{0} ({2}: {1})",
+				"Year": "{1} {0}"
+			},
+			"intervalFormats": {
+				"intervalFormatFallback": "{0} – {1}",
+				"d": {
+					"d": "d–d"
+				},
+				"h": {
+					"a": "h a – h a",
+					"h": "h–h a"
+				},
+				"H": {
+					"H": "HH–HH"
+				},
+				"hm": {
+					"a": "h:mm a – h:mm a",
+					"h": "h:mm–h:mm a",
+					"m": "h:mm–h:mm a"
+				},
+				"Hm": {
+					"H": "HH:mm–HH:mm",
+					"m": "HH:mm–HH:mm"
+				},
+				"hmv": {
+					"a": "h:mm a – h:mm a v",
+					"h": "h:mm–h:mm a v",
+					"m": "h:mm–h:mm a v"
+				},
+				"Hmv": {
+					"H": "HH:mm–HH:mm v",
+					"m": "HH:mm–HH:mm v"
+				},
+				"hv": {
+					"a": "h a – h a v",
+					"h": "h–h a v"
+				},
+				"Hv": {
+					"H": "HH–HH v"
+				},
+				"M": {
+					"M": "MM–MM"
+				},
+				"Md": {
+					"d": "dd/MM – dd/MM",
+					"M": "dd/MM – dd/MM"
+				},
+				"MEd": {
+					"d": "dd/MM E – dd/MM E",
+					"M": "dd/MM E – dd/MM E"
+				},
+				"MMM": {
+					"M": "MMM–MMM"
+				},
+				"MMMd": {
+					"d": "d – d MMM",
+					"M": "d MMM – d MMM"
+				},
+				"MMMEd": {
+					"d": "d MMM E – d MMM E",
+					"M": "d MMM E – d MMM E"
+				},
+				"y": {
+					"y": "G y–y"
+				},
+				"yM": {
+					"M": "GGGGG M/y – M/y",
+					"y": "GGGGG M/y – M/y"
+				},
+				"yMd": {
+					"d": "GGGGG dd.MM.y – dd.MM.y",
+					"M": "GGGGG dd.MM.y – dd.MM.y",
+					"y": "GGGGG dd.MM.y – dd.MM.y"
+				},
+				"yMEd": {
+					"d": "GGGGG dd.MM.y E – dd.MM.y E",
+					"M": "GGGGG dd.MM.y E – dd.MM.y E",
+					"y": "GGGGG dd.MM.y E – dd.MM.y E"
+				},
+				"yMMM": {
+					"M": "G MMM–MMM y",
+					"y": "G MMM y – MMM y"
+				},
+				"yMMMd": {
+					"d": "G d–d MMM y",
+					"M": "G d MMM – d MMM y",
+					"y": "G d MMM y – d MMM y"
+				},
+				"yMMMEd": {
+					"d": "G d MMM y E – d MMM y E",
+					"M": "G d MMM y E – d MMM y E",
+					"y": "G d MMM y E – d MMM y E"
+				},
+				"yMMMM": {
+					"M": "G MMMM – MMMM y",
+					"y": "G MMMM y – MMMM y"
+				}
+			}
+		},
+		"months": {
+			"format": {
+				"abbreviated": [
+					"Ferverdin",
+					"Ordibeheşt",
+					"Hordad",
+					"Tir",
+					"Mordad",
+					"Şehriver",
+					"Mehr",
+					"Aban",
+					"Azer",
+					"Dey",
+					"Behmen",
+					"Esfend"
+				],
+				"narrow": [
+					"1",
+					"2",
+					"3",
+					"4",
+					"5",
+					"6",
+					"7",
+					"8",
+					"9",
+					"10",
+					"11",
+					"12"
+				],
+				"wide": [
+					"Ferverdin",
+					"Ordibeheşt",
+					"Hordad",
+					"Tir",
+					"Mordad",
+					"Şehriver",
+					"Mehr",
+					"Aban",
+					"Azer",
+					"Dey",
+					"Behmen",
+					"Esfend"
+				]
+			},
+			"stand-alone": {
+				"abbreviated": [
+					"Ferverdin",
+					"Ordibeheşt",
+					"Hordad",
+					"Tir",
+					"Mordad",
+					"Şehriver",
+					"Mehr",
+					"Aban",
+					"Azer",
+					"Dey",
+					"Behmen",
+					"Esfend"
+				],
+				"narrow": [
+					"1",
+					"2",
+					"3",
+					"4",
+					"5",
+					"6",
+					"7",
+					"8",
+					"9",
+					"10",
+					"11",
+					"12"
+				],
+				"wide": [
+					"Ferverdin",
+					"Ordibeheşt",
+					"Hordad",
+					"Tir",
+					"Mordad",
+					"Şehriver",
+					"Mehr",
+					"Aban",
+					"Azer",
+					"Dey",
+					"Behmen",
+					"Esfend"
+				]
+			}
+		},
+		"days": {
+			"format": {
+				"abbreviated": [
+					"Paz",
+					"Pzt",
+					"Sal",
+					"Çar",
+					"Per",
+					"Cum",
+					"Cmt"
+				],
+				"narrow": [
+					"P",
+					"P",
+					"S",
+					"Ç",
+					"P",
+					"C",
+					"C"
+				],
+				"short": [
+					"Pa",
+					"Pt",
+					"Sa",
+					"Ça",
+					"Pe",
+					"Cu",
+					"Ct"
+				],
+				"wide": [
+					"Pazar",
+					"Pazartesi",
+					"Salı",
+					"Çarşamba",
+					"Perşembe",
+					"Cuma",
+					"Cumartesi"
+				]
+			},
+			"stand-alone": {
+				"abbreviated": [
+					"Paz",
+					"Pzt",
+					"Sal",
+					"Çar",
+					"Per",
+					"Cum",
+					"Cmt"
+				],
+				"narrow": [
+					"P",
+					"P",
+					"S",
+					"Ç",
+					"P",
+					"C",
+					"C"
+				],
+				"short": [
+					"Pa",
+					"Pt",
+					"Sa",
+					"Ça",
+					"Pe",
+					"Cu",
+					"Ct"
+				],
+				"wide": [
+					"Pazar",
+					"Pazartesi",
+					"Salı",
+					"Çarşamba",
+					"Perşembe",
+					"Cuma",
+					"Cumartesi"
+				]
+			}
+		},
+		"quarters": {
+			"format": {
+				"abbreviated": [
+					"Ç1",
+					"Ç2",
+					"Ç3",
+					"Ç4"
+				],
+				"narrow": [
+					"1.",
+					"2.",
+					"3.",
+					"4."
+				],
+				"wide": [
+					"1. çeyrek",
+					"2. çeyrek",
+					"3. çeyrek",
+					"4. çeyrek"
+				]
+			},
+			"stand-alone": {
+				"abbreviated": [
+					"Ç1",
+					"Ç2",
+					"Ç3",
+					"Ç4"
+				],
+				"narrow": [
+					"1.",
+					"2.",
+					"3.",
+					"4."
+				],
+				"wide": [
+					"1. çeyrek",
+					"2. çeyrek",
+					"3. çeyrek",
+					"4. çeyrek"
+				]
+			}
+		},
+		"dayPeriods": {
+			"format": {
+				"abbreviated": [
+					"ÖÖ",
+					"ÖS"
+				],
+				"narrow": [
+					"öö",
+					"ös"
+				],
+				"wide": [
+					"ÖÖ",
+					"ÖS"
+				]
+			},
+			"stand-alone": {
+				"abbreviated": [
+					"ÖÖ",
+					"ÖS"
+				],
+				"narrow": [
+					"ÖÖ",
+					"ÖS"
+				],
+				"wide": [
+					"ÖÖ",
+					"ÖS"
+				]
+			}
+		},
+		"era-wide": {
+			"0": "AP"
+		},
+		"era-abbreviated": {
+			"0": "AP"
+		},
+		"era-narrow": {
+			"0": "AP"
+		}
+	},
 	"dateFields": {
 		"era": {
 			"displayName": "Miladi Dönem"
 		},
-		"year": {
+		"year-wide": {
 			"displayName": "Yıl",
 			"relative-type--1": "geçen yıl",
 			"relative-type-0": "bu yıl",
@@ -2432,7 +2857,35 @@
 				"relativeTimePattern-count-other": "{0} yıl önce"
 			}
 		},
-		"quarter": {
+		"year-short": {
+			"displayName": "yıl",
+			"relative-type--1": "geçen yıl",
+			"relative-type-0": "bu yıl",
+			"relative-type-1": "gelecek yıl",
+			"relativeTime-type-future": {
+				"relativeTimePattern-count-one": "{0} yıl sonra",
+				"relativeTimePattern-count-other": "{0} yıl sonra"
+			},
+			"relativeTime-type-past": {
+				"relativeTimePattern-count-one": "{0} yıl önce",
+				"relativeTimePattern-count-other": "{0} yıl önce"
+			}
+		},
+		"year-narrow": {
+			"displayName": "yıl",
+			"relative-type--1": "geçen yıl",
+			"relative-type-0": "bu yıl",
+			"relative-type-1": "gelecek yıl",
+			"relativeTime-type-future": {
+				"relativeTimePattern-count-one": "{0} yıl sonra",
+				"relativeTimePattern-count-other": "{0} yıl sonra"
+			},
+			"relativeTime-type-past": {
+				"relativeTimePattern-count-one": "{0} yıl önce",
+				"relativeTimePattern-count-other": "{0} yıl önce"
+			}
+		},
+		"quarter-wide": {
 			"displayName": "Çeyrek",
 			"relative-type--1": "last quarter",
 			"relative-type-0": "this quarter",
@@ -2446,7 +2899,35 @@
 				"relativeTimePattern-count-other": "{0} çeyrek önce"
 			}
 		},
-		"month": {
+		"quarter-short": {
+			"displayName": "çyr.",
+			"relative-type--1": "last quarter",
+			"relative-type-0": "this quarter",
+			"relative-type-1": "next quarter",
+			"relativeTime-type-future": {
+				"relativeTimePattern-count-one": "{0} çyr. sonra",
+				"relativeTimePattern-count-other": "{0} çyr. sonra"
+			},
+			"relativeTime-type-past": {
+				"relativeTimePattern-count-one": "{0} çyr. önce",
+				"relativeTimePattern-count-other": "{0} çyr. önce"
+			}
+		},
+		"quarter-narrow": {
+			"displayName": "çyr.",
+			"relative-type--1": "last quarter",
+			"relative-type-0": "this quarter",
+			"relative-type-1": "next quarter",
+			"relativeTime-type-future": {
+				"relativeTimePattern-count-one": "{0} çyr. sonra",
+				"relativeTimePattern-count-other": "{0} çyr. sonra"
+			},
+			"relativeTime-type-past": {
+				"relativeTimePattern-count-one": "{0} çyr. önce",
+				"relativeTimePattern-count-other": "{0} çyr. önce"
+			}
+		},
+		"month-wide": {
 			"displayName": "Ay",
 			"relative-type--1": "geçen ay",
 			"relative-type-0": "bu ay",
@@ -2460,7 +2941,35 @@
 				"relativeTimePattern-count-other": "{0} ay önce"
 			}
 		},
-		"week": {
+		"month-short": {
+			"displayName": "ay",
+			"relative-type--1": "geçen ay",
+			"relative-type-0": "bu ay",
+			"relative-type-1": "gelecek ay",
+			"relativeTime-type-future": {
+				"relativeTimePattern-count-one": "{0} ay sonra",
+				"relativeTimePattern-count-other": "{0} ay sonra"
+			},
+			"relativeTime-type-past": {
+				"relativeTimePattern-count-one": "{0} ay önce",
+				"relativeTimePattern-count-other": "{0} ay önce"
+			}
+		},
+		"month-narrow": {
+			"displayName": "ay",
+			"relative-type--1": "geçen ay",
+			"relative-type-0": "bu ay",
+			"relative-type-1": "gelecek ay",
+			"relativeTime-type-future": {
+				"relativeTimePattern-count-one": "{0} ay sonra",
+				"relativeTimePattern-count-other": "{0} ay sonra"
+			},
+			"relativeTime-type-past": {
+				"relativeTimePattern-count-one": "{0} ay önce",
+				"relativeTimePattern-count-other": "{0} ay önce"
+			}
+		},
+		"week-wide": {
 			"displayName": "Hafta",
 			"relative-type--1": "geçen hafta",
 			"relative-type-0": "bu hafta",
@@ -2474,8 +2983,68 @@
 				"relativeTimePattern-count-other": "{0} hafta önce"
 			}
 		},
-		"day": {
+		"week-short": {
+			"displayName": "hf.",
+			"relative-type--1": "geçen hafta",
+			"relative-type-0": "bu hafta",
+			"relative-type-1": "gelecek hafta",
+			"relativeTime-type-future": {
+				"relativeTimePattern-count-one": "{0} hf. sonra",
+				"relativeTimePattern-count-other": "{0} hf. sonra"
+			},
+			"relativeTime-type-past": {
+				"relativeTimePattern-count-one": "{0} hf. önce",
+				"relativeTimePattern-count-other": "{0} hf. önce"
+			}
+		},
+		"week-narrow": {
+			"displayName": "hf.",
+			"relative-type--1": "geçen hafta",
+			"relative-type-0": "bu hafta",
+			"relative-type-1": "gelecek hafta",
+			"relativeTime-type-future": {
+				"relativeTimePattern-count-one": "{0} hf. sonra",
+				"relativeTimePattern-count-other": "{0} hf. sonra"
+			},
+			"relativeTime-type-past": {
+				"relativeTimePattern-count-one": "{0} hf. önce",
+				"relativeTimePattern-count-other": "{0} hf. önce"
+			}
+		},
+		"day-wide": {
 			"displayName": "Gün",
+			"relative-type--2": "evvelsi gün",
+			"relative-type--1": "dün",
+			"relative-type-0": "bugün",
+			"relative-type-1": "yarın",
+			"relative-type-2": "öbür gün",
+			"relativeTime-type-future": {
+				"relativeTimePattern-count-one": "{0} gün sonra",
+				"relativeTimePattern-count-other": "{0} gün sonra"
+			},
+			"relativeTime-type-past": {
+				"relativeTimePattern-count-one": "{0} gün önce",
+				"relativeTimePattern-count-other": "{0} gün önce"
+			}
+		},
+		"day-short": {
+			"displayName": "gün",
+			"relative-type--2": "evvelsi gün",
+			"relative-type--1": "dün",
+			"relative-type-0": "bugün",
+			"relative-type-1": "yarın",
+			"relative-type-2": "öbür gün",
+			"relativeTime-type-future": {
+				"relativeTimePattern-count-one": "{0} gün sonra",
+				"relativeTimePattern-count-other": "{0} gün sonra"
+			},
+			"relativeTime-type-past": {
+				"relativeTimePattern-count-one": "{0} gün önce",
+				"relativeTimePattern-count-other": "{0} gün önce"
+			}
+		},
+		"day-narrow": {
+			"displayName": "gün",
 			"relative-type--2": "evvelsi gün",
 			"relative-type--1": "dün",
 			"relative-type-0": "bugün",
@@ -2493,7 +3062,7 @@
 		"weekday": {
 			"displayName": "Haftanın Günü"
 		},
-		"hour": {
+		"hour-wide": {
 			"displayName": "Saat",
 			"relativeTime-type-future": {
 				"relativeTimePattern-count-one": "{0} saat sonra",
@@ -2504,7 +3073,29 @@
 				"relativeTimePattern-count-other": "{0} saat önce"
 			}
 		},
-		"minute": {
+		"hour-short": {
+			"displayName": "sa.",
+			"relativeTime-type-future": {
+				"relativeTimePattern-count-one": "{0} sa. sonra",
+				"relativeTimePattern-count-other": "{0} sa. sonra"
+			},
+			"relativeTime-type-past": {
+				"relativeTimePattern-count-one": "{0} sa. önce",
+				"relativeTimePattern-count-other": "{0} sa. önce"
+			}
+		},
+		"hour-narrow": {
+			"displayName": "sa.",
+			"relativeTime-type-future": {
+				"relativeTimePattern-count-one": "{0} sa. sonra",
+				"relativeTimePattern-count-other": "{0} sa. sonra"
+			},
+			"relativeTime-type-past": {
+				"relativeTimePattern-count-one": "{0} sa. önce",
+				"relativeTimePattern-count-other": "{0} sa. önce"
+			}
+		},
+		"minute-wide": {
 			"displayName": "Dakika",
 			"relativeTime-type-future": {
 				"relativeTimePattern-count-one": "{0} dakika sonra",
@@ -2515,7 +3106,29 @@
 				"relativeTimePattern-count-other": "{0} dakika önce"
 			}
 		},
-		"second": {
+		"minute-short": {
+			"displayName": "dk.",
+			"relativeTime-type-future": {
+				"relativeTimePattern-count-one": "{0} dk. sonra",
+				"relativeTimePattern-count-other": "{0} dk. sonra"
+			},
+			"relativeTime-type-past": {
+				"relativeTimePattern-count-one": "{0} dk. önce",
+				"relativeTimePattern-count-other": "{0} dk. önce"
+			}
+		},
+		"minute-narrow": {
+			"displayName": "dk.",
+			"relativeTime-type-future": {
+				"relativeTimePattern-count-one": "{0} dk. sonra",
+				"relativeTimePattern-count-other": "{0} dk. sonra"
+			},
+			"relativeTime-type-past": {
+				"relativeTimePattern-count-one": "{0} dk. önce",
+				"relativeTimePattern-count-other": "{0} dk. önce"
+			}
+		},
+		"second-wide": {
 			"displayName": "Saniye",
 			"relative-type-0": "şimdi",
 			"relativeTime-type-future": {
@@ -2525,6 +3138,30 @@
 			"relativeTime-type-past": {
 				"relativeTimePattern-count-one": "{0} saniye önce",
 				"relativeTimePattern-count-other": "{0} saniye önce"
+			}
+		},
+		"second-short": {
+			"displayName": "sn.",
+			"relative-type-0": "şimdi",
+			"relativeTime-type-future": {
+				"relativeTimePattern-count-one": "{0} sn. sonra",
+				"relativeTimePattern-count-other": "{0} sn. sonra"
+			},
+			"relativeTime-type-past": {
+				"relativeTimePattern-count-one": "{0} sn. önce",
+				"relativeTimePattern-count-other": "{0} sn. önce"
+			}
+		},
+		"second-narrow": {
+			"displayName": "sn.",
+			"relative-type-0": "şimdi",
+			"relativeTime-type-future": {
+				"relativeTimePattern-count-one": "{0} sn. sonra",
+				"relativeTimePattern-count-other": "{0} sn. sonra"
+			},
+			"relativeTime-type-past": {
+				"relativeTimePattern-count-one": "{0} sn. önce",
+				"relativeTimePattern-count-other": "{0} sn. önce"
 			}
 		},
 		"zone": {
@@ -2594,7 +3231,19 @@
 	},
 	"currencyFormat": {
 		"standard": "#,##0.00 ¤",
-		"accounting": "#,##0.00 ¤;(#,##0.00 ¤)"
+		"accounting": "#,##0.00 ¤;(#,##0.00 ¤)",
+		"currencySpacing": {
+			"beforeCurrency": {
+				"currencyMatch": "[:^S:]",
+				"surroundingMatch": "[:digit:]",
+				"insertBetween": " "
+			},
+			"afterCurrency": {
+				"currencyMatch": "[:^S:]",
+				"surroundingMatch": "[:digit:]",
+				"insertBetween": " "
+			}
+		}
 	},
 	"symbols-latn-decimal": ",",
 	"symbols-latn-group": ".",
@@ -2646,13 +3295,13 @@
 		"CLP": 0,
 		"COP": 0,
 		"CRC": 0,
-		"CZK": 2,
+		"CZK": 0,
 		"DEFAULT": 2,
 		"DJF": 0,
 		"ESP": 0,
 		"GNF": 0,
 		"GYD": 0,
-		"HUF": 2,
+		"HUF": 0,
 		"IDR": 0,
 		"IQD": 0,
 		"IRR": 0,
@@ -2686,7 +3335,7 @@
 		"TMM": 0,
 		"TND": 3,
 		"TRL": 0,
-		"TWD": 2,
+		"TWD": 0,
 		"TZS": 0,
 		"UGX": 0,
 		"UYI": 0,
@@ -2705,7 +3354,7 @@
 	"weekData-weekendStart": 6,
 	"weekData-weekendEnd": 0,
 	"timeData": {
-		"_allowed": "H",
+		"_allowed": "H hB",
 		"_preferred": "H"
 	},
 	"eras-gregorian": {
@@ -2719,6 +3368,11 @@
 	"eras-islamic": {
 		"0": {
 			"_start": "622-7-15"
+		}
+	},
+	"eras-persian": {
+		"0": {
+			"_start": "622-01-01"
 		}
 	},
 	"eras-japanese": {

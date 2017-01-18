@@ -1,6 +1,8 @@
-/* ============================================= */
-/* CSS for control sap.m/Panel.control           */
-/* ============================================= */
+/* ============================ */
+/* CSS for control sap.m/Panel  */
+/* Base theme                   */
+/* ============================ */
+
 .sapMPanel {
 	overflow: hidden;
 	// The following needed for calculation of height for content child
@@ -23,12 +25,19 @@
 	* the size of small text so let's disable this
 	*/
 	-webkit-text-size-adjust: none;
+
+	font-weight: @sapUiFontHeaderWeight;
+	font-size: @sapMFontHeader4Size;
+	font-family: @sapUiFontHeaderFamily;
+	color: @sapUiGroupTitleTextColor;
+	background-color: @sapUiGroupTitleBackground;
 }
 
 .sapMPanelContent {
 	padding: 1rem;
 	box-sizing: border-box;
 	overflow: auto;
+	white-space: normal;
 }
 
 .sapMPanelExpandablePart {
@@ -42,11 +51,8 @@
 	font-size: 1rem;
 	top: 50%;
 	-webkit-transform: translateY(-50%);
-	-ms-transform: translateY(-50%);
 	transform: translateY(-50%);
-	/* 400ms is standard jQuery duration */
-	-webkit-transition: -webkit-transform 0.4s ease-out;
-	transition: transform 0.4s ease-out;
+	color: @sapUiContentIconColor;
 
 	&:focus {
 		outline: none;
@@ -66,24 +72,21 @@
 .sapMPanelExpandableIconExpanded {
 	display: inline-block;
 	-webkit-transform: translateY(-50%) rotate(90deg);
-	-ms-transform: translateY(-50%) rotate(90deg);
 	transform: translateY(-50%) rotate(90deg);
-	/* 400ms is standard jQuery duration */
-	-webkit-transition: all 0.4s ease-out;
-	transition: all 0.4s ease-out;
 }
 
-html[dir=rtl] .sapUiIconMirrorInRTL:not(.sapUiIconSuppressMirrorInRTL).sapMPanelExpandableIcon {
-	-webkit-transform: translateY(-50%) scale(-1, 1);
-	-ms-transform: translateY(-50%) scale(-1, 1);
-	transform: translateY(-50%) scale(-1, 1);
-}
+html[data-sap-ui-animation='on'] {
+	.sapMPanelExpandableIcon {
+		/* 400ms is standard jQuery duration */
+		-webkit-transition: -webkit-transform 0.4s ease-out;
+		transition: transform 0.4s ease-out;
+	}
 
-/* rotate(90deg) will be mirrored to rotate(-90deg) for RTL */
-html[dir=rtl] .sapUiIconMirrorInRTL:not(.sapUiIconSuppressMirrorInRTL).sapMPanelExpandableIconExpanded {
-	-webkit-transform: translateY(-50%) rotate(90deg) scale(-1, 1);
-	-ms-transform: translateY(-50%) rotate(90deg) scale(-1, 1);
-	transform: translateY(-50%) rotate(90deg) scale(-1, 1);
+	.sapMPanelExpandableIconExpanded {
+		/* 400ms is standard jQuery duration */
+		-webkit-transition: all 0.4s ease-out;
+		transition: all 0.4s ease-out;
+	}
 }
 
 .sapMPanelWrappingDiv,
@@ -100,18 +103,27 @@ html[dir=rtl] .sapUiIconMirrorInRTL:not(.sapUiIconSuppressMirrorInRTL).sapMPanel
 	border-bottom-width: 0;
 }
 
-.sap-tablet .sapUiFioriObjectPage > section > .sapMPanel,
-.sap-desktop .sapUiFioriObjectPage > section > .sapMPanel {
+html.sap-tablet .sapUiFioriObjectPage > section > .sapMPanel,
+html.sap-desktop .sapUiFioriObjectPage > section > .sapMPanel {
 	margin: 1rem 0;
 	padding: 0 1rem;
 	box-sizing: border-box;
 }
 
 .sapMPanel .sapMPanelWrappingDiv .sapMPanelHdr,
-.sapMPanel .sapMPanelWrappingDivTb .sapMTB {
+.sapMPanel .sapMPanelWrappingDivTb .sapMIBar.sapMTB {
 	padding-left: 0;
 	margin-left: 3rem;
+
+  	>:first-child {
+	  margin-left: 0;
+	}
 }
 
 /* mixin call for creating container content padding classes (arguments: rootContainer, contentSelector) */
 .sapUiContainerContentPadding(~".sapMPanel", ~"> .sapMPanelContent");
+
+/* workaround for drawing issue in IE - ensures that the content will be redrawn */
+html[data-sap-ui-animation='on'][data-sap-ui-browser^="ie"] .sapMPanelContent {
+	transform: translate(0, 0);
+}

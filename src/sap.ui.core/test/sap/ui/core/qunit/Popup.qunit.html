@@ -1,23 +1,22 @@
 <!DOCTYPE HTML>
 <html>
 	<head>
-		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
 		<title>Popup - sap.ui.core</title>
 
+		<script src="../shared-config.js"></script>
 		<script id="sap-ui-bootstrap"
-			type="text/javascript"
 			src="../../../../../resources/sap-ui-core.js"
-			data-sap-ui-theme="sap_bluecrystal"
 			data-sap-ui-noConflict="true"
 			data-sap-ui-libs="" >
 		</script>
 
-		<link rel="stylesheet" href="../../../../../resources/sap/ui/thirdparty/qunit.css" type="text/css" media="screen" />
-		<script type="text/javascript" src="../../../../../resources/sap/ui/thirdparty/qunit.js"></script>
-		<script type="text/javascript" src="../../../../../resources/sap/ui/qunit/qunit-junit.js"></script>
-		<script type="text/javascript" src="../../../../../resources/sap/ui/qunit/QUnitUtils.js"></script>
+		<link rel="stylesheet" href="../../../../../resources/sap/ui/thirdparty/qunit.css" type="text/css" media="screen">
+		<script src="../../../../../resources/sap/ui/thirdparty/qunit.js"></script>
+		<script src="../../../../../resources/sap/ui/qunit/qunit-junit.js"></script>
+		<script src="../../../../../resources/sap/ui/qunit/QUnitUtils.js"></script>
 
-		<script type="text/javascript" src="PopupTests.js"></script>
+		<script src="PopupTests.js"></script>
 
 		<style>
 			#popup {
@@ -74,7 +73,7 @@
 		<div id="qunit-fixture">test markup, will be hidden</div>
 
 		<button id="focusableElement">Focusable Button</button>
-		<input id="focusableElement2"></input>
+		<input id="focusableElement2">
 
 		<div id="popup" tabindex="0">
 			This is a plain-HTML popup with two focusable child elements
@@ -89,6 +88,8 @@
 		<div id="popup2" tabindex="0">
 			<button id="popup2-btn">Button</button>
 		</div>
+
+		<div id="uiarea" />
 
 	</body>
 </html>

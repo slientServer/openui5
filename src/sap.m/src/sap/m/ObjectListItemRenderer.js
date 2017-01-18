@@ -59,12 +59,12 @@ sap.ui.define(['jquery.sap.global', './ListItemBaseRenderer', 'sap/ui/core/Rende
 				rm.write("</div>");
 			}
 
-			if (oStatus && (!oStatus._isEmpty())) {
+			if (oStatus && !oStatus._isEmpty()) {
 				rm.write("<div");
 				rm.addClass("sapMObjLStatusDiv");
 
 				// Object marker icons (flag, favorite) are passed as an array
-				if (oStatus instanceof Array) {
+				if (oStatus instanceof Array && oStatus.length > 0) {
 					rm.addClass("sapMObjStatusMarker");
 				}
 				rm.writeClasses();
@@ -129,7 +129,7 @@ sap.ui.define(['jquery.sap.global', './ListItemBaseRenderer', 'sap/ui/core/Rende
 
 			// Container for fields placed on the top half of the item, below the intro. This
 			// includes title, number, and number units.
-			rm.write("<div");  // Start Top row container
+			rm.write("<div"); // Start Top row container
 			rm.addClass("sapMObjLTopRow");
 			rm.writeClasses();
 			rm.write(">");
@@ -198,7 +198,9 @@ sap.ui.define(['jquery.sap.global', './ListItemBaseRenderer', 'sap/ui/core/Rende
 
 			rm.write("</div>"); // End Top row container
 
-			rm.write('<div style="clear:both"/>');
+			if (!(sap.ui.Device.browser.internet_explorer && sap.ui.Device.browser.version < 10)) {
+				rm.write("<div style=\"clear: both;\"></div>");
+			}
 
 			// Bottom row container.
 			if (oLI._hasBottomContent()) {
@@ -209,33 +211,13 @@ sap.ui.define(['jquery.sap.global', './ListItemBaseRenderer', 'sap/ui/core/Rende
 
 				var aAttribs = oLI._getVisibleAttributes();
 				var statuses = [];
-				var markers = null;
+				var markers = oLI._getVisibleMarkers();
 
-				if (oLI.getShowMarkers() || oLI.getMarkLocked()) {
-					var placeholderIcon = oLI._getPlaceholderIcon();
-					markers = [placeholderIcon];
+				markers._isEmpty = function() {
+					return !(markers.length);
+				};
 
-					markers._isEmpty = function() {
-						return false;
-					};
-
-					if (oLI.getMarkLocked()) {
-						var lockIcon = oLI._getLockIcon();
-						lockIcon.setVisible(oLI.getMarkLocked());
-						markers.push(lockIcon);
-					}
-
-					if (oLI.getShowMarkers()) {
-						var favIcon = oLI._getFavoriteIcon();
-						var flagIcon = oLI._getFlagIcon();
-
-						favIcon.setVisible(oLI.getMarkFavorite());
-						flagIcon.setVisible(oLI.getMarkFlagged());
-
-						markers.push(favIcon);
-						markers.push(flagIcon);
-					}
-
+				if (!markers._isEmpty()) {// add markers only if the array is not empty, otherwise it brakes the layout BCP: 1670363254
 					statuses.push(markers);
 				}
 
@@ -252,64 +234,6 @@ sap.ui.define(['jquery.sap.global', './ListItemBaseRenderer', 'sap/ui/core/Rende
 
 				rm.write("</div>"); // End Bottom row container
 			}
-
-			// ARIA description node
-			this.renderAriaNode(rm, oLI, this.getAriaNodeText(oLI));
-
-		};
-
-		/**
-		 * Renders hidden ARIA node, additionally, describing the ObjectListItem if description text is provided.
-		 * {@link sap.ui.core.RenderManager}.
-		 *
-		 * @param {sap.ui.core.RenderManager}
-		 *			rm The RenderManager that can be used for writing to the
-		 *			Render-Output-Buffer
-		 * @param {sap.m.ObjectListItem}
-		 *			oLI An object to be rendered
-		 * @param {String}
-		 *			sAriaNodeText The ARIA node description text
-		 */
-		ObjectListItemRenderer.renderAriaNode = function(rm, oLI, sAriaNodeText) {
-			if (sAriaNodeText) {
-				rm.write("<div");
-
-				rm.writeAttribute("id", oLI.getId() + "-aria");
-				rm.writeAttribute("aria-hidden", "true");
-				rm.addClass("sapUiHidden");
-				rm.writeClasses();
-				rm.write(">");
-				rm.writeEscaped(sAriaNodeText);
-
-				rm.write("</div>");
-			}
-		};
-
-		/**
-		 * Returns ARIA node description text for flag, favorite, and lock marks.
-		 *
-		 * @param {sap.m.ObjectListItem}
-		 *			oLI an object to be rendered
-		 * @returns {String}
-		 */
-		ObjectListItemRenderer.getAriaNodeText = function(oLI) {
-			var aAriaNodeText = [];
-
-			var oLibraryResourceBundle = sap.ui.getCore().getLibraryResourceBundle("sap.m");
-
-			if (oLI.getMarkFlagged()) {
-				aAriaNodeText.push(oLibraryResourceBundle.getText("ARIA_FLAG_MARK_VALUE"));
-			}
-
-			if (oLI.getMarkFavorite()) {
-				aAriaNodeText.push(oLibraryResourceBundle.getText("ARIA_FAVORITE_MARK_VALUE"));
-			}
-
-			if (oLI.getMarkLocked()) {
-				aAriaNodeText.push(oLibraryResourceBundle.getText("OBJECTLISTITEM_ARIA_LOCKED_MARK_VALUE"));
-			}
-
-			return aAriaNodeText.join(" ");
 		};
 
 		/**
@@ -338,6 +262,12 @@ sap.ui.define(['jquery.sap.global', './ListItemBaseRenderer', 'sap/ui/core/Rende
 				aLabelledByIds.push(oLI.getId() + "-numberUnit");
 			}
 
+			if (oLI.getAttributes()) {
+				oLI.getAttributes().forEach(function(attribute) {
+					aLabelledByIds.push(attribute.getId());
+				});
+			}
+
 			if (oLI.getFirstStatus()) {
 				aLabelledByIds.push(oLI.getFirstStatus().getId());
 			}
@@ -346,14 +276,10 @@ sap.ui.define(['jquery.sap.global', './ListItemBaseRenderer', 'sap/ui/core/Rende
 				aLabelledByIds.push(oLI.getSecondStatus().getId());
 			}
 
-			if (oLI.getAttributes()) {
-				oLI.getAttributes().forEach(function(attribute) {
-					aLabelledByIds.push(attribute.getId());
+			if (oLI.getMarkers()) {
+				oLI.getMarkers().forEach(function(marker) {
+					aLabelledByIds.push(marker.getId() + "-text");
 				});
-			}
-
-			if (this.getAriaNodeText(oLI)) {
-				aLabelledByIds.push(oLI.getId() + "-aria");
 			}
 
 			return aLabelledByIds.join(" ");

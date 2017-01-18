@@ -12,7 +12,6 @@ sap.ui.define([
 		},
 
 		init : function () {
-
 			// call the init function of the parent
 			UIComponent.prototype.init.apply(this, arguments);
 
@@ -25,14 +24,12 @@ sap.ui.define([
 			var oModel = new JSONModel(oData);
 			this.setModel(oModel);
 
-			// set invoice model - local
-			var oConfig = this.getMetadata().getConfig();
-			var sNamespace = this.getMetadata().getManifestEntry("sap.app").id;
-			var oInvoiceModel = new JSONModel(jQuery.sap.getModulePath(sNamespace, oConfig.invoiceLocal));
-			this.setModel(oInvoiceModel, "invoice");
-
 			// set dialog
-			this.helloDialog = new HelloDialog();
+			this._helloDialog = new HelloDialog(this.getAggregation("rootControl"));
+		},
+		
+		openHelloDialog : function () {
+			this._helloDialog.open();
 		}
 	});
 

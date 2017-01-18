@@ -24,6 +24,7 @@ sap.ui.define(['jquery.sap.global', './Panel', './library'],
 	 *
 	 * @constructor
 	 * @public
+	 * @deprecated Since version 1.38. Instead, use the <code>sap.m.TabContainer</code> control.
 	 * @alias sap.ui.commons.Tab
 	 * @ui5-metamodel This control/element also will be described in the UI5 (legacy) designtime metamodel
 	 */
@@ -94,14 +95,11 @@ sap.ui.define(['jquery.sap.global', './Panel', './library'],
 
 		// Restore scroll positions
 		if (this.oScrollDomRef) {
-			var scrollTop = this.getProperty("scrollTop");
-			if (scrollTop > 0) {
-				this.oScrollDomRef.scrollTop = scrollTop;
-			}
-			var scrollLeft = this.getProperty("scrollLeft");
-			if (scrollLeft > 0) {
-				this.oScrollDomRef.scrollLeft = scrollLeft;
-			}
+			var scrollTop = this.getProperty("scrollTop") || 0;
+			this.oScrollDomRef.scrollTop = scrollTop;
+
+			var scrollLeft = this.getProperty("scrollLeft") || 0;
+			this.oScrollDomRef.scrollLeft = scrollLeft;
 		}
 
 		// TODO: this must also be done for tabs where the contents are not rendered initially

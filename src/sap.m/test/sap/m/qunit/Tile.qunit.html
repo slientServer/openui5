@@ -1,19 +1,20 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<title>QUnit Tests - sap.m.Tile</title>
+	<script src="../shared-config.js"></script>
 	<script id="sap-ui-bootstrap"
-			data-sap-ui-theme="sap_bluecrystal"
-			type="text/javascript"
 			data-sap-ui-noConflict="true"
 			data-sap-ui-libs="sap.m"
+			data-sap-ui-language="en-US"
 			src="../../../../resources/sap-ui-core.js">
 	</script>
-	<link rel="stylesheet" href="../../../../resources/sap/ui/thirdparty/qunit.css" type="text/css" media="screen" />
+	<link rel="stylesheet" href="../../../../resources/sap/ui/thirdparty/qunit.css" type="text/css" media="screen">
 	<script src="../../../../resources/sap/ui/thirdparty/qunit.js"></script>
-	<script type="text/javascript" src="../../../../resources/sap/ui/qunit/qunit-junit.js"></script>
-
+	<script src="../../../../resources/sap/ui/qunit/qunit-junit.js"></script>
+	<script src="../../../../resources/sap/ui/thirdparty/sinon.js"></script>
+	<script src="../../../../resources/sap/ui/thirdparty/sinon-qunit.js"></script>
 	<script src="../../../../resources/sap/ui/qunit/QUnitUtils.js"></script>
 	<script>
 
@@ -114,6 +115,31 @@
 
 				ok(sut.$().hasClass("sapMTileDrag"),"has drag class set");
 		});
+
+
+		test("Should Set Visibility and trigger rerender of the TileContainer", function() {
+			//Arrange
+			var result ,
+			//SUT
+			sut = new sap.m.Tile(),
+			sut2 = new sap.m.Tile(),
+			container = new sap.m.TileContainer({tiles: [sut, sut2]});
+
+			sinon.spy(container, "rerender");
+
+			container.placeAt("qunit-fixture");
+			core.applyChanges();
+
+			//Act
+			sut.setVisible(false);
+			core.applyChanges();
+
+			//Assert
+			assert.ok(container.rerender.calledOnce, "Tile container is rerendered when tile visibility is changed");
+			container.destroy();
+		});
+
+
 
 		module("Events");
 
@@ -236,6 +262,31 @@
 
 			cnt.destroy();
 		});
+
+		test("ShouldHaveAriaDescribedByAttribute", function () {
+			var m = sap.m,
+					sut = new m.Tile(),
+					tiles = [sut, new m.Tile()],
+					cnt = new m.TileContainer({tiles: tiles});
+
+			cnt.placeAt("qunit-fixture");
+
+			// Act
+			core.applyChanges();
+
+			// Assert
+			equal(sut.$().attr('aria-describedby'), null, 'When tile is not editable, aria-describedBy should not exist');
+
+			// Act
+			sut.isEditable(true);
+			//Assert
+			equal(sut.$().attr('aria-describedby'), sut._getAriaDescribedByDeleteLabel().getId(), 'When tile is editable, aria-describedBy should exist');
+			equal(sut._getAriaDescribedByDeleteLabel().getText(), sap.ui.getCore().getLibraryResourceBundle("sap.m").getText("TILE_REMOVE_BY_DEL_KEY"),
+					'When tile is editable, aria-describedBy should point to a label with certain text');
+
+			cnt.destroy();
+		})
+
 
 	</script>
 </head>

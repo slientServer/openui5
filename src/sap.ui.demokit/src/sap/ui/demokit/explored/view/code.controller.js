@@ -2,8 +2,13 @@
  * ${copyright}
  */
 
-/*global JSZip *///declare unusual global vars for JSLint/SAPUI5 validation
-sap.ui.define(['sap/ui/core/mvc/Controller', 'sap/ui/Device', 'sap/m/MessageToast'], function (Controller, Device, MessageToast) {
+/*global JSZip, URI *///declare unusual global vars for JSLint/SAPUI5 validation
+sap.ui.define(['jquery.sap.global', 'sap/ui/Device',
+	'sap/ui/core/Component', 'sap/ui/core/UIComponent', 'sap/ui/core/mvc/Controller',
+	'sap/ui/model/json/JSONModel',
+	'sap/m/MessageToast',
+	'../data'],
+	function (jQuery, Device, Component, UIComponent, Controller, JSONModel, MessageToast, data) {
 	"use strict";
 
 	return Controller.extend("sap.ui.demokit.explored.view.code", {
@@ -11,7 +16,7 @@ sap.ui.define(['sap/ui/core/mvc/Controller', 'sap/ui/Device', 'sap/m/MessageToas
 		_aMockFiles : ["products.json", "supplier.json", "img.json"],
 
 		onInit : function () {
-			this.router = sap.ui.core.UIComponent.getRouterFor(this);
+			this.router = UIComponent.getRouterFor(this);
 			this.router.attachRoutePatternMatched(this.onRouteMatched, this);
 			this._viewData = sap.ui.getCore().byId("app").getViewData();
 			this._viewData.component.codeCache = {};
@@ -28,7 +33,7 @@ sap.ui.define(['sap/ui/core/mvc/Controller', 'sap/ui/Device', 'sap/m/MessageToas
 			var sFileName = decodeURIComponent(oEvt.getParameter("arguments").fileName);
 
 			// retrieve sample object
-			var oSample = sap.ui.demokit.explored.data.samples[this._sId];
+			var oSample = data.samples[this._sId];
 			if (!oSample) {
 				this.router.myNavToWithoutHash("sap.ui.demokit.explored.view.notFound", "XML", false, { path: this._sId });
 				return;
@@ -81,7 +86,9 @@ sap.ui.define(['sap/ui/core/mvc/Controller', 'sap/ui/Device', 'sap/m/MessageToas
 				this._oData.fileName = sFileName;
 			}
 			// set model
-			this.getView().setModel(new sap.ui.model.json.JSONModel(this._oData));
+			var oJSONModel = new JSONModel(this._oData);
+			this.getView().setModel(oJSONModel);
+			oJSONModel.refresh(true);
 
 			// scroll to top of page
 			var page = this.getView().byId("page");
@@ -114,28 +121,32 @@ sap.ui.define(['sap/ui/core/mvc/Controller', 'sap/ui/Device', 'sap/m/MessageToas
 
 		onDownload : function (evt) {
 
-			if (Device.browser.internet_explorer && Device.browser.version < 10) {
-				MessageToast.show('Download action is not supported in Internet Explorer 9', {
-					autoClose: true,
-					duration: 3000
-				});
-				return;
-			}
-
 			jQuery.sap.require("sap.ui.thirdparty.jszip");
 			var oZipFile = new JSZip();
 
 			// zip files
-			var oData = this.getView().getModel().getData();
+			var oData = this.getView().getModel().getData(),
+				iRequiredParentLevels = 0;
 			for (var i = 0 ; i < oData.files.length ; i++) {
 				var oFile = oData.files[i],
-					sRawFileContent = oFile.raw;
+					sRawFileContent = oFile.raw,
+					iFileNestedLevel = oFile.name.split("../").length - 1,
+					sFileNameCloned = oFile.name.slice();
 
-				if (oFile.name === oData.iframe) {
+				if (iFileNestedLevel > iRequiredParentLevels) {
+					iRequiredParentLevels = iFileNestedLevel;
+				}
+
+				if (iFileNestedLevel > 0 ) {
+					sFileNameCloned = oFile.name.slice(oFile.name.lastIndexOf("../") + 3);
+				}
+
+				// change the bootstrap URL to the current server for all HTML files of the sample
+				if (sFileNameCloned && (sFileNameCloned === oData.iframe || sFileNameCloned.split(".").pop() === "html")) {
 					sRawFileContent = this._changeIframeBootstrapToCloud(sRawFileContent);
 				}
 
-				oZipFile.file(oFile.name, sRawFileContent);
+				oZipFile.file(sFileNameCloned, sRawFileContent);
 
 				// mock files
 				for (var j = 0; j < this._aMockFiles.length; j++) {
@@ -149,10 +160,11 @@ sap.ui.define(['sap/ui/core/mvc/Controller', 'sap/ui/Device', 'sap/m/MessageToas
 			var sRef = jQuery.sap.getModulePath(this._sId),
 				aExtraFiles = oData.includeInDownload || [],
 				that = this;
-			oZipFile.file("Component.js", this.fetchSourceFile(sRef, "Component.js"));
 
+			// iframe examples have a separate index file and a component file to describe it
 			if (!oData.iframe) {
-				oZipFile.file("index.html", this.createIndexFile(oData));
+				oZipFile.file("Component.js", this.fetchSourceFile(sRef, "Component.js"));
+				oZipFile.file("index.html", this._changeIframeBootstrapToCloud(this.createIndexFile(oData, iRequiredParentLevels)));
 			}
 
 			// add extra download files
@@ -167,10 +179,11 @@ sap.ui.define(['sap/ui/core/mvc/Controller', 'sap/ui/Device', 'sap/m/MessageToas
 
 		_openGeneratedFile : function (oContent) {
 			jQuery.sap.require("sap.ui.core.util.File");
-			sap.ui.core.util.File.save(oContent, this._sId, "zip", "application/zip");
+			var File = sap.ui.require("sap/ui/core/util/File");
+			File.save(oContent, this._sId, "zip", "application/zip");
 		},
 
-		createIndexFile : function(oData) {
+		createIndexFile : function(oData, iRequiredParentLevels) {
 
 			var sHeight,
 				bScrolling;
@@ -179,7 +192,16 @@ sap.ui.define(['sap/ui/core/mvc/Controller', 'sap/ui/Device', 'sap/m/MessageToas
 			var sIndexFile = this.fetchSourceFile(sRef, "index.html.tmpl");
 
 			sIndexFile = sIndexFile.replace(/{{TITLE}}/g, oData.name);
+
 			sIndexFile = sIndexFile.replace(/{{SAMPLE_ID}}/g, oData.id);
+
+			var sParentResourcesRoots = "",
+				sODataIdCloned = oData.id.slice();
+			for (var i = 0; i < iRequiredParentLevels; i++) {
+				sODataIdCloned = sODataIdCloned.substring(0, sODataIdCloned.lastIndexOf("."));
+				sParentResourcesRoots += "\"" + sODataIdCloned  + "\" : \"./\", ";
+			}
+			sIndexFile = sIndexFile.replace(/{{PARENT_RESOURCES}}/g, sParentResourcesRoots);
 
 			sHeight = oData.stretch ? 'height : "100%", ' : "";
 			sIndexFile = sIndexFile.replace(/{{HEIGHT}}/g, sHeight);
@@ -235,8 +257,13 @@ sap.ui.define(['sap/ui/core/mvc/Controller', 'sap/ui/Device', 'sap/m/MessageToas
 		},
 
 		_changeIframeBootstrapToCloud : function (sRawIndexFileHtml) {
-			var rReplaceIndex = /src=["|']([^"|^']*sap-ui-core\.js)["|']/;
-			return sRawIndexFileHtml.replace(rReplaceIndex, 'src="https://openui5.hana.ondemand.com/resources/sap-ui-core.js"');
+			var rReplaceIndex = /src=(?:"[^"]*\/sap-ui-core\.js"|'[^']*\/sap-ui-core\.js')/;
+			var oCurrentURI = new URI(window.location.href).search("");
+			var oRelativeBootstrapURI = new URI(jQuery.sap.getResourcePath("", "/sap-ui-core.js"));
+			var sBootstrapURI = oRelativeBootstrapURI.absoluteTo(oCurrentURI).toString();
+
+			// replace the bootstrap path of the sample with the current to the core
+			return sRawIndexFileHtml.replace(rReplaceIndex, 'src="' + sBootstrapURI + '"');
 		},
 
 		handleTabSelectEvent: function(oEvent) {

@@ -1,8 +1,8 @@
 <html>
  <head>
   <title>QUnit TestSuite for sap.ui.unified</title>
-  <script type="text/javascript" src="../../../../../resources/sap/ui/qunit/qunit-redirect.js"></script>
-  <script language="javascript">
+  <script src="../../../../../resources/sap/ui/qunit/qunit-redirect.js"></script>
+  <script>
 
   /**
    * Add test pages to this test suite function.
@@ -18,10 +18,15 @@
     suite.addTestPage(contextPath + "/test-resources/sap/ui/unified/qunit/CalendarDateInterval.qunit.html");
     suite.addTestPage(contextPath + "/test-resources/sap/ui/unified/qunit/CalendarMonthInterval.qunit.html");
     suite.addTestPage(contextPath + "/test-resources/sap/ui/unified/qunit/CalendarTimeInterval.qunit.html");
+    suite.addTestPage(contextPath + "/test-resources/sap/ui/unified/qunit/CalendarOneMonthInterval.qunit.html");
+    suite.addTestPage(contextPath + "/test-resources/sap/ui/unified/qunit/CalendarWeekInterval.qunit.html");
     suite.addTestPage(contextPath + "/test-resources/sap/ui/unified/qunit/CalendarLegend.qunit.html");
+    suite.addTestPage(contextPath + "/test-resources/sap/ui/unified/qunit/CalendarUtils.qunit.html");
+    suite.addTestPage(contextPath + "/test-resources/sap/ui/unified/qunit/Currency.qunit.html");
     suite.addTestPage(contextPath + "/test-resources/sap/ui/unified/qunit/ExploredSamples.qunit.html");
     suite.addTestPage(contextPath + "/test-resources/sap/ui/unified/qunit/FileUploader.qunit.html");
     suite.addTestPage(contextPath + "/test-resources/sap/ui/unified/qunit/Menu.qunit.html");
+    suite.addTestPage(contextPath + "/test-resources/sap/ui/unified/qunit/Month.qunit.html");
     suite.addTestPage(contextPath + "/test-resources/sap/ui/unified/qunit/Shell.qunit.html");
     suite.addTestPage(contextPath + "/test-resources/sap/ui/unified/qunit/ShellLayout.qunit.html");
     suite.addTestPage(contextPath + "/test-resources/sap/ui/unified/qunit/ShellOverlay.qunit.html");
@@ -29,7 +34,7 @@
 
     return suite;
   }
-  
+
   </script>
  </head>
  <body>

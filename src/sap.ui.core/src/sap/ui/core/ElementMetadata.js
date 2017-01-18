@@ -23,7 +23,7 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/base/ManagedObjectMetadata'],
 	 * @alias sap.ui.core.ElementMetadata
 	 */
 	var ElementMetadata = function(sClassName, oClassInfo) {
-	
+
 		// call super constructor
 		ManagedObjectMetadata.apply(this, arguments);
 	};
@@ -90,11 +90,18 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/base/ManagedObjectMetadata'],
 		delete oClassInfo.renderer;
 
 		ManagedObjectMetadata.prototype.applySettings.call(this, oClassInfo);
-	
+
+		if (typeof oStaticInfo["designTime"] === "boolean") {
+			this._bHasDesignTime = oStaticInfo["designTime"];
+		} else if (oStaticInfo["designTime"]) {
+			this._bHasDesignTime = true;
+			this._oDesignTime = oStaticInfo["designTime"];
+		}
+
 		this._sRendererName = this.getName() + "Renderer";
-	
+
 		if ( typeof vRenderer !== "undefined" ) {
-	
+
 			if ( typeof vRenderer === "string" ) {
 				this._sRendererName = vRenderer || undefined;
 				return;
@@ -105,25 +112,16 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/base/ManagedObjectMetadata'],
 
 			var oParent = this.getParent();
 			var oBaseRenderer;
-			if ( oParent && oParent instanceof ElementMetadata ) {
+			if ( oParent instanceof ElementMetadata ) {
 				oBaseRenderer = oParent.getRenderer();
 			}
 			if ( !oBaseRenderer ) {
-				jQuery.sap.require("sap.ui.core.Renderer");
-				oBaseRenderer = sap.ui.require('sap/ui/core/Renderer');
+				oBaseRenderer = sap.ui.requireSync('sap/ui/core/Renderer');
 			}
 			var oRenderer = jQuery.sap.newObject(oBaseRenderer);
 			jQuery.extend(oRenderer, vRenderer);
 			jQuery.sap.setObject(this.getRendererName(), oRenderer);
 		}
-
-		if (typeof oStaticInfo["designTime"] === "boolean") {
-			this._bHasDesignTime = oStaticInfo["designTime"];
-		} else if (oStaticInfo["designTime"]) {
-			this._bHasDesignTime = true;
-			this._oDesignTime = oStaticInfo["designTime"];
-		}
-
 	};
 
 	ElementMetadata.prototype.afterApplySettings = function() {
@@ -136,25 +134,21 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/base/ManagedObjectMetadata'],
 	};
 
 	/**
-	 * Returns the design time metadata. The design time metadata contains all relevant information to support the control
-	 * in the UI5 design time.
-	 *
-	 * @return {map} The design time metadata
-	 * @since 1.30.0
+	 * Returns a promise that resolves with the own, unmerged designtime data.
+	 * If the class is marked as having no designtime data, the promise will resolve with null.
 	 */
-	ElementMetadata.prototype.getDesignTime = function() {	
-		if (!this._oDesignTime && this._bHasDesignTime) {
-			// the synchronous loading would be only relevant during the
-			// development time - for productive usage the design time metadata should
-			// provide in a preload packaging which includes the control design time metadata
-			// - so the sync request penalty
-			// should be ignorable for now (async implementation will
-			// change the complete behavior of the constructor function)
-			jQuery.sap.require({modName: this.getElementName(), type: "designtime"});
-			this._oDesignTime = jQuery.sap.getObject(this.getElementName() + ".designtime");	
+	function loadOwnDesignTime(oElementMetadata) {
+		if (oElementMetadata._oDesignTime || !oElementMetadata._bHasDesignTime) {
+			return Promise.resolve(oElementMetadata._oDesignTime || null);
 		}
-		return this._oDesignTime;	
-	};
+		return new Promise(function(fnResolve) {
+			var sModule = jQuery.sap.getResourceName(oElementMetadata.getElementName(), ".designtime");
+			sap.ui.require([sModule], function(oDesignTime) {
+				oElementMetadata._oDesignTime = oDesignTime;
+				fnResolve(oDesignTime);
+			});
+		});
+	}
 
 	/**
 	 * Load and returns the design time metadata asynchronously. The design time metadata contains all relevant information to support the control
@@ -164,18 +158,28 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/base/ManagedObjectMetadata'],
 	 * @since 1.28.0
 	 */
 	ElementMetadata.prototype.loadDesignTime = function() {
-		var that = this;
-		return new Promise(function(fnResolve, fnReject) {
-			if (!that._oDesignTime && that._bHasDesignTime) {
-				var sModule = jQuery.sap.getResourceName(that.getElementName(), ".designtime");
-				sap.ui.require([sModule], function(oDesignTime) {
-					that._oDesignTime = oDesignTime;
-					fnResolve(oDesignTime);
-				});
+		if (!this._oDesignTimePromise) {
+
+			// Note: parent takes care of merging its ancestors
+			var oWhenParentLoaded;
+			var oParent = this.getParent();
+			if (oParent instanceof ElementMetadata) {
+				oWhenParentLoaded = oParent.loadDesignTime();
 			} else {
-				fnResolve(that._oDesignTime);
+				oWhenParentLoaded = Promise.resolve(null);
 			}
-		});
+
+			// Note that the ancestor designtimes and the own designtime will be loaded 'in parallel',
+			// only the merge is done in sequence by chaining promises
+			this._oDesignTimePromise = loadOwnDesignTime(this).then(function(oOwnDesignTime) {
+				return oWhenParentLoaded.then(function(oParentDesignTime) {
+					// we use jQuery.sap.extend to be able to also overwrite properties with null or undefined
+					return jQuery.sap.extend({}, oParentDesignTime, oOwnDesignTime);
+				});
+			});
+		}
+
+		return this._oDesignTimePromise;
 	};
 
 	return ElementMetadata;

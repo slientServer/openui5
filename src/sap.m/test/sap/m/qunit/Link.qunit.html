@@ -1,21 +1,20 @@
 <!DOCTYPE HTML>
 <html>
 	<head>
-		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
 
 		<title>Test Page for sap.m.Link</title>
+		<script src="../shared-config.js"></script>
 		<script id="sap-ui-bootstrap"
-				data-sap-ui-theme="sap_bluecrystal"
-				type="text/javascript"
 				data-sap-ui-noConflict="true"
 				data-sap-ui-libs="sap.m"
 				src="../../../../resources/sap-ui-core.js">
 		</script>
-		<link rel="stylesheet" href="../../../../resources/sap/ui/thirdparty/qunit.css" type="text/css" media="screen" />
-		<script type="text/javascript" src="../../../../resources/sap/ui/thirdparty/qunit.js"></script>
-		<script type="text/javascript" src="../../../../resources/sap/ui/qunit/qunit-junit.js"></script>
-		<script type="text/javascript" src="../../../../resources/sap/ui/qunit/QUnitUtils.js"></script>
-		<script type="text/javascript">
+		<link rel="stylesheet" href="../../../../resources/sap/ui/thirdparty/qunit.css" type="text/css" media="screen">
+		<script src="../../../../resources/sap/ui/thirdparty/qunit.js"></script>
+		<script src="../../../../resources/sap/ui/qunit/qunit-junit.js"></script>
+		<script src="../../../../resources/sap/ui/qunit/QUnitUtils.js"></script>
+		<script>
 
 		var sText = "Hello World";
 
@@ -96,7 +95,7 @@
 			oLinkNRS.setSubtle(false);
 			oLinkNRS.destroy();
 		});
-		
+
 		test("Non-rendered Emphasized values", function() {
 			// this checks for the bug in BCP message 1472023641 - no need to actually render the Link (issue is about non-rendered Links) or write checks, it would fail with a JS error
 			expect(0);
@@ -105,7 +104,7 @@
 			oLinkNRE.setEmphasized(false);
 			oLinkNRE.destroy();
 		});
-		
+
 		test("Rendered initial Subtle values", function() {
 			expect(1);
 			var oLinkRIS = new sap.m.Link({subtle: true});
@@ -114,7 +113,7 @@
 			ok(oLinkRIS.$().hasClass('sapMLnkSubtle'), "Link should have the 'sapMLnkSubtle' CSS class.");
 			oLinkRIS.destroy();
 		});
-		
+
 		test("Rendered initial Emphasized values", function() {
 			expect(1);
 			var oLinkRIE = new sap.m.Link({emphasized: true});
@@ -131,13 +130,65 @@
 		});
 
 		test("Disabled link should not have the preseted href", function() {
-			equal(oLink2.$().attr("href"), "javascript:void(0);", "oLink2 href should be 'javascript:void(0);'");
+			equal(oLink2.$().attr("href"), "#", "oLink2 href should be '#'");
 			oLink2.setEnabled(true);
 			sap.ui.getCore().applyChanges();
 			equal(oLink2.$().attr("href"), "x.html", "oLink2 href should be 'x.html' again after enabling");
 			oLink2.destroy();
 		});
 
+		// Keyboar handling
+		test("Disabled link should not be in the tab chain", function() {
+			var oLink1 = new sap.m.Link("l1", {
+				text : sText,
+				href: "x.html",
+				target: "_blank",
+				width : "200px",
+				enabled : false
+			}).placeAt("uiArea1");
+
+			sap.ui.getCore().applyChanges();
+
+			var $oLink = oLink1.$();
+
+			strictEqual($oLink.attr("tabIndex"), "-1", "Property 'tabIndex' should be '-1'");
+
+			oLink1.destroy();
+		});
+
+		test("Link with empty or no text should not be in the tab chain", function() {
+			var oLink1 = new sap.m.Link("l1", {
+				text : "",
+				href: "x.html",
+				target: "_blank",
+				width : "200px"
+			}).placeAt("uiArea1");
+
+			sap.ui.getCore().applyChanges();
+
+			var $oLink = oLink1.$();
+
+			strictEqual($oLink.attr("tabIndex"), "-1", "Property 'tabIndex' should be '-1'");
+
+			oLink1.destroy();
+		});
+
+		test("Normal link should be in the tab chain", function() {
+			var oLink1 = new sap.m.Link("l1", {
+				text : sText,
+				href: "x.html",
+				target: "_blank",
+				width : "200px"
+			}).placeAt("uiArea1");
+
+			sap.ui.getCore().applyChanges();
+
+			var $oLink = oLink1.$();
+
+			strictEqual($oLink.attr("tabIndex"), "0", "Property 'tabIndex' should be '0'");
+
+			oLink1.destroy();
+		});
 
 		// ARIA specific tests
 		test("ARIA specific test", function() {
@@ -180,6 +231,14 @@
 
 			oLink1.setEmphasized(false);
 			strictEqual($oLink.attr("aria-describedby"), undefined, "Property 'aria-describedby' should not exist");
+
+			oLink1.addAriaLabelledBy("id1");
+			sap.ui.getCore().applyChanges();
+			strictEqual(oLink1.$().attr("aria-labelledby"), "id1 " + oLink1.getId(), "Property 'aria-labelledby' should contain the link ID");
+
+			oLink1.removeAriaLabelledBy("id1");
+			sap.ui.getCore().applyChanges();
+			strictEqual(oLink1.$().attr("aria-labelledby"), undefined, "Property 'aria-labelledby' should not exist");
 
 			oLink1.destroy();
 		});
@@ -241,6 +300,25 @@
 			strictEqual(oLink.$().attr('dir'), undefined, "The dir attribute should not be rendered");
 
 			oLink.destroy();
+		});
+
+		test("getAccessibilityInfo", function() {
+			var oControl = new sap.m.Link({text: "Text", href: "HRef"});
+			ok(!!oControl.getAccessibilityInfo, "Link has a getAccessibilityInfo function");
+			var oInfo = oControl.getAccessibilityInfo();
+			ok(!!oInfo, "getAccessibilityInfo returns a info object");
+			strictEqual(oInfo.role, "link", "AriaRole");
+			strictEqual(oInfo.type, sap.ui.getCore().getLibraryResourceBundle("sap.m").getText("ACC_CTR_TYPE_LINK"), "Type");
+			strictEqual(oInfo.description, "Text", "Description");
+			strictEqual(oInfo.focusable, true, "Focusable");
+			strictEqual(oInfo.enabled, true, "Enabled");
+			ok(oInfo.editable === undefined || oInfo.editable === null, "Editable");
+			oControl.setText("");
+			oControl.setEnabled(false);
+			oInfo = oControl.getAccessibilityInfo();
+			strictEqual(oInfo.description, "HRef", "Description");
+			strictEqual(oInfo.focusable, false, "Focusable");
+			oControl.destroy();
 		});
 
 		</script>

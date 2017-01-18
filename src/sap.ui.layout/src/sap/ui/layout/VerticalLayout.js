@@ -68,6 +68,14 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/core/Control', 'sap/ui/core/EnabledP
 		return this;
 	};
 
+	/**
+	 * @see sap.ui.core.Control#getAccessibilityInfo
+	 * @protected
+	 */
+	VerticalLayout.prototype.getAccessibilityInfo = function() {
+		return {children: this.getContent()};
+	};
+
 	EnabledPropagator.call(VerticalLayout.prototype);
 
 	return VerticalLayout;

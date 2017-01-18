@@ -26,6 +26,7 @@ sap.ui.define(['jquery.sap.global', './TextField', './library', 'sap/ui/core/Pop
 	 *
 	 * @constructor
 	 * @public
+	 * @deprecated Since version 1.38. Instead, use the <code>sap.m.ComboBox</code> control.
 	 * @alias sap.ui.commons.ComboBox
 	 * @ui5-metamodel This control/element also will be described in the UI5 (legacy) designtime metamodel
 	 */
@@ -1338,41 +1339,6 @@ sap.ui.define(['jquery.sap.global', './TextField', './library', 'sap/ui/core/Pop
 	// Focus information handling and rendering related
 	//***********************************************************
 
-	/**
-	 * Returns an object representing the serialized focus information
-	 * To be overwritten by the specific control method
-	 * @return {object} an object representing the serialized focus information
-	 * @private
-	 */
-	ComboBox.prototype.getFocusInfo = function(){
-		return {id: this.getId(), sTypedChars: this._sTypedChars};
-	};
-
-	/*
-	 * Applies the focus info
-	 * To be overwritten by the specific control method
-	 * @param {object} oFocusInfo
-	 * @private
-	 */
-	ComboBox.prototype.applyFocusInfo = function(oFocusInfo){
-
-		var $Inp = jQuery(this.getInputDomRef());
-
-		// only apply the stored value if the FocusInfo wasn't processed by
-		// the Popup. It might be possible that an application changed the value
-		// within the ComboBox in the meantime and the stored value in the FocusInfo
-		// is outdated.
-		if (!oFocusInfo.popup) {
-			$Inp.val(oFocusInfo.sTypedChars);
-		}
-		if (!this.getSelectedItemId() || sap.ui.getCore().byId(this.getSelectedItemId()).getText() != oFocusInfo.sTypedChars) {
-			// text entred before and is not the currently selected item -> just restore type-ahead
-			this._doTypeAhead();
-		}
-		this.focus();
-		return this;
-	};
-
 	/*
 	 * Ensure that handed in ListBoxes are taken from the visible UI immediately.
 	 * @protected
@@ -1785,6 +1751,17 @@ sap.ui.define(['jquery.sap.global', './TextField', './library', 'sap/ui/core/Pop
 			}
 		}
 
+	};
+
+	/**
+	 * @see sap.ui.core.Control#getAccessibilityInfo
+	 * @protected
+	 */
+	ComboBox.prototype.getAccessibilityInfo = function() {
+		var oInfo = TextField.prototype.getAccessibilityInfo.apply(this, arguments);
+		oInfo.role = "combobox";
+		oInfo.type = sap.ui.getCore().getLibraryResourceBundle("sap.ui.commons").getText("ACC_CTR_TYPE_COMBO");
+		return oInfo;
 	};
 
 	// to overwrite JS doc with new event parameter

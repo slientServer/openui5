@@ -11,7 +11,7 @@ sap.ui.define([
 
 		onInit: function () {
 			// set mock data
-			var sPath = jQuery.sap.getModulePath("sap.m.sample.UploadCollection", "/uploadCollection.json")
+			var sPath = jQuery.sap.getModulePath("sap.m.sample.UploadCollection", "/uploadCollection.json");
 			var oModel = new JSONModel(sPath);
 			this.getView().setModel(oModel);
 
@@ -31,11 +31,13 @@ sap.ui.define([
 
 			var oSelect = this.getView().byId("tbSelect");
 			oSelect.setModel(oModelCB);
-		},
 
-		onBeforeRendering : function () {
-			// Sets the text to the Label
-			this.getView().byId("attachmentTitle").setText(this.getAttachmentTitleText());
+			// Sets the text to the label
+			this.getView().byId("UploadCollection").addEventDelegate({
+				onBeforeRendering : function () {
+					this.getView().byId("attachmentTitle").setText(this.getAttachmentTitleText());
+				}.bind(this)
+			});
 		},
 
 		formatAttribute : function (sValue) {
@@ -47,7 +49,7 @@ sap.ui.define([
 					maxIntegerDigits : 3
 				}).format(sValue);
 			} else {
-				return sValue
+				return sValue;
 			}
 		},
 
@@ -91,7 +93,7 @@ sap.ui.define([
 						if (aItems[index].documentId === aItemsToDelete[i].getDocumentId()){
 							aItems.splice(index, 1);
 						}
-					} 
+					}
 				};
 			});
 			this.getView().byId("UploadCollection").getModel().setData({
@@ -178,10 +180,11 @@ sap.ui.define([
 			}, 4000);
 		},
 
-		onSelectChange:  function(oEvent) {
+		onSeparatorsChange: function(oEvent) {
 			var oUploadCollection= this.getView().byId("UploadCollection");
 			oUploadCollection.setShowSeparators(oEvent.getParameters().selectedItem.getProperty("key"));
 		},
+
 		onBeforeUploadStarts: function(oEvent) {
 			// Header Slug
 			var oCustomerHeaderSlug = new sap.m.UploadCollectionParameter({
@@ -191,6 +194,7 @@ sap.ui.define([
 			oEvent.getParameters().addHeaderParameter(oCustomerHeaderSlug);
 			MessageToast.show("BeforeUploadStarts event triggered.");
 		},
+
 		onUploadTerminated: function(oEvent) {
 			// get parameter file name
 			var sFileName = oEvent.getParameter("fileName");
@@ -198,15 +202,8 @@ sap.ui.define([
 			var oRequestHeaders = oEvent.getParameters().getHeaderParameter();
 		},
 
-		onCountPress: function(oEvent) {
-			var aSelectedItems = this.getView().byId("UploadCollection").getSelectedItems();
-			var sText = aSelectedItems.length + " items selected";
-			MessageToast.show(sText);
-		},
-
 		onSelectAllPress: function(oEvent) {
 			var oUploadCollection = this.getView().byId("UploadCollection");
-
 			if (!oEvent.getSource().getPressed()){
 				this.deselectAllItems(oUploadCollection);
 				oEvent.getSource().setPressed(false);
@@ -217,6 +214,7 @@ sap.ui.define([
 				oEvent.getSource().setPressed(true);
 				oEvent.getSource().setText("Deselect all");
 			}
+			this.onSelectionChange(oEvent);
 		},
 
 		deselectAllItems: function(oUploadCollection){
@@ -239,6 +237,12 @@ sap.ui.define([
 			} else {
 				oUploadCollection.setUploadEnabled(false);
 			}
+		},
+
+		onSwitchUploadInvisibleChange: function() {
+			var oUploadCollection = this.getView().byId("UploadCollection");
+			var bUploadButtonInvisible = oUploadCollection.getUploadButtonInvisible();
+			oUploadCollection.setUploadButtonInvisible(!bUploadButtonInvisible);
 		},
 
 		onSwitchModeChange: function(oEvent){
@@ -264,9 +268,13 @@ sap.ui.define([
 		},
 
 		enableToolbarItems: function(status){
-			this.getView().byId("countButton").setEnabled(status);
+			this.getView().byId("selectAllButton").setVisible(status);
+			this.getView().byId("deleteSelectedButton").setVisible(status);
 			this.getView().byId("selectAllButton").setEnabled(status);
-			this.getView().byId("deleteSelectedButton").setEnabled(status);
+			// This is only enabled if there is a selected item in multi-selection mode
+			if (this.getView().byId("UploadCollection").getSelectedItems().length > 0) {
+				this.getView().byId("deleteSelectedButton").setEnabled(true);
+			}
 		},
 
 		onDeleteSelectedItems: function(){
@@ -281,6 +289,26 @@ sap.ui.define([
 
 		onSearch: function(oEvent){
 			MessageToast.show("Search feature isn't available in this sample");
+		},
+
+		onSelectionChange: function(oEvent){
+			var oUploadCollection = this.getView().byId("UploadCollection");
+			// Only it is enabled if there is a selected item in multi-selection mode
+			if (oUploadCollection.getMode() === "MultiSelect"){
+				if (oUploadCollection.getSelectedItems().length > 0) {
+					this.getView().byId("deleteSelectedButton").setEnabled(true);
+				} else {
+					this.getView().byId("deleteSelectedButton").setEnabled(false);
+				}
+			}
+		},
+
+		onAttributePress: function(oEvent) {
+			MessageToast.show("Attribute press event - " + oEvent.getSource().getTitle() + ": " + oEvent.getSource().getText());
+		},
+
+		onMarkerPress: function(oEvent) {
+			MessageToast.show("Marker press event - " + oEvent.getSource().getType());
 		}
 	});
 

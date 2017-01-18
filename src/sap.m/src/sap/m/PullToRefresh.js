@@ -79,7 +79,7 @@ sap.ui.define(['jquery.sap.global', './library', 'sap/ui/core/Control', 'sap/ui/
 		if (this.getVisible() && !this._oBusyIndicator) {
 			jQuery.sap.require("sap.m.BusyIndicator");
 			this._oBusyIndicator = new sap.m.BusyIndicator({
-				size: this._bTouchMode ? "2em" : "1.7em",
+				size: "1.7rem",
 				design: "auto"
 			});
 			this._oBusyIndicator.setParent(this);
@@ -206,7 +206,7 @@ sap.ui.define(['jquery.sap.global', './library', 'sap/ui/core/Control', 'sap/ui/
 				$this.toggleClass("sapMFlip", false).toggleClass("sapMLoading", false);
 				$text.html(this.oRb.getText(this._bTouchMode ? "PULL2REFRESH_PULLDOWN" : "PULL2REFRESH_REFRESH"));
 				$this.removeAttr("aria-live");
-				$this.find(".sapMPullDownInfo").html(this.getDescription());
+				$this.find(".sapMPullDownInfo").html(jQuery.sap.encodeHTML(this.getDescription()));
 				break;
 			case 1:
 				$this.toggleClass("sapMFlip", true);

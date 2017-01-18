@@ -22,6 +22,7 @@ sap.ui.define(['jquery.sap.global', './library', 'sap/ui/core/Control'],
 		 * @constructor
 		 * @public
 		 * @since 1.9.0
+		 * @deprecated Since version 1.38. Instead, use the <code>sap.ui.core.HTML</code> control.
 		 * @alias sap.ui.commons.FormattedTextView
 		 * @ui5-metamodel This control/element also will be described in the UI5 (legacy) designtime metamodel
 		 */
@@ -133,10 +134,7 @@ sap.ui.define(['jquery.sap.global', './library', 'sap/ui/core/Control'],
 		 */
 		FormattedTextView.prototype.hasControls = function () {
 			var aControls = this.getAggregation("controls");
-			if (aControls && aControls.length > 0) {
-				return true;
-			}
-			return false;
+			return !!(aControls && aControls.length > 0);
 		};
 
 		/**
@@ -218,7 +216,6 @@ sap.ui.define(['jquery.sap.global', './library', 'sap/ui/core/Control'],
 		/**
 		 * Sets the controls to be rendered.
 		 * @param {array} aControls Controls should be rendered
-		 * @param {sap.ui.commons.FormattedTextView} oThis An execution context will be passed
 		 * @private
 		 */
 		var fnSetControls = function (aControls) {

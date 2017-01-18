@@ -1,61 +1,34 @@
-/* ========================================= */
-/* CSS for control sap.m/TileContent.control */
-/* ========================================= */
+/* ================================== */
+/* CSS for control sap.m/TileContent  */
+/* Base theme                         */
+/* ================================== */
+
 .sapMTileCnt {
 	display: inline-block;
 	box-sizing: border-box;
 	position: relative;
 }
 
-.sapUiMedia-Std-Desktop .sapMTileCnt.Auto.ft-Auto,
-.sapUiMedia-Std-Tablet .sapMTileCnt.Auto.ft-Auto,
-.sapMTileCnt.L.ft-Auto,
-.sapMTileCnt.M.ft-Auto {
-	height: 7rem;
-	min-width: 11.5rem;
-	max-width: 23.5rem;
+.sapMTileCnt.sapMFrameTypeAuto {
+	height: 6.375rem;
+	min-width: 10.875rem;
+	max-width: 22.5rem;
 }
-
-.sapUiMedia-Std-Phone .sapMTileCnt.Auto.ft-Auto,
-.sapMTileCnt.S.ft-Auto {
-	height: 5.375rem;
-	min-width: 9.25rem;
-	max-width: 19rem;
-}
-
 
 /* TwoByOne size */
-.sapUiMedia-Std-Desktop .sapMTileCnt.Auto.ft-TwoByOne,
-.sapUiMedia-Std-Tablet .sapMTileCnt.Auto.ft-TwoByOne,
-.sapMTileCnt.L.ft-TwoByOne,
-.sapMTileCnt.M.ft-TwoByOne {
-	height: 7rem;
-    /*min-width: 11.5rem; */
-	width: 23.5rem;
-}
+.sapMTileCnt.sapMFrameTypeTwoByOne {
+	height: 6.375rem;
+	width: 22.375rem;
 
-.sapUiMedia-Std-Phone .sapMTileCnt.Auto.ft-TwoByOne,
-.sapMTileCnt.S.ft-TwoByOne {
-	height: 5.375rem;
-	/*min-width: 9.25rem;*/
-	width: 19rem;
+	&.News {
+		width: 22.5rem;
+	}
 }
 
 /* OneByOne size */
-.sapUiMedia-Std-Desktop .sapMTileCnt.Auto.ft-OneByOne,
-.sapUiMedia-Std-Tablet .sapMTileCnt.Auto.ft-OneByOne,
-.sapMTileCnt.L.ft-OneByOne,
-.sapMTileCnt.M.ft-OneByOne {
-	height: 7rem;
-	width: 11.5rem;
-	/*max-width: 23.5rem;*/
-}
-
-.sapUiMedia-Std-Phone .sapMTileCnt.Auto.ft-OneByOne,
-.sapMTileCnt.S.ft-OneByOne {
-	height: 5.375rem;
-	width: 9.25rem;
-	/*max-width: 19rem;*/
+.sapMTileCnt.sapMFrameTypeOneByOne {
+	height: 6.375rem;
+	width: 11rem;
 }
 
 /* Footer CSS */
@@ -63,72 +36,45 @@
 	overflow: hidden;
 	text-overflow: ellipsis;
 	white-space: nowrap;
-	margin-left:0.5rem;
-	margin-right:0.5rem;
 	text-align: right;
 	position: absolute;
-	bottom: 0.5rem;
-	right:0px;
-	left:0px;
+	right: 0;
+	left: 0;
 	box-sizing: border-box;
-	-moz-box-sizing: border-box;
-	-webkit-box-sizing: border-box;
+	height: 1.1875rem;
+	bottom: 0.625rem;
+	margin-left: 0.9375rem;
+	margin-right: 0.9375rem;
+	line-height: 1.1875rem;
+	font-family: @sapUiFontFamily;
+	font-size: @sapMFontMediumSize;
+	color: @sapUiTileTextColor;
 }
 
 html[dir=rtl] .sapMTileCntFtrTxt {
 	text-align: left;
 }
 
-.sapUiMedia-Std-Phone .sapMTileCntFtrTxt.Auto,
-.sapMTileCntFtrTxt.S {
-	font-size: 12px;
-	line-height: 12px;
-	height: 0.875rem;
-}
-
-.sapUiMedia-Std-Desktop .sapMTileCntFtrTxt.Auto,
-.sapMTileCntFtrTxt.L,
-.sapUiMedia-Std-Tablet .sapMTileCntFtrTxt.Auto,
-.sapMTileCntFtrTxt.M {
-	font-size: 14px;
-	line-height: 14px;
-	height: 1rem;
-}
-
 /* Content */
 .sapMTileCntContent {
-	overflow: hidden;
-	padding-left: 0.5rem;
-	padding-right: 0.5rem;
+	overflow: visible;
 	display: inline-block;
 	width: 100%;
 	box-sizing: border-box;
-	-moz-box-sizing: border-box;
-	-webkit-box-sizing: border-box;
 }
 
-.sapMTileCntContent > .sapMTcInnerMarker{
+.sapMTileCntContent > .sapMTcInnerMarker {
 	display: inline-block;
 	vertical-align: bottom;
 	line-height: normal;
 }
 
-.sapUiMedia-Std-Desktop .sapMTileCntContent.Auto,
-.sapUiMedia-Std-Tablet .sapMTileCntContent.Auto,
-.sapMTileCntContent.L,
-.sapMTileCntContent.M {
-	height:4.5rem;
-	margin-bottom: 0.5rem;
-	margin-top: 0.5rem;
-	line-height: 4.5rem;
-}
-
-.sapUiMedia-Std-Phone .sapMTileCntContent.Auto,
-.sapMTileCntContent.S {
-	height:3.5rem;
+.sapMTileCntContent {
+	height: 3.875rem;
 	margin-bottom: 0.25rem;
 	margin-top: 0.25rem;
-	line-height: 3.5rem;
+	padding-left: 0.9375rem;
+	padding-right: 0.9375rem;
 }
 
 .sapMTileCnt + .sapMTileCnt {
@@ -137,4 +83,79 @@ html[dir=rtl] .sapMTileCntFtrTxt {
 
 .sapMTileCntContent > .sapMNwC {
 	background-color: inherit;
+}
+
+.sapMTileCnt.News {
+	height: 6.125rem;
+	margin-top: 0.3125rem;
+	background-color: @sapUiTileBackground;
+
+	.sapMTileCntContent {
+		padding-left: 1rem;
+		padding-right: 1rem;
+	}
+
+	.sapMTileCntFtrTxt {
+		margin-left: 1rem;
+		margin-right: 1rem;
+	}
+
+	.sapMTileCntContent > .sapMTcInnerMarker {
+		vertical-align: top;
+	}	
+}
+
+/* BREAKPOINT FOR SMALL PHONES */
+@media screen and (max-width: 374px) {
+	.sapMTileCnt.sapMFrameTypeAuto {
+		height: 5.5rem;
+		min-width: 9.125rem;
+		max-width: 19rem;
+	}
+
+	.sapMTileCnt.sapMFrameTypeTwoByOne {
+		height: 5.5rem;
+		width: 18.875rem;
+
+		&.News {
+			width: 19rem;
+		}
+	}
+
+	.sapMTileCnt.sapMFrameTypeOneByOne {
+		height: 5.5rem;
+		width: 9.25rem;
+	}
+
+	.sapMTileCntFtrTxt {
+		height: 1.063rem;
+		line-height: 1.063rem;
+		bottom: 0.4375rem;
+		margin-left: 0.5625rem;
+		margin-right: 0.5625rem;
+		font-size: @sapMFontSmallSize;
+	}
+
+	.sapMTileCntContent {
+		height: 3.563rem;
+		line-height: 3.563rem;
+		margin-bottom: 0.25rem;
+		margin-top: 0.25rem;
+		padding-left: 0.5625rem;
+		padding-right: 0.5625rem;
+	}
+
+	.sapMTileCnt.News {
+		height: 5.25rem;
+
+		.sapMTileCntContent {
+			padding-left: 0.625rem;
+			padding-right: 0.625rem;
+		}
+
+		.sapMTileCntFtrTxt {
+			margin-left: 0.625rem;
+			margin-right: 0.625rem;
+		}
+	}
 }

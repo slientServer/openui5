@@ -2,10 +2,10 @@
  * ${copyright}
  */
 
-sap.ui.define(['sap/ui/core/format/NumberFormat', 'sap/ui/model/FormatException',
-		'sap/ui/model/odata/type/ODataType', 'sap/ui/model/ParseException',
-		'sap/ui/model/ValidateException'],
-	function(NumberFormat, FormatException, ODataType, ParseException, ValidateException) {
+sap.ui.define(['jquery.sap.global', 'sap/ui/core/format/NumberFormat',
+		'sap/ui/model/FormatException', 'sap/ui/model/odata/type/ODataType',
+		'sap/ui/model/ParseException', 'sap/ui/model/ValidateException'],
+	function(jQuery, NumberFormat, FormatException, ODataType, ParseException, ValidateException) {
 	"use strict";
 
 	var rDecimal = /^[-+]?(\d+)(?:\.(\d+))?$/;
@@ -22,8 +22,8 @@ sap.ui.define(['sap/ui/core/format/NumberFormat', 'sap/ui/model/FormatException'
 
 		if (!oType.oFormat) {
 			oFormatOptions = {
-				groupingEnabled: true,
-				maxIntegerDigits: Infinity
+				groupingEnabled : true,
+				maxIntegerDigits : Infinity
 			};
 			iScale = getScale(oType);
 			if (iScale !== Infinity) {
@@ -114,7 +114,7 @@ sap.ui.define(['sap/ui/core/format/NumberFormat', 'sap/ui/model/FormatException'
 		}
 
 		function setConstraint(sName, vValue, vDefault) {
-			if (vValue != vDefault) {
+			if (vValue !== vDefault) {
 				oType.oConstraints = oType.oConstraints || {};
 				oType.oConstraints[sName] = vValue;
 			}
@@ -146,8 +146,8 @@ sap.ui.define(['sap/ui/core/format/NumberFormat', 'sap/ui/model/FormatException'
 	 * href="http://www.odata.org/documentation/odata-version-2-0/overview#AbstractTypeSystem">
 	 * <code>Edm.Decimal</code></a>.
 	 *
-	 * In {@link sap.ui.model.odata.v2.ODataModel ODataModel} this type is represented as a
-	 * <code>string</code>. It never uses exponential format ("1e-5").
+	 * In both {@link sap.ui.model.odata.v2.ODataModel} and {@link sap.ui.model.odata.v4.ODataModel}
+	 * this type is represented as a <code>string</code>. It never uses exponential format ("1e-5").
 	 *
 	 * @extends sap.ui.model.odata.type.ODataType
 	 *
@@ -197,7 +197,8 @@ sap.ui.define(['sap/ui/core/format/NumberFormat', 'sap/ui/model/FormatException'
 	 * @param {string} sValue
 	 *   the value to be formatted, which is represented as a string in the model
 	 * @param {string} sTargetType
-	 *   the target type; may be "any", "float", "int" or "string".
+	 *   the target type; may be "any", "float", "int", "string", or a type with one of these types
+	 *   as its {@link sap.ui.base.DataType#getPrimitiveType primitive type}.
 	 *   See {@link sap.ui.model.odata.type} for more information.
 	 * @returns {number|string}
 	 *   the formatted output value in the target type; <code>undefined</code> or <code>null</code>
@@ -210,7 +211,7 @@ sap.ui.define(['sap/ui/core/format/NumberFormat', 'sap/ui/model/FormatException'
 		if (sValue === null || sValue === undefined) {
 			return null;
 		}
-		switch (sTargetType) {
+		switch (this.getPrimitiveType(sTargetType)) {
 		case "any":
 			return sValue;
 		case "float":
@@ -233,8 +234,9 @@ sap.ui.define(['sap/ui/core/format/NumberFormat', 'sap/ui/model/FormatException'
 	 *   the value to be parsed; the empty string and <code>null</code> are parsed to
 	 *   <code>null</code>
 	 * @param {string} sSourceType
-	 *   the source type (the expected type of <code>vValue</code>); may be "float", "int" or
-	 *   "string".
+	 *   the source type (the expected type of <code>vValue</code>); may be "float", "int",
+	 *   "string", or a type with one of these types as its
+	 *   {@link sap.ui.base.DataType#getPrimitiveType primitive type}.
 	 *   See {@link sap.ui.model.odata.type} for more information.
 	 * @returns {string}
 	 *   the parsed value
@@ -249,7 +251,7 @@ sap.ui.define(['sap/ui/core/format/NumberFormat', 'sap/ui/model/FormatException'
 		if (vValue === null || vValue === "") {
 			return null;
 		}
-		switch (sSourceType) {
+		switch (this.getPrimitiveType(sSourceType)) {
 		case "string":
 			sResult = getFormatter(this).parse(vValue);
 			if (!sResult) {

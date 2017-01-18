@@ -70,8 +70,7 @@ sap.ui.define([
 		};
 
 		QuickViewCard.prototype.onAfterRendering = function() {
-			//Sets the correct length of the links inside the QuickView. This is done to overwrite the styles set by the ResponsiveGridLayout
-			this.$().find(".sapMLnk").css("width", "auto");
+			this._setLinkWidth();
 		};
 
 		QuickViewCard.prototype.exit = function() {
@@ -94,6 +93,9 @@ sap.ui.define([
 
 			var mContent = oQuickViewPage._createPageContent();
 
+			// don't store the content for destroying, the nav container will destroy all the pages
+			oQuickViewPage._mPageContent = null;
+
 			var oContainer = new ScrollContainer(this.getId() + '-' + oQuickViewPage.getPageId(), {
 				horizontal : false,
 				vertical : false
@@ -108,6 +110,14 @@ sap.ui.define([
 			oContainer.addStyleClass('sapMQuickViewPage');
 
 			return oContainer;
+		};
+
+		/**
+		 * Sets the correct length of the links inside the QuickViewCard. This is done to overwrite the styles set by the ResponsiveGridLayout
+		 * @private
+		 */
+		QuickViewCard.prototype._setLinkWidth = function() {
+			this.$().find(".sapMLnk").css("width", "auto");
 		};
 
 

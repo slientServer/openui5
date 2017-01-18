@@ -8,12 +8,12 @@ sap.ui.define([
 	'sap/ui/dt/ElementOverlay',
 	'sap/ui/dt/OverlayRegistry',
 	'sap/ui/dt/Selection',
-	'sap/ui/dt/DesignTimeMetadata',
+	'sap/ui/dt/ElementDesignTimeMetadata',
 	'sap/ui/dt/ElementUtil',
 	'sap/ui/dt/OverlayUtil',
 	'./library'
 ],
-function(ManagedObject, ElementOverlay, OverlayRegistry, Selection, DesignTimeMetadata, ElementUtil, OverlayUtil) {
+function(ManagedObject, ElementOverlay, OverlayRegistry, Selection, ElementDesignTimeMetadata, ElementUtil, OverlayUtil) {
 	"use strict";
 
 	/**
@@ -25,7 +25,7 @@ function(ManagedObject, ElementOverlay, OverlayRegistry, Selection, DesignTimeMe
 	 * @class
 	 * The DesignTime allows to create a set of Overlays above the root elements and
 	 * their public children and manage theire events.
-	 * @extends sap.ui.core.ManagedObject
+	 * @extends sap.ui.base.ManagedObject
 	 *
 	 * @author SAP SE
 	 * @version ${version}
@@ -53,7 +53,7 @@ function(ManagedObject, ElementOverlay, OverlayRegistry, Selection, DesignTimeMe
 
 				/**
 				 * DesignTime metadata for classses to use with overlays (will overwrite default DTMetadata fields)
-				 * should have a map structure { "sClassName" : oDTMetadata, ... }
+				 * should have a map structure { "sClassName" : oDesignTimeMetadata, ... }
 				 */
 				 designTimeMetadata : {
 					type : "object"
@@ -79,7 +79,7 @@ function(ManagedObject, ElementOverlay, OverlayRegistry, Selection, DesignTimeMe
 			},
 			events : {
 				/**
-				 * Event fired when an ElementOverlay is created
+				 * Event fired when an ElementOverlay is created and its designTimeMetadata is loaded
 				 */
 				elementOverlayCreated : {
 					parameters : {
@@ -101,7 +101,19 @@ function(ManagedObject, ElementOverlay, OverlayRegistry, Selection, DesignTimeMe
 					parameters : {
 						selection : { type : "sap.ui.dt.Overlay[]" }
 					}
-				}
+				},
+				/**
+				 * Event fired when DesignTime is syncing overlays with a ControlTree of root elements
+				 */
+				syncing : {},
+				/**
+				 * Event fired when DesignTime's overlays are in-sync with ControlTree of root elements
+				 */
+				synced : {},
+				/**
+				 * Event fired when DesignTime's overlays failed to sync with ControlTree of root elements
+				 */
+				syncFailed : {}
 			}
 		}
 	});
@@ -111,6 +123,9 @@ function(ManagedObject, ElementOverlay, OverlayRegistry, Selection, DesignTimeMe
 	 * @protected
 	 */
 	DesignTime.prototype.init = function() {
+		// number of element overlays waiting for their designTimeMetadata
+		this._iOverlaysPending = 0;
+		// array of errors while element overlays waiting for their designTimeMetadata
 		this._oSelection = this.createSelection();
 		this._oSelection.attachEvent("change", function(oEvent) {
 			this.fireSelectionChange({selection: oEvent.getParameter("selection")});
@@ -122,6 +137,7 @@ function(ManagedObject, ElementOverlay, OverlayRegistry, Selection, DesignTimeMe
 	 * @protected
 	 */
 	DesignTime.prototype.exit = function() {
+		delete this._iOverlaysPending;
 		this._destroyAllOverlays();
 		this._oSelection.destroy();
 	};
@@ -183,7 +199,7 @@ function(ManagedObject, ElementOverlay, OverlayRegistry, Selection, DesignTimeMe
 	/**
 	 * Inserts new plugin to use with the DesignTime at a defined position
 	 * @param {sap.ui.dt.Plugin} oPlugin to insert
-	 * @param {integer} iIndex a position to insert the plugin at
+	 * @param {int} iIndex a position to insert the plugin at
 	 * @return {sap.ui.dt.DesignTime} this
 	 * @protected
 	 */
@@ -240,7 +256,7 @@ function(ManagedObject, ElementOverlay, OverlayRegistry, Selection, DesignTimeMe
 
 	/**
 	 * Returns a designTimeMetadata
-	 * @return {object} designTimeMetadata
+	 * @return {map} designTimeMetadata
 	 * @protected
 	 */
 	DesignTime.prototype.getDesignTimeMetadata = function() {
@@ -255,11 +271,11 @@ function(ManagedObject, ElementOverlay, OverlayRegistry, Selection, DesignTimeMe
 	 */
 	DesignTime.prototype.getDesignTimeMetadataFor = function(vElement) {
 		var sClassName = vElement;
-		var mDTMetadata = this.getDesignTimeMetadata();
+		var mDesignTimeMetadata = this.getDesignTimeMetadata();
 		if (vElement.getMetadata) {
-			sClassName = vElement.getMetadata()._sClassName;
+			sClassName = vElement.getMetadata().getName();
 		}
-		return mDTMetadata[sClassName];
+		return mDesignTimeMetadata[sClassName];
 	};
 
 	/**
@@ -271,7 +287,13 @@ function(ManagedObject, ElementOverlay, OverlayRegistry, Selection, DesignTimeMe
 	DesignTime.prototype.addRootElement = function(vRootElement) {
 		this.addAssociation("rootElements", vRootElement);
 
-		this.createElementOverlaysFor(ElementUtil.getElementInstance(vRootElement));
+		var oRootOverlay = this._createElementOverlay(ElementUtil.getElementInstance(vRootElement));
+
+		// trigger rendering of all overlays only once after DesignTime is synced
+		// to prevent rerendering of UIArea during async loading process
+		this.attachEventOnce("synced", function() {
+			oRootOverlay.placeInOverlayContainer();
+		});
 
 		return this;
 	};
@@ -308,14 +330,13 @@ function(ManagedObject, ElementOverlay, OverlayRegistry, Selection, DesignTimeMe
 	/**
 	 * Creates and returns the created instance of ElementOverlay for an element
 	 * @param {string|sap.ui.core.Element} oElement to create ElementOverlay for
-	 * @param {object} oDTMetadata to create ElementOverlay with
+	 * @param {object} oDesignTimeMetadata to create ElementOverlay with
 	 * @return {sap.ui.dt.ElementOverlay} created ElementOverlay
 	 * @protected
 	 */
-	DesignTime.prototype.createElementOverlay = function(oElement, oDTMetadata, bInHiddenTree) {
+	DesignTime.prototype.createElementOverlay = function(oElement, bInHiddenTree) {
 		return new ElementOverlay({
 			inHiddenTree : bInHiddenTree,
-			designTimeMetadata : oDTMetadata ? new DesignTimeMetadata({data : oDTMetadata}) : null,
 			element : oElement
 		});
 	};
@@ -326,73 +347,75 @@ function(ManagedObject, ElementOverlay, OverlayRegistry, Selection, DesignTimeMe
 	 * @public
 	 */
 	DesignTime.prototype.getElementOverlays = function() {
-		var that = this;
 		var aElementOverlays = [];
 
 		this._iterateRootElements(function(oRootElement) {
-			aElementOverlays = aElementOverlays.concat(that._getAllElementOverlaysIn(oRootElement));
-		});
+			aElementOverlays = aElementOverlays.concat(this._getAllElementOverlaysIn(oRootElement));
+		}, this);
 
 		return aElementOverlays;
 	};
 
 	/**
 	 * @param {sap.ui.core.Element} oElement element
-	 * @return {sap.ui.dt.ElementOverlay} created ElementOverlay
+	 * @return {sap.ui.dt.ElementOverlay} created or already existing instance of ElementOverlay for oElement
 	 * @private
 	 */
 	DesignTime.prototype._createElementOverlay = function(oElement, bInHiddenTree) {
-		if (ElementUtil.isInstanceOf(oElement, "sap.ui.core.Element")) {
-			// check if ElementOverlay for the element already exists before creating the new one
-			// (can happen when two aggregations returning the same elements)
-			if (!OverlayRegistry.getOverlay(oElement)) {
-				// merge the DTMetadata from the DesignTime and from UI5
-				var oMetadataFromDesignTime = this.getDesignTimeMetadataFor(oElement);
-				var oDTMetadata = ElementUtil.getDesignTimeMetadata(oElement);
-				jQuery.extend(true, oDTMetadata, oMetadataFromDesignTime);
-				oDTMetadata = oDTMetadata !== {} ? oDTMetadata : null;
-
-				var oElementOverlay = this.createElementOverlay(oElement, oDTMetadata, bInHiddenTree);
-				if (oElementOverlay) {
-					oElementOverlay.attachEvent("elementModified", this._onElementModified, this);
-					oElementOverlay.attachEvent("destroyed", this._onElementOverlayDestroyed, this);
-					oElementOverlay.attachEvent("selectionChange", this._onElementOverlaySelectionChange, this);
-
-					this.fireElementOverlayCreated({elementOverlay : oElementOverlay});
-					return oElementOverlay;
-				}
-
+		oElement = ElementUtil.fixComponentContainerElement(oElement);
+		var oElementOverlay = OverlayRegistry.getOverlay(oElement);
+		if (oElement && !oElement.bIsDestroyed && !oElementOverlay) {
+			if (this._iOverlaysPending === 0) {
+				this.fireSyncing();
 			}
+			this._iOverlaysPending++;
+
+			oElementOverlay = this.createElementOverlay(oElement, bInHiddenTree);
+			if (oElementOverlay) {
+				oElementOverlay.attachRequestElementOverlaysForAggregation(this._onRequestElementOverlaysForAggregation, this);
+				oElementOverlay.attachElementModified(this._onElementModified, this);
+				oElementOverlay.attachDestroyed(this._onElementOverlayDestroyed, this);
+				oElementOverlay.attachSelectionChange(this._onElementOverlaySelectionChange, this);
+			}
+
+			ElementUtil.loadDesignTimeMetadata(oElement).then(function(oDesignTimeMetadata) {
+				// if oElement is already destroyed while designtime metadata is loading
+				if (!oElement || oElement.bIsDestroyed) {
+					return;
+				}
+				// merge the DTMetadata from the DesignTime and from UI5
+				var oMergedDesignTimeMetadata = oDesignTimeMetadata || {};
+				jQuery.extend(true, oMergedDesignTimeMetadata, this.getDesignTimeMetadataFor(oElement));
+				var oElementDesignTimeMetadata = new ElementDesignTimeMetadata({
+					libraryName : oElement.getMetadata().getLibraryName(),
+					data : oMergedDesignTimeMetadata});
+
+				oElementOverlay.setDesignTimeMetadata(oElementDesignTimeMetadata);
+				this.fireElementOverlayCreated({elementOverlay : oElementOverlay});
+			}.bind(this)).catch(function(oError) {
+				jQuery.sap.log.error("exception occured in sap.ui.dt.DesignTime._createElementOverlay", oError.stack || oError);
+				if (oError instanceof Error) {
+					this.fireSyncFailed();
+				}
+			}.bind(this)).then(function() {
+				this._iOverlaysPending--;
+				if (this._iOverlaysPending === 0) {
+					this.fireSynced();
+				}
+			}.bind(this));
 		}
+
+		return oElementOverlay;
 	};
 
 	/**
-	 * Creates ElementOverlay for an element and all public children of the element
+	 * Create an overlay for an element and register it in the DesignTime
 	 * @param {sap.ui.core.Element} oElement element
 	 * @return {sap.ui.dt.ElementOverlay} created ElementOverlay
-	 * @private
+	 * @public
 	 */
-	DesignTime.prototype.createElementOverlaysFor = function(oElement) {
-		var that = this;
-
-		var createChildOverlays = function(oElementOverlay) {
-			oElementOverlay.getAggregationOverlays().forEach(function(oAggregationOverlay) {
-				var sAggregationName = oAggregationOverlay.getAggregationName();
-				var oElement = oElementOverlay.getElementInstance();
-				var aChildren = ElementUtil.getAggregation(oElement, sAggregationName);
-				aChildren.forEach(function(oChild) {
-						var oChildOverlay = that._createElementOverlay(oChild, oAggregationOverlay.isInHiddenTree());
-						if (oChildOverlay) {
-							createChildOverlays(oChildOverlay);
-						}
-				});
-			});
-		};
-
-		var oElementOverlay = this._createElementOverlay(ElementUtil.ensureRootElement(oElement));
-		if (oElementOverlay) {
-			createChildOverlays(oElementOverlay);
-		}
+	DesignTime.prototype.createOverlay = function(oElement) {
+		return this._createElementOverlay(oElement);
 	};
 
 	/**
@@ -400,7 +423,7 @@ function(ManagedObject, ElementOverlay, OverlayRegistry, Selection, DesignTimeMe
 	 * @private
 	 */
 	DesignTime.prototype._destroyOverlaysForElement = function(oElement) {
-		var oOverlay = OverlayRegistry.getOverlay(ElementUtil.ensureRootElement(oElement));
+		var oOverlay = OverlayRegistry.getOverlay(oElement);
 		if (oOverlay) {
 			oOverlay.destroy();
 		}
@@ -410,11 +433,31 @@ function(ManagedObject, ElementOverlay, OverlayRegistry, Selection, DesignTimeMe
 	 * @private
 	 */
 	DesignTime.prototype._destroyAllOverlays = function() {
-		var that = this;
-
 		this._iterateRootElements(function(oRootElement) {
-			that._destroyOverlaysForElement(oRootElement);
-		});
+			this._destroyOverlaysForElement(oRootElement);
+		}, this);
+	};
+
+	/**
+	 * @private
+	*/
+	DesignTime.prototype._createChildOverlaysForAggregation = function(oElementOverlay, sAggregationName) {
+		var oAggregationOverlay = oElementOverlay.getAggregationOverlay(sAggregationName);
+		var oElement = oElementOverlay.getElementInstance();
+		var vChildren = ElementUtil.getAggregation(oElement, sAggregationName);
+		ElementUtil.iterateOverElements(vChildren, function(oChild) {
+			this._createElementOverlay(oChild, oAggregationOverlay.isInHiddenTree());
+		}.bind(this));
+	};
+
+	/**
+	 * @private
+	*/
+	DesignTime.prototype._onRequestElementOverlaysForAggregation = function(oEvent) {
+		var oElementOverlay = oEvent.getSource();
+
+		var sAggregationName = oEvent.getParameter("name");
+		this._createChildOverlaysForAggregation(oElementOverlay, sAggregationName);
 	};
 
 	/**
@@ -448,9 +491,15 @@ function(ManagedObject, ElementOverlay, OverlayRegistry, Selection, DesignTimeMe
 	DesignTime.prototype._onElementModified = function(oEvent) {
 		var oParams = oEvent.getParameters();
 		if (oParams.type === "addOrSetAggregation" || oParams.type === "insertAggregation") {
-			this._onElementOverlayAddAggregation(oParams.value);
+			this._onElementOverlayAddAggregation(oParams.value, oParams.target, oParams.name);
 		} else if (oParams.type === "setParent") {
-			this._onElementOverlaySetParent(oParams.target, oParams.value);
+			// timeout is needed because UI5 controls & apps can temporary "dettach" controls from control tree
+			// and add them again later, so the check if the control is dettached from root element's tree is delayed
+			setTimeout(function() {
+				if (!this.bIsDestroyed) {
+					this._checkIfOverlayShouldBeDestroyed(oParams.target, oParams.value);
+				}
+			}.bind(this), 0);
 		}
 	};
 
@@ -458,11 +507,14 @@ function(ManagedObject, ElementOverlay, OverlayRegistry, Selection, DesignTimeMe
 	 * @param {sap.ui.core.Element} oElement which was added
 	 * @private
 	 */
-	DesignTime.prototype._onElementOverlayAddAggregation = function(oElement) {
-		var oElementOverlay = OverlayRegistry.getOverlay(oElement);
-		// TODO what if it was moved between hidden/public tree? can this happen?
-		if (!oElementOverlay) {
-			this.createElementOverlaysFor(oElement);
+	DesignTime.prototype._onElementOverlayAddAggregation = function(oChild, oParent, sAggregationName) {
+		// oElement can be of an alternative type (setLabel(sText) for example)
+		if (oChild instanceof sap.ui.core.Element) {
+			var oChildElementOverlay = OverlayRegistry.getOverlay(oChild);
+			if (!oChildElementOverlay) {
+				var bIsInHiddenTree = OverlayRegistry.getOverlay(oParent).getAggregationOverlay(sAggregationName).isInHiddenTree();
+				this._createElementOverlay(oChild, bIsInHiddenTree);
+			}
 		}
 	};
 
@@ -471,10 +523,9 @@ function(ManagedObject, ElementOverlay, OverlayRegistry, Selection, DesignTimeMe
 	 * @param {sap.ui.core.Element} oParent new parent
 	 * @private
 	 */
-	DesignTime.prototype._onElementOverlaySetParent = function(oElement, oParent) {
+	DesignTime.prototype._checkIfOverlayShouldBeDestroyed = function(oElement, oParent) {
 		var oElementOverlay = OverlayRegistry.getOverlay(oElement);
-		// if __bSapUiDtSupressOverlayDestroy is true, overlay shouldn't be destroyed, as long as it's in movement process
-		if (oElementOverlay && !this._isElementInRootElements(oElement) && !oElement.__bSapUiDtSupressOverlayDestroy) {
+		if (oElementOverlay && !this._isElementInRootElements(oElement)) {
 			oElementOverlay.destroy();
 		}
 	};
@@ -501,12 +552,12 @@ function(ManagedObject, ElementOverlay, OverlayRegistry, Selection, DesignTimeMe
 	 * @param {function} fnStep function called with every root element
 	 * @private
 	 */
-	DesignTime.prototype._iterateRootElements = function(fnStep) {
+	DesignTime.prototype._iterateRootElements = function(fnStep, oScope) {
 		var aRootElements = this.getRootElements();
 		aRootElements.forEach(function(sRootElementId) {
 			var oRootElement = ElementUtil.getElementInstance(sRootElementId);
-			fnStep(oRootElement);
-		});
+			fnStep.call(oScope || this, oRootElement);
+		}, this);
 	};
 
 	/**
@@ -517,8 +568,7 @@ function(ManagedObject, ElementOverlay, OverlayRegistry, Selection, DesignTimeMe
 	DesignTime.prototype._getAllElementOverlaysIn = function(oElement) {
 		var aElementOverlays = [];
 
-		var oRootElement = ElementUtil.ensureRootElement(oElement);
-		var oElementOverlay = OverlayRegistry.getOverlay(oRootElement);
+		var oElementOverlay = OverlayRegistry.getOverlay(oElement);
 		if (oElementOverlay) {
 			OverlayUtil.iterateOverlayElementTree(oElementOverlay, function(oChildOverlay) {
 				aElementOverlays.push(oChildOverlay);

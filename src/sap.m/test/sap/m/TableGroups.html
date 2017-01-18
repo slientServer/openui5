@@ -1,13 +1,14 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-<meta http-equiv="X-UA-Compatible" content="IE=edge" />
-<meta http-equiv='Content-Type' content='text/html;charset=UTF-8'/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta http-equiv='Content-Type' content='text/html;charset=UTF-8'>
 
 <title>Table Grouping Example Page</title>
 
+<script src="shared-config.js"></script>
 <script src="../../../resources/sap-ui-core.js" data-sap-ui-xx-bindingSyntax="complex"
-	id="sap-ui-bootstrap" data-sap-ui-libs="sap.m" data-sap-ui-theme="sap_bluecrystal">
+	id="sap-ui-bootstrap" data-sap-ui-libs="sap.m">
 </script>
 
 <script>
@@ -91,7 +92,7 @@
 			text: text
 		}
 	});
-	
+
 	// define the row template
 	var oItemTemplate = new sap.m.ColumnListItem({
 		tooltip: "Gender icon chosen because no better suitable icon is available... no discrimination of any gender intended",
@@ -118,8 +119,8 @@
 			})
 		]
 	});
-	
-	// init table 
+
+	// init table
 	var oTable = new sap.m.Table({
 		growing : true,
 		growingThreshold : 5,

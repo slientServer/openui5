@@ -5,31 +5,31 @@
   The focus is on the correct calculation of the number of visible items. When toolbar item widths are influenced
   by images and these images are only loaded AFTER onAfterRendering (which happens sometimes in Safari and always in Chrome)
   the calculation is wrong and not repeated after the images are loaded.
-  Author: d029506
 -->
 
 <html>
 
 <head>
-	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 
 	<META http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 
 	<title>Test Page for sap.ui.commons.Toolbar with Right Side Items</title>
 
+		<script src="../shared-config.js"></script>
 		<script id="sap-ui-bootstrap"
-			      type="text/javascript"
+			     
 			      src="../../../../../resources/sap-ui-core.js"
 			      data-sap-ui-theme="sap_bluecrystal"
 			      data-sap-ui-noConflict="true"
 			      data-sap-ui-libs="sap.ui.commons">
 		</script>
-		<link rel="stylesheet" href="../../../../../resources/sap/ui/thirdparty/qunit.css" type="text/css" media="screen" />
-		<script type="text/javascript" src="../../../../../resources/sap/ui/thirdparty/qunit.js"></script>
-		<script type="text/javascript" src="../../../../../resources/sap/ui/qunit/qunit-junit.js"></script>
-		<script type="text/javascript" src="../../../../../resources/sap/ui/qunit/QUnitUtils.js"></script>
+		<link rel="stylesheet" href="../../../../../resources/sap/ui/thirdparty/qunit.css" type="text/css" media="screen">
+		<script src="../../../../../resources/sap/ui/thirdparty/qunit.js"></script>
+		<script src="../../../../../resources/sap/ui/qunit/qunit-junit.js"></script>
+		<script src="../../../../../resources/sap/ui/qunit/QUnitUtils.js"></script>
 
-	<script type="text/javascript">
+	<script>
 		function addManyItems(oToolbar) {
 			var id = oToolbar.getId();
 

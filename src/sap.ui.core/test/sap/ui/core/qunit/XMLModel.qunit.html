@@ -2,31 +2,31 @@
 
 <!--
   Tested sap.ui.model.xml.XMLModel
-  Author: d050084
 -->
 
 <html>
 <head>
-<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
 <!-- Initialization -->
-<script id="sap-ui-bootstrap" type="text/javascript"
+<script src="../shared-config.js"></script>
+<script id="sap-ui-bootstrap"
 	src="../../../../../resources/sap-ui-core.js"
 	data-sap-ui-theme="sap_bluecrystal"
 	data-sap-ui-libs="sap.ui.layout,sap.ui.commons">
 	</script>
 
-<link rel="stylesheet" href="../../../../../resources/sap/ui/thirdparty/qunit.css" type="text/css" media="screen" />
-<script type="text/javascript" src="../../../../../resources/sap/ui/thirdparty/qunit.js"></script>
-<script type="text/javascript" src="../../../../../resources/sap/ui/qunit/qunit-junit.js"></script>
-<script type="text/javascript" src="../../../../../resources/sap/ui/qunit/QUnitUtils.js"></script>
-<script type="text/javascript" src="../../../../../resources/sap/ui/thirdparty/sinon.js"></script>
+<link rel="stylesheet" href="../../../../../resources/sap/ui/thirdparty/qunit.css" type="text/css" media="screen">
+<script src="../../../../../resources/sap/ui/thirdparty/qunit.js"></script>
+<script src="../../../../../resources/sap/ui/qunit/qunit-junit.js"></script>
+<script src="../../../../../resources/sap/ui/qunit/QUnitUtils.js"></script>
+<script src="../../../../../resources/sap/ui/thirdparty/sinon.js"></script>
 <!--[if IE]>
-	<script type="text/javascript" src="../../../../../resources/sap/ui/thirdparty/sinon-ie.js"></script>
+	<script src="../../../../../resources/sap/ui/thirdparty/sinon-ie.js"></script>
 <![endif]-->
-<script type="text/javascript" src="../../../../../resources/sap/ui/thirdparty/sinon-qunit.js"></script>
+<script src="../../../../../resources/sap/ui/thirdparty/sinon-qunit.js"></script>
 
 <!-- Test functions -->
-<script language="javascript">
+<script>
 
 	var testdata = "<teamMembers>" +
 						"<member firstName=\"Andreas\" lastName=\"Klark\"></member>" +
@@ -241,7 +241,7 @@
 		oLabel.bindProperty("text", "/pet/0/@type");
 		oLayout.addContent(oLabel);
 		ok(oLabel.getBindingContext() == undefined, "context undefined");
-		oContext = oModel.createBindingContext("/pet");
+		oContext = oModelChild.createBindingContext("/pet");
 		oLabel.setBindingContext(oContext);
 		equal(oLabel.getBindingContext().getPath(), "/pet", "context set correctly");
 		oModelChild.setProperty("0/@type", "rat",oLabel.getBindingContext());
@@ -310,11 +310,7 @@
 		"<baz>52</baz>" +
 		"</root>";
 		oModel.setXML(sXML);
-		if (sap.ui.Device.browser.internet_explorer && parseInt(sap.ui.Device.browser.version) < 9){
-			equal(oModel.getData().getElementsByTagName("bar")[0].text, "ABCDEFG", "get XML test");
-		}else {
-			equal(oModel.getData().getElementsByTagName("bar")[0].textContent, "ABCDEFG", "get XML test");
-		}
+		equal(oModel.getData().getElementsByTagName("bar")[0].textContent, "ABCDEFG", "get XML test");
 	});
 
 	test("test XML compatible syntax", function() {

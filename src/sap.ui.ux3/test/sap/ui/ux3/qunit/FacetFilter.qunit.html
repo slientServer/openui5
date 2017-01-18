@@ -1,30 +1,28 @@
 <!DOCTYPE HTML>
 
-<!-- 
+<!--
   Tested control/class: sap.ui.ux3.FacetFilterList, sap.ui.ux3.FacetFilter
-  Author: d029506
 -->
 
 <html>
 <head>
-	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<title>FacetFilter - sap.ui.ux3</title>
 	<!-- todo: link rel="shortcut icon" type="image/x-icon" href="../images/controls/sap.ui.ux3.FacetFilter.gif"-->
-	<script id="sap-ui-bootstrap" 
-		type="text/javascript"
+	<script src="../shared-config.js"></script>
+	<script id="sap-ui-bootstrap"
 		src="../../../../../resources/sap-ui-core.js"
-		data-sap-ui-theme="sap_bluecrystal"
 		data-sap-ui-noConflict="true"
 		data-sap-ui-libs="sap.ui.ux3,sap.ui.commons"
 		data-sap-ui-language=en>
 	</script>
-	<link rel="stylesheet" href="../../../../../resources/sap/ui/thirdparty/qunit.css" type="text/css" media="screen" />
-	<script type="text/javascript" src="../../../../../resources/sap/ui/thirdparty/qunit.js"></script>
-	<script type="text/javascript" src="../../../../../resources/sap/ui/qunit/qunit-junit.js"></script>
-	<script type="text/javascript" src="../../../../../resources/sap/ui/qunit/QUnitUtils.js"></script>
+	<link rel="stylesheet" href="../../../../../resources/sap/ui/thirdparty/qunit.css" type="text/css" media="screen">
+	<script src="../../../../../resources/sap/ui/thirdparty/qunit.js"></script>
+	<script src="../../../../../resources/sap/ui/qunit/qunit-junit.js"></script>
+	<script src="../../../../../resources/sap/ui/qunit/QUnitUtils.js"></script>
 
 	<!-- Control initialization -->
-	<script language="javascript">
+	<script>
 	var oFacetFilter = new sap.ui.ux3.FacetFilter("myFacetFilter");
 
 	var oFFL1 = new sap.ui.ux3.FacetFilterList("ffl1", {
@@ -70,7 +68,7 @@
 	</script>
 
 	<!-- Test helper functions -->
-	<script language="javascript">
+	<script>
 
 		function getListItemRefs(oListBox) {
 			return jQuery(jQuery("#"+oListBox.getId()).children()[0]).children();
@@ -83,7 +81,7 @@
 	</script>
 
 	<!-- Test functions -->
-	<script language="javascript">
+	<script>
 
 		sap.ui.test.qunit.delayTestStart();
 

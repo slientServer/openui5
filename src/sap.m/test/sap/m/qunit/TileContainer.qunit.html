@@ -1,7 +1,7 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-	<meta http-equiv="X-UA-Compatible" content="IE=edge" charset="UTF-8"/>
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 
 	<title>TileContainer - sap.m</title>
 
@@ -10,19 +10,19 @@
 		type="text/css" media="screen"/>
 
 	<!-- UI5 Bootstrap -->
+	<script src="../shared-config.js"></script>
 	<script id="sap-ui-bootstrap"
-		type="text/javascript"
 		src="../../../../resources/sap-ui-core.js"
-		data-sap-ui-theme="sap_bluecrystal"
 		data-sap-ui-libs="sap.m"></script>
 
 	<!-- QUnit libraries -->
 	<script src="../../../../resources/sap/ui/thirdparty/qunit.js"></script>
-	<script type="text/javascript" src="../../../../resources/sap/ui/qunit/qunit-junit.js"></script>
-	<script type="text/javascript" src="../../../../resources/sap/ui/qunit/QUnitUtils.js"></script>
+	<script src="../../../../resources/sap/ui/qunit/qunit-junit.js"></script>
+	<script src="../../../../resources/sap/ui/qunit/QUnitUtils.js"></script>
 	<script src="../../../../resources/sap/ui/thirdparty/sinon.js"></script>
+	<script src="../../../../resources/sap/ui/thirdparty/sinon-qunit.js"></script>
 
-	<script type="text/javascript">
+	<script>
 		var core = sap.ui.getCore();
 		var delay = 500;
 
@@ -289,10 +289,40 @@
 			core.applyChanges();
 			setTimeout(function() {
 				sut.moveTile(sut.getTiles()[0], 3);
-				var aTilesDom = jQuery('.sapMTile');
+				var aTilesDom = jQuery('#testOrder').find('.sapMTile');
 
 				// Assert that the index of the tile in the DOM is the same as the index of aggregation
 				equal(sut.getTiles()[3].getId(), jQuery(aTilesDom[3]).attr('id'), 'first, first; equal success');
+
+				sut.destroy();
+				done();
+			}.bind(this), delay);
+		});
+
+		test('Test setting first tile to visible false', function (assert) {
+			var done = assert.async();
+			// SUT
+			var m 	= sap.m,
+				sut 	= new m.TileContainer('testOrderVis', {
+						tiles : [
+							new m.StandardTile({id: 'first', visible: false}),
+							new m.StandardTile({id: 'second'}),
+							new m.StandardTile({id: 'third'})
+						]
+					});
+
+			sut.placeAt("qunit-fixture");
+
+			// Act
+			core.applyChanges();
+			setTimeout(function() {
+				var aTilesDom = jQuery('#testOrderVis').find('.sapMTile');
+
+				// Assert that the second tile in the aggregation is first in the DOM, since the first has visible set to false
+				equal(aTilesDom.eq(0).attr('id'), 'second', 'first tile in the DOM is the second one, since the first is not visible');
+
+				// Assert that the tiles in the DOM are only two not three like in aggregation, when one of the tiles is not visible
+				equal(aTilesDom.length, 2, 'only 2 tiles are rendered inside the DOM');
 
 				sut.destroy();
 				done();
@@ -497,6 +527,95 @@
 			var oNewTile = new sap.m.StandardTile();
 			this.sut.addTile(oNewTile);
 			deepEqual(this.getAriaPosInSetValues(), this.getExpectedAriaPositionInSetValues(), "Checking the 'aria-posinset' for exact values");
+		});
+
+		module("Data Binding", {
+			beforeEach: function () {
+				this.sandbox = sinon.sandbox;
+				sap.ui.getCore().setModel(new sap.ui.model.json.JSONModel({
+					"TileCollection" : [
+						{
+							"icon" : "hint",
+							"type" : "Monitor",
+							"title" : "1"
+						},
+						{
+							"icon" : "inbox",
+							"type" : "Create",
+							"number" : "89",
+							"title" : "2",
+							"info" : "Overdue",
+							"infoState" : "Error"
+						},
+						{
+							"type" : "Create",
+							"title" : "3",
+							"info" : "28 Days Left",
+							"infoState" : "Success"
+						},
+						{
+							"type" : "Create",
+							"title" : "4",
+							"info" : "28 Days Left",
+							"infoState" : "Success"
+						},
+						{
+							"type" : "Create",
+							"title" : "5",
+							"info" : "28 Days Left",
+							"infoState" : "Success"
+						}
+					]
+				}));
+				this.oTileContainer = new sap.m.TileContainer();
+				this.oTileContainer.bindAggregation('tiles', '/TileCollection', new sap.m.StandardTile({
+					type: "{type}",
+					title: "{title}",
+					info: "{info}",
+					infoState: "{infoState}",
+					number: "{number}",
+					icon: "{icon}"
+				}));
+				this.oTileContainer.placeAt('qunit-fixture');
+			},
+			afterEach: function () {
+				this.oTileContainer.destroy();
+				this.sandbox.restore();
+			}
+		});
+
+		test("Tiles are destroyed when model is changed", function () {
+			//Arrange
+			var fnDestroyTilesSpy = this.sandbox.spy(this.oTileContainer, 'destroyTiles'),
+				newDataModel = new sap.ui.model.json.JSONModel({
+					"TileCollection" : [
+						{
+							"icon" : "hint",
+							"type" : "Create",
+							"title" : "2222222222"
+						}
+					]
+				});
+
+			sap.ui.getCore().setModel(newDataModel);
+			//Assert
+			strictEqual(fnDestroyTilesSpy.callCount, 1, "Tiles are destroyed when data model was updated");
+		});
+
+		test('Paging is updated, when model is changed', function (assert) {
+			var done = assert.async();
+
+			setTimeout(function(){
+				strictEqual(this.oTileContainer._iPages, 1, "There is one page");
+
+				newDataModel = new sap.ui.model.json.JSONModel({});
+
+				sap.ui.getCore().setModel(newDataModel);
+
+				strictEqual(this.oTileContainer._iPages, 0, "There are no pages after the model was updated with empty data");
+
+				done();
+			}.bind(this), delay);
 		});
 	</script>
 </head>

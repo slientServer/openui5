@@ -11,36 +11,37 @@
 	<Panel headerText="{i18n>panel2HeaderText}" class="sapUiResponsiveMargin"
 		width="auto">
 		<content>
-			<l:VerticalLayout>
-				<Label class="sapUiSmallMargin" text="{i18n>address}:" />
-				<Text class="sapUiSmallMargin" text="{/address/street}\n{/address/zip} {/address/city}\n{/address/country}" width="200px" />
-								<Image 	class="sapUiSmallMargin" width="500px" height="300px" 
-						src="{ 
-								parts: [ 
-										'/address/street',
-										'/address/zip',
-										'/address/city',
-										'/address/country'
-										],
-								formatter: '.formatMapUrl'
-							}" />
-			</l:VerticalLayout>
-			<l:VerticalLayout>
-				<Label text="{i18n>salesToDate}" class="sapUiSmallMargin" />
-				<Input width="200px" enabled="{/enabled}" description="{/currencyCode}"
-						value="{ parts: [{path: '/salesToDate'}, {path: '/currencyCode'}], type: 'sap.ui.model.type.Currency', formatOptions: {showMeasure: false } }"/>
-			</l:VerticalLayout>
+			<l:HorizontalLayout>
+				<l:VerticalLayout>
+					<Label class="sapUiSmallMargin" text="{i18n>address}:" />
+					<Text class="sapUiSmallMarginBegin sapUiSmallMarginBottom" text="{/address/street}\n{/address/zip} {/address/city}\n{/address/country}" width="200px" />
+					<Link class="sapUiSmallMarginBegin"
+						  href="{
+								parts: [
+									'/firstName',
+									'/lastName'
+								],
+								formatter: '.formatMail'
+							}"
+						  text="{i18n>sendEmail}"/>
+				</l:VerticalLayout>
+				<l:VerticalLayout>
+					<Label text="{i18n>salesToDate}:" class="sapUiSmallMargin" />
+					<Input width="200px" enabled="{/enabled}" description="{/currencyCode}"
+						   value="{ parts: [{path: '/salesToDate'}, {path: '/currencyCode'}], type: 'sap.ui.model.type.Currency', formatOptions: {showMeasure: false } }"/>
+				</l:VerticalLayout>
+			</l:HorizontalLayout>
 		</content>
 	</Panel>
 	<Panel headerText="{i18n>panel3HeaderText}" class="sapUiResponsiveMargin" width="auto">
 		<content>
 			<List headerText="{i18n>productListTitle}" items="{products>/Products}">
 				<items>
-					<ObjectListItem 
+					<ObjectListItem
 						press=".onItemSelected"
 						type="Active"
 						title="{products>ProductName}"
-									number="{ parts: [{path: 'products>UnitPrice'}, {path: '/currencyCode'}], 
+									number="{ parts: [{path: 'products>UnitPrice'}, {path: '/currencyCode'}],
 												type: 'sap.ui.model.type.Currency',
 												formatOptions: { showMeasure: false }
 											}"
@@ -49,7 +50,7 @@
 							<ObjectAttribute text="{products>QuantityPerUnit}"/>
 							<ObjectAttribute title="{i18n>stockValue}"
 											 text="{parts: [{path: 'products>UnitPrice'}, {path: 'products>UnitsInStock'}, {path: '/currencyCode'}],
-														formatter: '.formatStockValue' 
+														formatter: '.formatStockValue'
 													}" />
 						</attributes>
 					</ObjectListItem>
@@ -61,21 +62,21 @@
 		<l:Grid defaultSpan="L3 M6 S12" containerQuery="true">
 			<Label text="{i18n>ProductID}:"/>
 			<Input value="{products>ProductID}"/>
-			
+
 			<Label text="{i18n>ProductName}:"/>
 			<Input value="{products>ProductName}"/>
-			
+
 			<Label text="{i18n>QuantityPerUnit}:"/>
 			<Input value="{products>QuantityPerUnit}"/>
-			
+
 			<Label text="{i18n>UnitPrice}:"/>
 			<Input value="{products>UnitPrice}"/>
-			
+
 			<Label text="{i18n>UnitsInStock}:"/>
 			<Input value="{products>UnitsInStock}"/>
-			
+
 			<Label text="{i18n>Discontinued}:"/>
-			<CheckBox value="{products>Discontinued}"/>
+			<CheckBox selected="{products>Discontinued}"/>
 		</l:Grid>
 	</Panel>
 </mvc:View>

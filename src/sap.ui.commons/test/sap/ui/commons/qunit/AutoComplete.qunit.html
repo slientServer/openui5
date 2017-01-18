@@ -2,14 +2,14 @@
 
 <!--
   Tested control/class: sap.ui.commons.AutoComplete
-  Author: d046314
 -->
 
 <html>
 <head>
-	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<title>AutoComplete - sap.ui.commons</title>
 	<link rel="shortcut icon" type="image/x-icon" href="../images/controls/sap.ui.commons.AutoComplete.gif">
+	<script src="../shared-config.js"></script>
 	<script id="sap-ui-bootstrap"
 		type="text/javascript"
 		src="../../../../../resources/sap-ui-core.js"
@@ -17,13 +17,13 @@
 		data-sap-ui-noConflict="true"
 		data-sap-ui-libs="sap.ui.commons">
 	</script>
-	<link rel="stylesheet" href="../../../../../resources/sap/ui/thirdparty/qunit.css" type="text/css" media="screen" />
-	<script type="text/javascript" src="../../../../../resources/sap/ui/thirdparty/qunit.js"></script>
-	<script type="text/javascript" src="../../../../../resources/sap/ui/qunit/qunit-junit.js"></script>
-	<script type="text/javascript" src="../../../../../resources/sap/ui/qunit/QUnitUtils.js"></script>
+	<link rel="stylesheet" href="../../../../../resources/sap/ui/thirdparty/qunit.css" type="text/css" media="screen">
+	<script src="../../../../../resources/sap/ui/thirdparty/qunit.js"></script>
+	<script src="../../../../../resources/sap/ui/qunit/qunit-junit.js"></script>
+	<script src="../../../../../resources/sap/ui/qunit/QUnitUtils.js"></script>
 
 	<!-- Test functions -->
-	<script language="javascript">
+	<script>
 		function clear(oAuto, bDestroyItems){
 			jQuery(oAuto.getInputDomRef()).val("");
 			oAuto.setValue("");

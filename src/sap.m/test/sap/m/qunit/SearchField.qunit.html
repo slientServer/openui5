@@ -1,21 +1,23 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
 
 <title>Test Page for sap.ui.m.SearchField</title>
-<script id="sap-ui-bootstrap" data-sap-ui-theme="sap_bluecrystal"
-	type="text/javascript" data-sap-ui-noConflict="true"
+<script src="../shared-config.js"></script>
+<script id="sap-ui-bootstrap" data-sap-ui-noConflict="true"
 	data-sap-ui-libs="sap.m" src="../../../../resources/sap-ui-core.js">
 </script>
 
-<link rel="stylesheet" href="../../../../resources/sap/ui/thirdparty/qunit.css" type="text/css" media="screen" />
-<script type="text/javascript" src="../../../../resources/sap/ui/thirdparty/qunit.js"></script>
-<script type="text/javascript" src="../../../../resources/sap/ui/qunit/qunit-junit.js"></script>
+<link rel="stylesheet" href="../../../../resources/sap/ui/thirdparty/qunit.css" type="text/css" media="screen">
+<script src="../../../../resources/sap/ui/thirdparty/qunit.js"></script>
+<script src="../../../../resources/sap/ui/qunit/qunit-junit.js"></script>
+<script src="../../../../resources/sap/ui/qunit/qunit-coverage.js"></script>
+<script src="../../../../resources/sap/ui/qunit/QUnitUtils.js"></script>
+<script src="../../../../resources/sap/ui/thirdparty/sinon.js"></script>
+<script src="../../../../resources/sap/ui/thirdparty/sinon-qunit.js"></script>
 
-<script type="text/javascript" src="../../../../resources/sap/ui/qunit/QUnitUtils.js"></script>
-
-<script type="text/javascript">
+<script>
 
 	var sf1, sf2, sf3,
 		sPlaceholder = "search for..",
@@ -173,7 +175,7 @@
 		ok(true, "Test for focused search field started");
 		// touch the search field
 		doTouchEnd("sf3-reset");
-		
+
 		setTimeout(function(){
 			ok(sf3.$().hasClass("sapMFocus"), "Third search field is focused after reset button press");
 			ok(/\uE00D/.test(getIconId(sf3, "search")), "Focused search field icon is magnifier");
@@ -182,9 +184,51 @@
 			setTimeout( function(){
 				ok(/\uE00A/.test(getIconId(sf3, "search")), "Defocused search field icon is synchronize");
 				start();
-				}, 350)
-			}, 200);
-		
+			}, 350)
+		}, 200);
+
+	});
+
+	QUnit.module("Rendering", {
+		setup: function () {
+			this.SearchField = new sap.m.SearchField({
+				placeholder: sPlaceholder,
+				value: sValue,
+				enabled: true,
+				showRefreshButton: true,
+				visible: true
+			}).placeAt("content");
+			sap.ui.getCore().applyChanges();
+        },
+        teardown: function() {
+			this.SearchField.destroy();
+        }
+    });
+
+	QUnit.test("ARIA attributes for Chrome specific", function(assert) {
+		// arrange
+        var bHasAutocorrect;
+		this.stub(sap.ui.Device, "browser", {name: "cr", chrome: true});
+
+        // act
+        this.SearchField.rerender();
+		bHasAutocorrect = this.SearchField.$("I").attr("autocorrect") == "off";
+
+        // assert
+		assert.strictEqual(bHasAutocorrect, false, "Shouldn't be rendered");
+    });
+
+	QUnit.test("ARIA attributes for Safari specific", function(assert) {
+		// arrange
+		var bHasAutocorrect;
+		this.stub(sap.ui.Device, "browser", {name: "sf", safari: true});
+
+		// act
+		this.SearchField.rerender();
+		bHasAutocorrect = this.SearchField.$("I").attr("autocorrect") == "off";
+
+		// assert
+		assert.strictEqual(bHasAutocorrect, true, "Should be rendered when on Safari");
 	});
 
 </script>

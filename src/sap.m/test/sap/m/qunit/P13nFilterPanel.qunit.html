@@ -1,30 +1,33 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
 
 <title>Test Page for sap.m.P13nFilterPanel</title>
-<script id="sap-ui-bootstrap" data-sap-ui-theme="sap_bluecrystal"
-	type="text/javascript" data-sap-ui-noConflict="true"
+<script src="../shared-config.js"></script>
+<script id="sap-ui-bootstrap" data-sap-ui-noConflict="true"
 	data-sap-ui-libs="sap.m" src="../../../../resources/sap-ui-core.js">
-	
+
 </script>
 
 <link rel="stylesheet"
 	href="../../../../resources/sap/ui/thirdparty/qunit.css"
 	type="text/css" media="screen" />
-<script type="text/javascript"
+<script
 	src="../../../../resources/sap/ui/thirdparty/qunit.js"></script>
-<script type="text/javascript"
+<script
 	src="../../../../resources/sap/ui/qunit/qunit-junit.js"></script>
-<script type="text/javascript"
+<script
+	src="../../../../resources/sap/ui/qunit/qunit-coverage.js"></script>
+<script
 	src="../../../../resources/sap/ui/qunit/QUnitUtils.js"></script>
-<script type="text/javascript"
+<script
 	src="../../../../resources/sap/ui/thirdparty/sinon.js"></script>
-<script type="text/javascript"
+<script
 	src="../../../../resources/sap/ui/thirdparty/sinon-qunit.js"></script>
 
-<script type="text/javascript">
+<script>
+
 	(function() {
 		jQuery.sap.require("sap.m.P13nFilterPanel");
 
@@ -187,40 +190,47 @@
 
 		test("test model update events", function() {
 
+			var removeSpy = sinon.spy(function(oEvent) {
+				var params = oEvent.getParameters();
+				var oModel = oP13nFilterPanel.getModel();
+				var oData = oModel.getData();
+				oData.filterItems.forEach(function(oItem, iIndex) {
+					if (oItem.key === params.key) {
+						oData.filterItems.splice(iIndex, 1);
+						oModel.setData(oData, true);
+						return;
+					}
+				});
+			});
+
+			var updateSpy = sinon.spy(function(oEvent) {
+				var params = oEvent.getParameters();
+				var oModel = oP13nFilterPanel.getModel();
+				var oData = oModel.getData();
+				var oFilterItemData = params.filterItemData;
+				ok(oFilterItemData instanceof sap.m.P13nFilterItem, "oFilterItemData should be of type P13nFilterItem");
+				strictEqual(oFilterItemData.getValue1(), "foo", "new Value1 value should be 'foo'");
+			});
+
+			var addSpy = sinon.spy(function(oEvent) {
+				var params = oEvent.getParameters();
+				var oModel = oP13nFilterPanel.getModel();
+				var oData = oModel.getData();
+				var oFilterItemData = params.filterItemData;
+				strictEqual(oFilterItemData.getValue1(), "new", "added condition Value1 value should be 'new'");
+				if (params.index) {
+					oData.filterItems.splice(params.index, 0, oFilterItemData);
+				} else {
+					oData.filterItems.push(oFilterItemData);
+				}
+				oModel.setData(oData, true);
+			});
+
 			// system under test
 			var oP13nFilterPanel = new sap.m.P13nFilterPanel({
-				removeFilterItem: function(oEvent) {
-					var params = oEvent.getParameters();
-					var oModel = oP13nFilterPanel.getModel();
-					var oData = oModel.getData();
-					oData.filterItems.forEach(function(oItem, iIndex) {
-						if (oItem.key === params.key) {
-							oData.filterItems.splice(iIndex, 1);
-							oModel.setData(oData, true);
-							return;
-						}
-					});
-				},
-				updateFilterItem: function(oEvent) {
-					var params = oEvent.getParameters();
-					var oModel = oP13nFilterPanel.getModel();
-					var oData = oModel.getData();
-					var oFilterItemData = params.filterItemData;
-					//key : sKey,
-					//index : iIndex,
-				},
-				addFilterItem: function(oEvent) {
-					var params = oEvent.getParameters();
-					var oModel = oP13nFilterPanel.getModel();
-					var oData = oModel.getData();
-					var oFilterItemData = params.filterItemData;
-					if (params.index) {
-						oData.filterItems.splice(params.index, 0, oFilterItemData);
-					} else {
-						oData.filterItems.push(oFilterItemData);
-					}
-					oModel.setData(oData, true);
-				}
+				removeFilterItem: removeSpy,
+				updateFilterItem: updateSpy,
+				addFilterItem: addSpy
 			});
 
 			bindFilterPanel(oP13nFilterPanel);
@@ -229,15 +239,13 @@
 			oP13nFilterPanel.placeAt("content");
 			sap.ui.getCore().applyChanges();
 
-			// assertions
-
-			var oConditionPanel = oP13nFilterPanel._oIncludeFilterPanel;
 
 			// Change item
+			var oConditionPanel = oP13nFilterPanel._oIncludeFilterPanel;
 			var oConditionGrid = oConditionPanel._oConditionsGrid.getContent()[1];
-			oConditionGrid.value1.setValue("foo");
-			oConditionPanel._changeField(oConditionGrid);
 			var sValue1 = "foo";
+			oConditionGrid.value1.setValue(sValue1);
+			oConditionPanel._changeField(oConditionGrid);
 			strictEqual(oP13nFilterPanel.getFilterItems()[1].getValue1(), sValue1, "Value1 of first condition must be '" + sValue1 + "'.");
 
 			// Remove item
@@ -252,6 +260,11 @@
 			oConditionGrid.value1.setValue("new");
 			oConditionPanel._changeField(oConditionGrid);
 			strictEqual(oP13nFilterPanel.getFilterItems().length, nItems, "length of getFilterItems should be '" + nItems + "'");
+
+			// check that all event handlers are called
+			ok(removeSpy.called, "removeFilterItem was called");
+			ok(updateSpy.called, "updateFilterItem was called");
+			ok(addSpy.called, "addFilterItem was called");
 
 			// cleanup
 			oP13nFilterPanel.destroy();
@@ -284,7 +297,7 @@
 			oP13nFilterPanel.placeAt("content");
 			sap.ui.getCore().applyChanges();
 
-			// assertions			
+			// assertions
 			strictEqual(oP13nFilterPanel.getItems().length, 3, "length of getItems should be 3'");
 			strictEqual(oP13nFilterPanel.getFilterItems().length, 3, "length of getFilterItems should be 3'");
 
@@ -340,7 +353,7 @@
 			oP13nFilterPanel.placeAt("content");
 			sap.ui.getCore().applyChanges();
 
-			// assertions			
+			// assertions
 			strictEqual(oP13nFilterPanel.getItems().length, 3, "length of getItems should be 3'");
 			strictEqual(oP13nFilterPanel.getFilterItems().length, 3, "length of getFilterItems should be 3'");
 
@@ -396,7 +409,7 @@
 				value2: sap.ui.core.format.DateFormat.getDateInstance().format(new Date())
 			}));
 			sap.ui.getCore().applyChanges();
-			// assertions			
+			// assertions
 			strictEqual(oP13nFilterPanel.getItems().length, 3, "length of getItems should be 3'");
 			strictEqual(oP13nFilterPanel.getFilterItems().length, 3, "length of getFilterItems should be 3'");
 

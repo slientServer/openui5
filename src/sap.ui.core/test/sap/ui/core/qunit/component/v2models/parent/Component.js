@@ -47,6 +47,14 @@ sap.ui.define(["sap/ui/core/UIComponent"], function(UIComponent) {
 							}
 						},
 
+						"ODataV4": {
+							"uri": "/path/to/odata/service/",
+							"type": "OData",
+							"settings": {
+								"odataVersion": "4.0"
+							}
+						},
+
 						"AnotherOData": {
 							"uri": "/path/to/odata/service/with/trailing/slash/",
 							"type": "OData",
@@ -54,7 +62,23 @@ sap.ui.define(["sap/ui/core/UIComponent"], function(UIComponent) {
 								"annotations": ["originAnnotations", "annotations2"]
 							}
 						},
-						
+
+						"ODataWithMultiOriginAnnotations": {
+							"uri": "/path/to/odata/service/with/multi/origin/annotations/",
+							"type": "OData",
+							"settings": {
+								"annotations": ["annotationWithOtherOrigin1", "annotationWithOtherOrigin2", "annotationWithOtherOrigin3", "annotationWithOtherOrigin4"]
+							}
+						},
+
+						"ODataWithSAPClient": {
+							"uri": "/path/to/odata/service/with/sapclient/?sap-client=100",
+							"type": "OData",
+							"settings": {
+								"annotations": ["annotationWithSAPClient"]
+							}
+						},
+
 						"originAnnotations" : {
 							"uri": "/path/to/odata/service/with/trailing/slash/annotations.xml",
 							"type": "ODataAnnotation"
@@ -69,6 +93,32 @@ sap.ui.define(["sap/ui/core/UIComponent"], function(UIComponent) {
 							"uri": "path/to/local/odata/annotations/2", // relative uri
 							"type": "ODataAnnotation"
 						},
+
+						"annotationWithOtherOrigin1": { // absolute uri
+							"uri": "/path/to/other/odata/service/Annotations(TechnicalName='%2FIWBEP%2FTEA_TEST_ANNOTATION_FILE',Version='0001')/$value",
+							"type":"ODataAnnotation"
+						},
+
+						"annotationWithOtherOrigin2": { // relative uri
+							"uri": "path/to/other/odata/service/Annotations(TechnicalName='%2FIWBEP%2FTEA_TEST_ANNOTATION_FILE',Version='0001')/$value",
+							"type":"ODataAnnotation"
+						},
+
+						"annotationWithOtherOrigin3": { //Missing value parameter
+							"uri": "/path/to/other/odata/service/other2/Annotations(TechnicalName='%2FIWBEP%2FTEA_TEST_ANNOTATION_FILE',Version='0001')/",
+							"type":"ODataAnnotation"
+						},
+
+						"annotationWithOtherOrigin4": { //already set origin
+							"uri": "/path/to/other3/odata/service/;o=sid(G1Y.400)/Annotations(TechnicalName='%2FIWBEP%2FTEA_TEST_ANNOTATION_FILE',Version='0001')/$value",
+							"type":"ODataAnnotation"
+						},
+
+						"annotationWithSAPClient": { //already set origin
+							"uri": "/path/to/odata/annotations/with/sapclient/?sap-client=200",
+							"type":"ODataAnnotation"
+						},
+
 
 						"json": {
 							"uri": "/path/to/data.json",
@@ -160,6 +210,13 @@ sap.ui.define(["sap/ui/core/UIComponent"], function(UIComponent) {
 							}
 						},
 
+						"ODataV4Model": {
+							"dataSource": "ODataV4",
+							"settings": {
+								"synchronizationMode": "None"
+							}
+						},
+
 						"v2-ODataModel": {
 							"type": "sap.ui.model.odata.v2.ODataModel",
 							"settings": {
@@ -180,6 +237,16 @@ sap.ui.define(["sap/ui/core/UIComponent"], function(UIComponent) {
 
 						"invalid-annotations": {
 							"dataSource": "odata-invalid-annotations"
+						},
+
+						"v2-ODataModel-OtherOrigins": {
+							"type": "sap.ui.model.odata.v2.ODataModel",
+							"dataSource": "ODataWithMultiOriginAnnotations"
+						},
+
+						"v2-ODataModel-SAPClient": {
+							"type": "sap.ui.model.odata.v2.ODataModel",
+							"dataSource": "ODataWithSAPClient"
 						},
 
 						"json": "json",

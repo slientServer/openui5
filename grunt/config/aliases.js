@@ -68,6 +68,29 @@ module.exports = function(grunt, config) {
 			]);
 		},
 
+		// Visualtest task
+		'visualtest' : function(mode) {
+
+			if (!mode || (mode !== 'src' && mode !== 'target')) {
+				mode = 'src';
+			}
+
+			// listen to the connect server startup
+			grunt.event.on('connect.*.listening', function(hostname, port) {
+				// 0.0.0.0 does not work in windows
+				if (hostname === '0.0.0.0') {
+					hostname = 'localhost';
+				}
+
+				// set baseUrl (using hostname / port from connect task)
+				grunt.config(['selenium_visualtest', 'options', 'baseUrl'], 'http://' + hostname + ':' + port);
+
+				// run visualtest task
+				grunt.task.run(['selenium_visualtest:run']);
+			});
+			grunt.task.run(['openui5_connect:' + mode]);
+		},
+
 		// Build task
 		'build': function() {
 
@@ -110,8 +133,15 @@ module.exports = function(grunt, config) {
 			});
 
 			aTasks.push('replace');
-			aTasks.push('concat');
-			aTasks.push('uglify');
+
+			// Only bundle core modules if library is included
+			if (config.libraries.some(function(lib) { return lib.name === 'sap.ui.core'; })) {
+				aTasks.push('concat:coreNoJQueryJS');
+				aTasks.push('concat:coreJs');
+
+				aTasks.push('uglify:coreNoJQueryJS');
+				aTasks.push('uglify:coreJs');
+			}
 
 			config.libraries.forEach(function(library) {
 
@@ -124,9 +154,15 @@ module.exports = function(grunt, config) {
 
 			if (grunt.option('publish')) {
 
+				// clone bower repositories into temp dir
+				aTasks.push('clean:tmp');
+				aTasks.push('gitclone');
+
 				// copy built resources into individual bower repositories
 				config.libraries.forEach(function(library) {
 					if (library.bower !== false) {
+						// Remove existing resources / test-resources and copy built files
+						aTasks.push('clean:bower-' + library.name);
 						aTasks.push('copy:bower-' + library.name);
 					}
 				});
@@ -135,14 +171,23 @@ module.exports = function(grunt, config) {
 				aTasks.push('updateBowerVersions');
 
 				// run git "add commit tag push" to publish the updated bower repo
-				aTasks.push('publishBower');
+				aTasks.push('gitadd');
+				aTasks.push('gitcommit');
+				aTasks.push('gittag');
+				aTasks.push('gitpush');
+
 			}
 
 			// run all build tasks
 			grunt.task.run(aTasks);
 		},
 
-		// Package task
+		// Bundle task (execute optionally after 'build')
+		'bundle': [
+			'copy:bundle'
+		],
+
+		// Package task (execute optionally after 'build')
 		'package': [
 			'compress:target'
 		],
@@ -180,7 +225,7 @@ module.exports = function(grunt, config) {
 					return;
 				}
 
-				var bowerFilename = '../packaged-' + library.name + '/bower.json';
+				var bowerFilename = 'tmp/packaged-' + library.name + '/bower.json';
 
 				grunt.log.subhead(library.name);
 
@@ -213,45 +258,20 @@ module.exports = function(grunt, config) {
 
 		},
 
-		// create a git commit + tag for each bower repository (without push)
-		'publishBower': function() {
-
-			var version = grunt.config(['package', 'version']);
-
-			async.each(config.libraries.filter(function(library) {
-				return library.bower !== false;
-			}), function(library, done) {
-
-				function git(args, callback) {
-					grunt.util.spawn({
-							cmd: 'git',
-							args: args,
-							opts: {
-								cwd: '../packaged-' + library.name
-							}
-					}, function () {
-						console.dir(arguments);
-						callback.apply(this, arguments);
-					});
-				}
-
-				async.eachSeries([
-					['add', '-A'],
-					['commit', '-m', version],
-					['tag', '-a', version, '-m', version]
-				], git, done);
-
-			}, this.async());
-
-		},
-
 		// CLDR modules are not added to package.json/devDependencies to avoid bloating of the node_modules folder
 		'cldr': [
 		    'cldr-download',
 		    'cldr-generate'
 		],
 		'cldr-download': [
-		    'npm-install:cldr-core:cldr-dates-modern:cldr-numbers-modern:cldr-misc-modern:cldr-localenames-modern:cldr-cal-islamic-modern:cldr-cal-japanese-modern'
+		    'npm-install:cldr-core@29.0.0',
+		    'npm-install:cldr-dates-modern@29.0.0',
+		    'npm-install:cldr-numbers-modern@29.0.0',
+		    'npm-install:cldr-misc-modern@29.0.0',
+		    'npm-install:cldr-localenames-modern@29.0.0',
+		    'npm-install:cldr-cal-islamic-modern@29.0.0',
+		    'npm-install:cldr-cal-japanese-modern@29.0.0',
+		    'npm-install:cldr-cal-persian-modern@29.0.0'
 		],
 		'cldr-generate': function() {
 			var done = this.async();
@@ -292,4 +312,4 @@ module.exports = function(grunt, config) {
 		]
 
 	};
-}
+};

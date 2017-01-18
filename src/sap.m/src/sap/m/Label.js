@@ -72,7 +72,8 @@ sap.ui.define(['jquery.sap.global', './library', 'sap/ui/core/Control', 'sap/ui/
 			 * By default the label set the for attribute to the ID of the labeled control. This can be changed by implementing the function getIdForLabel on the labelled control.
 			 */
 			labelFor : {type : "sap.ui.core.Control", multiple : false}
-		}
+		},
+		designTime : true
 	}});
 
 	Label.prototype.setText = function(sText) {
@@ -97,7 +98,15 @@ sap.ui.define(['jquery.sap.global', './library', 'sap/ui/core/Control', 'sap/ui/
 		}
 		return this;
 	};
-	
+
+	/**
+	 * @see sap.ui.core.Control#getAccessibilityInfo
+	 * @protected
+	 */
+	Label.prototype.getAccessibilityInfo = function() {
+		return {description: this.getText()};
+	};
+
 	// enrich Label functionality
 	LabelEnablement.enrich(Label.prototype);
 

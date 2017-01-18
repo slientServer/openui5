@@ -1,7 +1,7 @@
 /*!
  * ${copyright}
  */
-sap.ui.define([], function() {
+sap.ui.define(['jquery.sap.global'], function(jQuery) {
 	"use strict";
 
 	/**
@@ -61,6 +61,7 @@ sap.ui.define([], function() {
 			}
 
 			var oOptions = this._oOptions,
+				that = this,
 				oView, oControl, oViewContainingTheControl, sViewName, oViewOptions, vValid, sErrorMessage;
 
 			if (oOptions.viewName) {
@@ -84,6 +85,7 @@ sap.ui.define([], function() {
 				oSequencePromise = oSequencePromise.then(function(oParentInfo) {
 					// waiting to be loaded
 					return oView.loaded().then(function(oView) {
+						oView.addDependent(that._oTitleProvider);
 						return {
 							view: oView,
 							parentInfo: oParentInfo || {}

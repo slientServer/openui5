@@ -1,30 +1,34 @@
 <!DOCTYPE HTML>
 
-<!-- 
+<!--
   Tested control/class: sap.ui.unified.CalendarRow
 -->
 
 <html>
 	<head>
-		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
 		<title>CalendarRow - sap.ui.unified</title>
 		<link rel="shortcut icon" type="image/x-icon" href="../images/controls/sap.ui.unified.CalendarRow.gif">
+		<script src="../shared-config.js"></script>
 		<script id="sap-ui-bootstrap"
-			type="text/javascript"
 			src="../../../../../resources/sap-ui-core.js"
-			data-sap-ui-theme="sap_bluecrystal"
 			data-sap-ui-noConflict="true"
 			data-sap-ui-libs="sap.ui.unified"
 			data-sap-ui-language="en-US">
 		</script>
-		<link rel="stylesheet" href="../../../../../resources/sap/ui/thirdparty/qunit.css" type="text/css" media="screen" />
-		<script type="text/javascript" src="../../../../../resources/sap/ui/thirdparty/qunit.js"></script>
-		<script type="text/javascript" src="../../../../../resources/sap/ui/qunit/qunit-junit.js"></script>
-		<script type="text/javascript" src="../../../../../resources/sap/ui/qunit/QUnitUtils.js"></script>
+		<link rel="stylesheet" href="../../../../../resources/sap/ui/thirdparty/qunit.css" type="text/css" media="screen">
+		<script src="../../../../../resources/sap/ui/thirdparty/qunit.js"></script>
+		<script src="../../../../../resources/sap/ui/qunit/qunit-junit.js"></script>
+		<script src="../../../../../resources/sap/ui/qunit/QUnitUtils.js"></script>
+		<script src="../../../../../resources/sap/ui/qunit/qunit-coverage.js"></script>
+		<!-- SinonJS -->
+		<script src="../../../../../resources/sap/ui/thirdparty/sinon.js"></script>
+		<script src="../../../../../resources/sap/ui/thirdparty/sinon-ie.js"></script>
+		<script src="../../../../../resources/sap/ui/thirdparty/sinon-qunit.js"></script>
 
 		<!-- Test functions -->
-		<script language="javascript">
+		<script>
 
 			jQuery.sap.require("sap.ui.model.type.Date");
 			var oFormatYyyyMMddHHmm = sap.ui.core.format.DateFormat.getInstance({pattern: "yyyyMMddHHmm", calendarType: sap.ui.core.CalendarType.Gregorian});
@@ -43,6 +47,15 @@
 					iSelectedGroupAppointments = aAppointments.length;
 				}
 				bMultiSelect = oEvent.getParameter("multiSelect");
+			};
+
+			var oIntervalStartDate;
+			var oIntervalEndDate;
+			var bSubInterval = false;
+			var handleIntervalSelect = function(oEvent){
+				oIntervalStartDate = oEvent.getParameter("startDate");
+				oIntervalEndDate = oEvent.getParameter("endDate");
+				bSubInterval = oEvent.getParameter("subInterval");
 			};
 
 			var bStartDateChange = false;
@@ -68,14 +81,15 @@
 				startDate: new Date("2015", "01", "01", "10", "15"),
 				select: handleSelect,
 				startDateChange: handleStartDateChange,
+				intervalSelect: handleIntervalSelect,
 				leaveRow: handleLeaveRow,
 				appointments: [new sap.ui.unified.CalendarAppointment("App0", {
 													startDate: new Date("2015", "01", "01", "08", "15"),
-													endDate: new Date("2015", "01", "01", "09", "15"),
+													endDate: new Date("2015", "01", "01", "08", "20"),
 													type: sap.ui.unified.CalendarDayType.None,
 													title: "Appointment 0",
 													tooltip: "Tooltip 0",
-													text: "Appointment of 1 hours, 2 hour in past",
+													text: "Appointment of 5 minutes, 2 hour in past",
 													key: "A0"
 												}),
 											 new sap.ui.unified.CalendarAppointment("App1", {
@@ -143,6 +157,15 @@
 													text: "Appointment of full next 2 months",
 													key: "A7"
 												}),
+											 new sap.ui.unified.CalendarAppointment("App8", {
+													startDate: new Date("2015", "05", "02", "0", "0"),
+													endDate: new Date("2015", "05", "02", "23", "59", "59"),
+													type: sap.ui.unified.CalendarDayType.Type07,
+													title: "Appointment 8",
+													tooltip: "Tooltip 8",
+													text: "Appointment of one day",
+													key: "A8"
+												})
 											],
 				intervalHeaders: [new sap.ui.unified.CalendarAppointment("IHead1", {
 														startDate: new Date("2015", "01", "01", "12", "00"),
@@ -194,7 +217,17 @@
 				intervals: 5,
 				intervalType: sap.ui.unified.CalendarIntervalType.Day,
 				tooltip: "Row tooltip",
-				select: handleSelect
+				showIntervalHeaders: false,
+				select: handleSelect,
+				intervalSelect: handleIntervalSelect,
+				appointments: [
+					{
+						startDate: new Date("2015", "01", "07", "0", "0"),
+						endDate: new Date("2015", "01", "12", "23", "59"),
+						title: "Education",
+						type: "Type03"
+					}
+				]
 			}).placeAt("uiArea2");
 
 			qutils.delayTestStart();
@@ -205,7 +238,7 @@
 				var oAppointment = sap.ui.getCore().byId("App0");
 				equal(oAppointment.getKey(), "A0", "Appointment: key set");
 				equal(oAppointment.getTitle(), "Appointment 0", "Appointment: Title set");
-				equal(oAppointment.getText(), "Appointment of 1 hours, 2 hour in past", "Appointment: text set");
+				equal(oAppointment.getText(), "Appointment of 5 minutes, 2 hour in past", "Appointment: text set");
 				equal(oAppointment.getIcon(), "", "Appointment: no icon set");
 				equal(oAppointment.getTentative(), false, "Appointment: tentative not set");
 				equal(oAppointment.getSelected(), false, "Appointment: selected not set");
@@ -317,6 +350,8 @@
 				var $Appointment5 = jQuery("#App5");
 				var $Appointment6 = jQuery("#App6");
 				var $Appointment7 = jQuery("#App7");
+				var $Appointment8 = jQuery("#App8");
+				var $AppointmentDummy = jQuery("#Row1-DummyApp");
 
 				ok(!$Appointment0.get(0), "Appointment0 not rendered");
 
@@ -328,6 +363,7 @@
 				ok(jQuery("#App1-Icon").get(0), "Appointment1: icon rendered");
 				ok($Appointment1.attr("class").search("sapUiCalendarAppType") < 0, "Appointment1: no type rendered");
 				ok(!$Appointment1.hasClass("sapUiCalendarAppTent"), "Appointment1: not rendered as tentative");
+				ok(!$Appointment1.hasClass("sapUiCalendarAppSmall"), "Appointment1: not rendered as small appointment");
 
 				ok($Appointment2.get(0), "Appointment2 rendered");
 				ok(!jQuery("#App2-Icon").get(0), "Appointment2: no icon rendered");
@@ -352,6 +388,11 @@
 				ok(!$Appointment5.get(0), "Appointment5 not rendered");
 				ok(!$Appointment6.get(0), "Appointment6 not rendered");
 				ok(!$Appointment7.get(0), "Appointment7 not rendered");
+				ok(!$Appointment8.get(0), "Appointment8 not rendered");
+
+				ok($AppointmentDummy.get(0), "Dummy Appointment rendered");
+				ok(!$AppointmentDummy.is(":visible"), "Dummy Appointment not visible");
+
 			});
 
 			test("Interval headers - Hours view", function() {
@@ -359,21 +400,21 @@
 				ok(oHead, "Interval0: Head area rendered");
 				equal(jQuery(oHead).children().length, 0, "Interval0: Head has no content");
 
-				oHead = jQuery("#Row1-AppsInt1").children(".sapUiCalendarRowAppsIntHead")[0];
-				ok(oHead, "Interval1: Head area rendered");
-				equal(jQuery(oHead).children().length, 0, "Interval1: Head has no content");
+				var $Head = jQuery("#IHead1");
+				ok($Head.get(0), "Interval2: Header appointment rendered");
+				equal($Head.attr("title"), "Tooltip 1", "Interval2: Header appointment has tooltip rendered");
+				ok($Head.children().length > 0, "Interval2: Header appointment has content");
+				equal(jQuery($Head.children(".sapUiCalendarRowAppsIntHeadTitle")[0]).text(), "Head 1", "Interval2: Head has title rendered");
+				equal(jQuery($Head.children(".sapUiCalendarRowAppsIntHeadText")[0]).text(), "Head of one hour", "Interval2: Head has text rendered");
+				ok(Math.abs(Math.floor($Head.offset().left - jQuery("#Row1-AppsInt2").offset().left)) <= 1, "Intervalhead has same start rendered as Interval 2"); // maybe it varias 1px because of rounding
+				ok(Math.abs(Math.floor(($Head.offset().left + $Head.outerWidth()) - (jQuery("#Row1-AppsInt2").offset().left + jQuery("#Row1-AppsInt2").outerWidth()))) <= 1, "Intervalhead has same end rendered as Interval 2"); // maybe it varias 1px because of rounding
 
 				oHead = jQuery("#Row1-AppsInt2").children(".sapUiCalendarRowAppsIntHead")[0];
 				ok(oHead, "Interval2: Head area rendered");
-				equal(jQuery(oHead).attr("title"), "Tooltip 1", "Interval2: Head has tooltip rendered");
-				ok(jQuery(oHead).children().length > 0, "Interval2: Head has content");
-				equal(jQuery(jQuery(oHead).children(".sapUiCalendarRowAppsIntHeadTitle")[0]).text(), "Head 1", "Interval2: Head has title rendered");
-				equal(jQuery(jQuery(oHead).children(".sapUiCalendarRowAppsIntHeadText")[0]).text(), "Head of one hour", "Interval2: Head has text rendered");
+				equal(jQuery(oHead).children().length, 0, "Interval2: Head has no content");
 
-				oHead = jQuery("#Row1-AppsInt3").children(".sapUiCalendarRowAppsIntHead")[0];
-				ok(oHead, "Interval3: Head area rendered");
-				ok(!jQuery(oHead).attr("title"), "Interval3: Head has no tooltip rendered");
-				equal(jQuery(oHead).children().length, 0, "Interval3: Head has no content");
+				oHead = jQuery("#Row2-AppsInt0").children(".sapUiCalendarRowAppsIntHead")[0];
+				ok(!oHead, "Row2: Interval0: no head area rendered");
 			});
 
 			test("Subintervals - Hours view", function() {
@@ -416,19 +457,39 @@
 				var $Appointment5 = jQuery("#App5");
 				var $Appointment6 = jQuery("#App6");
 				var $Appointment7 = jQuery("#App7");
+				var $Appointment8 = jQuery("#App8");
+				var $AppointmentDummy = jQuery("#Row1-DummyApp");
 
 				ok($Appointment0.get(0), "Appointment0 rendered");
 				ok(!$Appointment0.hasClass("sapUiCalendarAppTent"), "Appointment0: not rendered as tentative");
 				ok(!$Appointment0.hasClass("sapUiCalendarAppSel"), "Appointment0: not rendered as selected");
+				ok($Appointment0.hasClass("sapUiCalendarAppSmall"), "Appointment0: rendered as small appointment");
+				equal($Appointment0.outerWidth(), $AppointmentDummy.outerWidth(), "Appointment0 hat min. width");
 				ok(!$Appointment1.get(0), "Appointment1 not rendered");
 				ok($Appointment2.get(0), "Appointment2 rendered");
-				equal($Appointment2.attr("data-sap-level"), sLevel, "Appointment2 has same level like before")
+				equal($Appointment2.attr("data-sap-level"), sLevel, "Appointment2 has same level like before");
 
 				ok(!$Appointment3.get(0), "Appointment3 not rendered");
 				ok(!$Appointment4.get(0), "Appointment4 not rendered");
 				ok(!$Appointment5.get(0), "Appointment5 not rendered");
 				ok(!$Appointment6.get(0), "Appointment6 not rendered");
 				ok(!$Appointment7.get(0), "Appointment7 not rendered");
+				ok(!$Appointment8.get(0), "Appointment8 not rendered");
+
+			});
+
+			test("Appointments - EmptyIntervalHeaders", function() {
+				oRow1.setShowEmptyIntervalHeaders(false);
+				sap.ui.getCore().applyChanges();
+				var oHead = jQuery("#Row1-AppsInt0").children(".sapUiCalendarRowAppsIntHead")[0];
+				ok(!oHead, "no empty Head area rendered");
+
+				oRow1.setShowEmptyIntervalHeaders(true);
+				sap.ui.getCore().applyChanges();
+				oHead = jQuery("#Row1-AppsInt0").children(".sapUiCalendarRowAppsIntHead")[0];
+				ok(oHead, "Interval0: Head area rendered again");
+				equal(jQuery(oHead).children().length, 0, "Interval0: Head has no content");
+
 			});
 
 			test("Appointments - change properties", function() {
@@ -468,6 +529,7 @@
 				var $Appointment5 = jQuery("#App5");
 				var $Appointment6 = jQuery("#App6");
 				var $Appointment7 = jQuery("#App7");
+				var $Appointment8 = jQuery("#App8");
 
 				ok($Appointment0.get(0), "Appointment0 rendered");
 				ok($Appointment1.get(0), "Appointment1 rendered");
@@ -481,6 +543,7 @@
 				ok(Math.abs(Math.floor(($Appointment6.offset().left + $Appointment6.outerWidth()) - (jQuery("#Row1-AppsInt2").offset().left + jQuery("#Row1-AppsInt2").outerWidth()))) <= 1, "Appointment 6 has same end rendered as Interval 2"); // maybe it varias 1px because of rounding
 
 				ok(!$Appointment7.get(0), "Appointment7 not rendered");
+				ok(!$Appointment8.get(0), "Appointment8 not rendered");
 			});
 
 			test("Interval headers - days view", function() {
@@ -488,35 +551,17 @@
 				ok(oHead, "Interval0: Head area rendered");
 				equal(jQuery(oHead).children().length, 0, "Interval0: Head has no content");
 
-				oHead = jQuery("#Row1-AppsInt1").children(".sapUiCalendarRowAppsIntHead")[0];
-				ok(oHead, "Interval1: Head area rendered");
-				equal(jQuery(oHead).children().length, 0, "Interval1: Head has no content");
+				var $Head = jQuery("#IHead2");
+				ok($Head.get(0), "Interval3: Header appointment rendered");
+				equal($Head.attr("title"), "Tooltip 2", "Interval3: Header appointment has tooltip rendered");
+				ok($Head.children().length > 0, "Interval3: Header appointment has content");
+				equal(jQuery($Head.children(".sapUiCalendarRowAppsIntHeadTitle")[0]).text(), "Head 2", "Interval3: Head has title rendered");
+				equal(jQuery($Head.children(".sapUiCalendarRowAppsIntHeadText")[0]).text(), "Head of 2 days", "Interval3: Head has text rendered");
+				ok(Math.abs(Math.floor($Head.offset().left - jQuery("#Row1-AppsInt3").offset().left)) <= 1, "Intervalhead has same start rendered as Interval 3"); // maybe it varias 1px because of rounding
+				ok(Math.abs(Math.floor(($Head.offset().left + $Head.outerWidth()) - (jQuery("#Row1-AppsInt4").offset().left + jQuery("#Row1-AppsInt4").outerWidth()))) <= 1, "Intervalhead has same end rendered as Interval 4"); // maybe it varias 1px because of rounding
 
-				oHead = jQuery("#Row1-AppsInt2").children(".sapUiCalendarRowAppsIntHead")[0];
-				ok(oHead, "Interval2: Head area rendered");
-				equal(jQuery(oHead).children().length, 0, "Interval2: Head has no content");
-				ok(!jQuery(oHead).attr("title"), "Interval2: Head has no tooltip rendered");
-				ok(!jQuery(oHead).hasClass("sapUiCalendarRowAppsIntHeadType01"), "Interval2: Head has no type rendered");
-
-				oHead = jQuery("#Row1-AppsInt3").children(".sapUiCalendarRowAppsIntHead")[0];
-				ok(oHead, "Interval3: Head area rendered");
-				ok(jQuery(oHead).children().length > 0, "Interval3: Head has content");
-				equal(jQuery(oHead).attr("title"), "Tooltip 2", "Interval3: Head has tooltip rendered");
-				equal(jQuery(jQuery(oHead).children(".sapUiCalendarRowAppsIntHeadTitle")[0]).text(), "Head 2", "Interval3: Head has title rendered");
-				equal(jQuery(jQuery(oHead).children(".sapUiCalendarRowAppsIntHeadText")[0]).text(), "Head of 2 days", "Interval3: Head has text rendered");
-				ok(jQuery(oHead).hasClass("sapUiCalendarRowAppsIntHeadType01"), "Interval3: Head has type rendered");
-
-				oHead = jQuery("#Row1-AppsInt4").children(".sapUiCalendarRowAppsIntHead")[0];
-				ok(oHead, "Interval4: Head area rendered");
-				equal(jQuery(oHead).children().length, 0, "Interval4: Head has no content");
-				equal(jQuery(oHead).attr("title"), "Tooltip 2", "Interval4: Head has tooltip rendered");
-				ok(jQuery(oHead).hasClass("sapUiCalendarRowAppsIntHeadType01"), "Interval4: Head has type rendered");
-
-				oHead = jQuery("#Row1-AppsInt5").children(".sapUiCalendarRowAppsIntHead")[0];
-				ok(oHead, "Interval5: Head area rendered");
-				equal(jQuery(oHead).children().length, 0, "Interval5: Head has no content");
-				ok(!jQuery(oHead).attr("title"), "Interval5: Head has no tooltip rendered");
-				ok(!jQuery(oHead).hasClass("sapUiCalendarRowAppsIntHeadType01"), "Interval5: Head has no type rendered");
+				ok(jQuery("#Row1-AppsInt0").hasClass("sapUiCalendarRowAppsIntLast"), "Interval0 is last of month");
+				ok(jQuery("#Row1-AppsInt1").hasClass("sapUiCalendarRowAppsIntFirst"), "Interval1 is first of month");
 			});
 
 			test("Subintervals - days view", function() {
@@ -549,6 +594,7 @@
 				var $Appointment5 = jQuery("#App5");
 				var $Appointment6 = jQuery("#App6");
 				var $Appointment7 = jQuery("#App7");
+				var $Appointment8 = jQuery("#App8");
 
 				ok(!$Appointment0.get(0), "Appointment0 not rendered");
 				ok(!$Appointment1.get(0), "Appointment1 not rendered");
@@ -566,6 +612,7 @@
 				ok(Math.abs(Math.floor($Appointment7.offset().left - jQuery("#Row1-AppsInt2").offset().left)) <= 1, "Appointment 7 has same start rendered as Interval 2"); // maybe it varias 1px because of rounding
 				ok(Math.abs(Math.floor(($Appointment7.offset().left + $Appointment7.outerWidth()) - (jQuery("#Row1-AppsInt4").offset().left + jQuery("#Row1-AppsInt4").outerWidth()))) <= 1, "Appointment 7 has same end rendered as Interval 4"); // maybe it varias 1px because of rounding
 
+				ok($Appointment8.get(0), "Appointment8 rendered");
 			});
 
 			test("Interval headers - month view", function() {
@@ -573,23 +620,14 @@
 				ok(oHead, "Interval0: Head area rendered");
 				equal(jQuery(oHead).children().length, 0, "Interval0: Head has no content");
 
-				oHead = jQuery("#Row1-AppsInt1").children(".sapUiCalendarRowAppsIntHead")[0];
-				ok(oHead, "Interval1: Head area rendered");
-				equal(jQuery(oHead).children().length, 0, "Interval1: Head has no content");
-
-				oHead = jQuery("#Row1-AppsInt2").children(".sapUiCalendarRowAppsIntHead")[0];
-				ok(oHead, "Interval2: Head area rendered");
-				ok(jQuery(oHead).children().length > 0, "Interval2: Head has content");
-				equal(jQuery(oHead).attr("title"), "Tooltip 3", "Interval2: Head has tooltip rendered");
-				equal(jQuery(jQuery(oHead).children(".sapUiCalendarRowAppsIntHeadTitle")[0]).text(), "Head 3", "Interval2: Head has title rendered");
-				equal(jQuery(jQuery(oHead).children(".sapUiCalendarRowAppsIntHeadText")[0]).text(), "Head of 1 month", "Interval2: Head has text rendered");
-				ok(jQuery(oHead).hasClass("sapUiCalendarRowAppsIntHeadType02"), "Interval2: Head has type rendered");
-
-				oHead = jQuery("#Row1-AppsInt3").children(".sapUiCalendarRowAppsIntHead")[0];
-				ok(oHead, "Interval3: Head area rendered");
-				equal(jQuery(oHead).children().length, 0, "Interval3: Head has no content");
-				ok(!jQuery(oHead).attr("title"), "Interval3: Head has no tooltip rendered");
-				ok(!jQuery(oHead).hasClass("sapUiCalendarRowAppsIntHeadType02"), "Interval3: Head has no type rendered");
+				var $Head = jQuery("#IHead3");
+				ok($Head.get(0), "Interval2: Header appointment rendered");
+				equal($Head.attr("title"), "Tooltip 3", "Interval2: Header appointment has tooltip rendered");
+				ok($Head.children().length > 0, "Interval2: Header appointment has content");
+				equal(jQuery($Head.children(".sapUiCalendarRowAppsIntHeadTitle")[0]).text(), "Head 3", "Interval3: Head has title rendered");
+				equal(jQuery($Head.children(".sapUiCalendarRowAppsIntHeadText")[0]).text(), "Head of 1 month", "Interval3: Head has text rendered");
+				ok(Math.abs(Math.floor($Head.offset().left - jQuery("#Row1-AppsInt2").offset().left)) <= 1, "Intervalhead has same start rendered as Interval 2"); // maybe it varias 1px because of rounding
+				ok(Math.abs(Math.floor(($Head.offset().left + $Head.outerWidth()) - (jQuery("#Row1-AppsInt2").offset().left + jQuery("#Row1-AppsInt2").outerWidth()))) <= 1, "Intervalhead has same end rendered as Interval 2"); // maybe it varias 1px because of rounding
 			});
 
 			test("Subintervals - months view", function() {
@@ -643,6 +681,7 @@
 				ok(!jQuery("#App5").get(0), "Appointment5 not rendered");
 				ok(!jQuery("#App6").get(0), "Appointment6 not rendered");
 				ok(!jQuery("#App7").get(0), "Appointment7 not rendered");
+				ok(!jQuery("#App8").get(0), "Appointment8 not rendered");
 				ok(jQuery("#Row1-Group0").get(0), "Group appointment rendered");
 			});
 
@@ -686,6 +725,84 @@
 				ok(jQuery("#App3").hasClass("sapUiCalendarAppSel"), "Appointment3: selected rendered");
 			});
 
+			test("click on interval", function() {
+				oIntervalStartDate = undefined;
+				oIntervalEndDate = undefined;
+				bSubInterval = undefined;
+				qutils.triggerEvent("click", "Row1-AppsInt1");
+				ok(oIntervalStartDate && oIntervalEndDate, "IntervalSelect event fired")
+				equal(oFormatYyyyMMddHHmm.format(oIntervalStartDate), "201502011100", "StartDate set");
+				equal(oFormatYyyyMMddHHmm.format(oIntervalEndDate), "201502011159", "EndDate set");
+				ok(!bSubInterval, "No sub-interval clicked");
+
+				oRow1.setIntervalType(sap.ui.unified.CalendarIntervalType.Day);
+				sap.ui.getCore().applyChanges();
+				oIntervalStartDate = undefined;
+				oIntervalEndDate = undefined;
+				bSubInterval = undefined;
+				qutils.triggerEvent("click", "Row1-AppsInt1");
+				ok(oIntervalStartDate && oIntervalEndDate, "IntervalSelect event fired")
+				equal(oFormatYyyyMMddHHmm.format(oIntervalStartDate), "201502020000", "StartDate set");
+				equal(oFormatYyyyMMddHHmm.format(oIntervalEndDate), "201502022359", "EndDate set");
+				ok(!bSubInterval, "No sub-interval clicked");
+
+				oRow1.setIntervalType(sap.ui.unified.CalendarIntervalType.Month);
+				sap.ui.getCore().applyChanges();
+				oIntervalStartDate = undefined;
+				oIntervalEndDate = undefined;
+				bSubInterval = undefined;
+				qutils.triggerEvent("click", "Row1-AppsInt1");
+				ok(oIntervalStartDate && oIntervalEndDate, "IntervalSelect event fired")
+				equal(oFormatYyyyMMddHHmm.format(oIntervalStartDate), "201503010000", "StartDate set");
+				equal(oFormatYyyyMMddHHmm.format(oIntervalEndDate), "201503312359", "EndDate set");
+				ok(!bSubInterval, "No sub-interval clicked");
+
+				oRow1.setIntervalType(sap.ui.unified.CalendarIntervalType.Hours);
+				sap.ui.getCore().applyChanges();
+			});
+
+			test("click on sub-interval", function() {
+				oRow1.setShowSubIntervals(true);
+				sap.ui.getCore().applyChanges();
+				var aSubIntervals = jQuery("#Row1-AppsInt1").children(".sapUiCalendarRowAppsSubInt");
+				oIntervalStartDate = undefined;
+				oIntervalEndDate = undefined;
+				bSubInterval = undefined;
+				qutils.triggerEvent("click", aSubIntervals[1]);
+				ok(oIntervalStartDate && oIntervalEndDate, "IntervalSelect event fired")
+				equal(oFormatYyyyMMddHHmm.format(oIntervalStartDate), "201502011115", "StartDate set");
+				equal(oFormatYyyyMMddHHmm.format(oIntervalEndDate), "201502011129", "EndDate set");
+				ok(bSubInterval, "sub-interval clicked");
+
+				oRow1.setIntervalType(sap.ui.unified.CalendarIntervalType.Day);
+				sap.ui.getCore().applyChanges();
+				aSubIntervals = jQuery("#Row1-AppsInt1").children(".sapUiCalendarRowAppsSubInt");
+				oIntervalStartDate = undefined;
+				oIntervalEndDate = undefined;
+				bSubInterval = undefined;
+				qutils.triggerEvent("click", aSubIntervals[1]);
+				ok(oIntervalStartDate && oIntervalEndDate, "IntervalSelect event fired")
+				equal(oFormatYyyyMMddHHmm.format(oIntervalStartDate), "201502020100", "StartDate set");
+				equal(oFormatYyyyMMddHHmm.format(oIntervalEndDate), "201502020159", "EndDate set");
+				ok(bSubInterval, "sub-interval clicked");
+
+				oRow1.setIntervalType(sap.ui.unified.CalendarIntervalType.Month);
+				sap.ui.getCore().applyChanges();
+				aSubIntervals = jQuery("#Row1-AppsInt1").children(".sapUiCalendarRowAppsSubInt");
+				oIntervalStartDate = undefined;
+				oIntervalEndDate = undefined;
+				bSubInterval = undefined;
+				qutils.triggerEvent("click", aSubIntervals[1]);
+				ok(oIntervalStartDate && oIntervalEndDate, "IntervalSelect event fired")
+				equal(oFormatYyyyMMddHHmm.format(oIntervalStartDate), "201503020000", "StartDate set");
+				equal(oFormatYyyyMMddHHmm.format(oIntervalEndDate), "201503022359", "EndDate set");
+				ok(bSubInterval, "sub-interval clicked");
+
+				oRow1.setIntervalType(sap.ui.unified.CalendarIntervalType.Hours);
+				oRow1.setShowSubIntervals(false);
+				sap.ui.getCore().applyChanges();
+			});
+
 			test("keyboard arrow navigation", function() {
 				initializeRow1();
 				jQuery("#App1").focus();
@@ -695,7 +812,7 @@
 				equal(oRow1.getFocusedAppointment().getId(), "App1", "Appointment1 returned by getFocusedAppointment");
 
 				bStartDateChange = false;
-				qutils.triggerKeyboardEvent("App1", "ARROW_RIGHT");
+				qutils.triggerKeydown("App1", "ARROW_RIGHT");
 				sap.ui.getCore().applyChanges();
 				equal(document.activeElement.id, "App3", "Appointment3 focused");
 				equal(jQuery("#App3").attr("tabindex"), "0", "Appointment3: tabindex 0 rendered");
@@ -709,7 +826,7 @@
 				equal(jQuery("#App2").attr("tabindex"), "0", "Appointment2: tabindex -1 rendered");
 				equal(oRow1.getFocusedAppointment().getId(), "App2", "Appointment2 returned by getFocusedAppointment");
 
-				qutils.triggerKeyboardEvent("App2", "ARROW_LEFT");
+				qutils.triggerKeydown("App2", "ARROW_LEFT");
 				sap.ui.getCore().applyChanges();
 				equal(document.activeElement.id, "App0", "Appointment0 focused");
 				equal(jQuery("#App0").attr("tabindex"), "0", "Appointment0: tabindex 0 rendered");
@@ -723,7 +840,7 @@
 				initializeRow1();
 				jQuery("#App1").focus();
 				bStartDateChange = false;
-				qutils.triggerKeyboardEvent("App1", "HOME");
+				qutils.triggerKeydown("App1", "HOME");
 				sap.ui.getCore().applyChanges();
 				equal(document.activeElement.id, "App0", "Appointment0 focused");
 				equal(jQuery("#App0").attr("tabindex"), "0", "Appointment0: tabindex 0 rendered");
@@ -733,7 +850,7 @@
 				equal(oFormatYyyyMMddHHmm.format(oStartDate), "201502010800", "new Start date");
 
 				bStartDateChange = false;
-				qutils.triggerKeyboardEvent("App0", "END");
+				qutils.triggerKeydown("App0", "END");
 				sap.ui.getCore().applyChanges();
 				equal(document.activeElement.id, "App4", "Appointment4 focused");
 				equal(jQuery("#App0").attr("tabindex"), "-1", "Appointment0: tabindex -1 rendered");
@@ -744,7 +861,7 @@
 
 			test("keyboard selection", function() {
 				jQuery("#App0").focus();
-				qutils.triggerKeyboardEvent("App0", "ENTER");
+				qutils.triggerKeydown("App0", "ENTER");
 				equal(sSelectedAppointmentId, "App0", "Appointment 0: ENTER fires select event");
 				ok(!bMultiSelect, "Appointment 0: no multiple selection");
 				ok(sap.ui.getCore().byId("App0").getSelected(), "Appointment0: selected property set");
@@ -755,32 +872,32 @@
 				bLeaveRow = false;
 				sType = undefined;
 				jQuery("#App0").focus();
-				qutils.triggerKeyboardEvent("App0", "ARROW_UP");
+				qutils.triggerKeydown("App0", "ARROW_UP");
 				ok(bLeaveRow, "LeaveRow event fired");
 				equal(sType, "sapup", "LeaveRow event 'type' parameter set");
 
 				bLeaveRow = false;
 				sType = undefined;
-				qutils.triggerKeyboardEvent("App0", "ARROW_DOWN");
+				qutils.triggerKeydown("App0", "ARROW_DOWN");
 				ok(bLeaveRow, "LeaveRow event fired");
 				equal(sType, "sapdown", "LeaveRow event 'type' parameter set");
 
 				bLeaveRow = false;
-				qutils.triggerKeyboardEvent("App0", "HOME");
+				qutils.triggerKeydown("App0", "HOME");
 				ok(bLeaveRow, "LeaveRow event fired");
 				equal(sType, "saphome", "LeaveRow event 'type' parameter set");
 
 				bLeaveRow = false;
 				jQuery("#App1").focus();
-				qutils.triggerKeyboardEvent("App1", "HOME");
+				qutils.triggerKeydown("App1", "HOME");
 				ok(!bLeaveRow, "No LeaveRow event fired");
 
 				bLeaveRow = false;
-				qutils.triggerKeyboardEvent("App0", "END");
+				qutils.triggerKeydown("App0", "END");
 				ok(!bLeaveRow, "NoLeaveRow event fired");
 
 				bLeaveRow = false;
-				qutils.triggerKeyboardEvent("App4", "END");
+				qutils.triggerKeydown("App4", "END");
 				ok(bLeaveRow, "LeaveRow event fired");
 				equal(sType, "sapend", "LeaveRow event 'type' parameter set");
 			});
@@ -796,6 +913,97 @@
 				oRow1.focusNearestAppointment(new Date("2015", "01", "01", "11", "00"));
 				equal(document.activeElement.id, "App1", "Appointment1 focused");
 			});
+
+			test("_determineVisibleAppointments", function () {
+				//arrange
+				var aAppointments = oRow2.getAppointments(),
+					oApp = aAppointments[0];
+
+				//assert
+				ok(!oApp.$().is(":visible"), "The appointment is visible");
+				//arrange
+				oRow2.setIntervalType(sap.ui.unified.CalendarIntervalType.Month);
+				sap.ui.getCore().applyChanges();
+				//assert
+				ok(oApp.$().is(":visible"), "The first appointment is visible");
+				equal(oRow2._getVisibleAppointments().length, 1, "The number of visible appointments is as expected");
+			});
+
+		module("RTL", {
+				beforeEach: function () {
+					//Arrange
+					this.bOriginalRTLMode = sap.ui.getCore().getConfiguration().getRTL();
+					sap.ui.getCore().getConfiguration().setRTL(true);
+
+					this.oRowRTL = new sap.ui.unified.CalendarRow("RowRTL",  {
+						startDate: new Date("2015", "01", "01", "10", "15"),
+						intervalType: sap.ui.unified.CalendarIntervalType.Day,
+						appointments: [
+							new sap.ui.unified.CalendarAppointment("App0RTL", {
+								startDate: new Date("2015", "01", "01", "08", "15"),
+								endDate: new Date("2015", "01", "01", "08", "20")
+							}),
+							new sap.ui.unified.CalendarAppointment("App1RTL", {
+								startDate: new Date("2015", "01", "01", "11", "15"),
+								endDate: new Date("2015", "01", "01", "13", "15")
+							}),
+							new sap.ui.unified.CalendarAppointment("App2RTL", {
+									startDate: new Date("2015", "01", "01", "09", "45"),
+									endDate: new Date("2015", "01", "01", "11", "45")
+								}),
+							new sap.ui.unified.CalendarAppointment("App3RTL", {
+									startDate: new Date("2015", "01", "01", "15", "00"),
+									endDate: new Date("2015", "01", "01", "15", "30")
+								})
+						]
+					});
+					this.oRowRTL.placeAt("uiAreaRTL");
+					sap.ui.getCore().applyChanges();
+				},
+				afterEach: function () {
+					//Cleanup
+					sap.ui.getCore().getConfiguration().setRTL(this.bOriginalRTLMode);
+					this.oRowRTL.destroy();
+				}
+			});
+
+		test("keyboard arrow navigation", function() {
+			jQuery("#App1RTL").focus();
+			equal(document.activeElement.id, "App1RTL", "Appointment1 focused");
+			equal(jQuery("#App1RTL").attr("tabindex"), "0", "Appointment1: tabindex 0 rendered");
+			equal(jQuery("#App2RTL").attr("tabindex"), "-1", "Appointment2: tabindex -1 rendered");
+			equal(this.oRowRTL.getFocusedAppointment().getId(), "App1RTL", "Appointment1 returned by getFocusedAppointment");
+
+			qutils.triggerKeydown("App1RTL", "ARROW_LEFT");
+			sap.ui.getCore().applyChanges();
+			equal(document.activeElement.id, "App3RTL", "Appointment3 focused");
+			equal(jQuery("#App3RTL").attr("tabindex"), "0", "Appointment3: tabindex 0 rendered");
+			equal(jQuery("#App1RTL").attr("tabindex"), "-1", "Appointment1: tabindex -1 rendered");
+			equal(this.oRowRTL.getFocusedAppointment().getId(), "App3RTL", "Appointment3 returned by getFocusedAppointment");
+
+			jQuery("#App2RTL").focus();
+			equal(document.activeElement.id, "App2RTL", "Appointment2 focused");
+			equal(jQuery("#App1RTL").attr("tabindex"), "-1", "Appointment1: tabindex 0 rendered");
+			equal(jQuery("#App2RTL").attr("tabindex"), "0", "Appointment2: tabindex -1 rendered");
+			equal(this.oRowRTL.getFocusedAppointment().getId(), "App2RTL", "Appointment2 returned by getFocusedAppointment");
+
+			qutils.triggerKeydown("App2RTL", "ARROW_RIGHT");
+			sap.ui.getCore().applyChanges();
+			equal(document.activeElement.id, "App0RTL", "Appointment0 focused");
+			equal(jQuery("#App0RTL").attr("tabindex"), "0", "Appointment0: tabindex 0 rendered");
+			equal(jQuery("#App2RTL").attr("tabindex"), "-1", "Appointment2: tabindex -1 rendered");
+			equal(this.oRowRTL.getFocusedAppointment().getId(), "App0RTL", "Appointment0 returned by getFocusedAppointment");
+		});
+
+		test("Now indicator is displayed on the right", function() {
+			var oDate = new Date();
+			oDate.setHours(oDate.getHours() - 3);
+			this.oRowRTL.setStartDate(oDate);
+			sap.ui.getCore().applyChanges();
+			ok(jQuery("#RowRTL-Now").is(":visible"), "Now indicatior is visible");
+			ok(jQuery("#RowRTL-Now").css("right"), "Now indicatior is displayed on the right");
+		});
+
 	</script>
 
 	</head>
@@ -805,6 +1013,8 @@
 		<h2 id="qunit-userAgent"></h2>
 		<div id="qunit-testrunner-toolbar"></div>
 		<ol id="qunit-tests"></ol>
+		<br>
+		<div id="uiAreaRTL"></div>
 		<br>
 		<div id="uiArea1"></div>
 		<br>

@@ -1,25 +1,24 @@
 <!DOCTYPE HTML>
 <html>
 	<head>
-		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
 		<title>Test Page for sap.ui.dt.ControlObserver</title>
 
+		<script src="../shared-config.js"></script>
 		<script id="sap-ui-bootstrap"
-				data-sap-ui-theme="sap_bluecrystal"
-				type="text/javascript"
 				data-sap-ui-noConflict="true"
 				data-sap-ui-resourceroots='{"dt.view": "testdata/designtime/"}'
 				data-sap-ui-libs="sap.ui.dt,sap.m,sap.ui.layout"
 				src="../../../../../resources/sap-ui-core.js">
 		</script>
-		<link rel="stylesheet" href="../../../../../resources/sap/ui/thirdparty/qunit.css" type="text/css" media="screen" />
-		<script type="text/javascript" src="../../../../../resources/sap/ui/thirdparty/qunit.js"></script>
-		<script type="text/javascript" src="../../../../../resources/sap/ui/qunit/qunit-junit.js"></script>
-		<script type="text/javascript" src="../../../../../resources/sap/ui/qunit/QUnitUtils.js"></script>
-		<script type="text/javascript">
+		<link rel="stylesheet" href="../../../../../resources/sap/ui/thirdparty/qunit.css" type="text/css" media="screen">
+		<script src="../../../../../resources/sap/ui/thirdparty/qunit.js"></script>
+		<script src="../../../../../resources/sap/ui/qunit/qunit-junit.js"></script>
+		<script src="../../../../../resources/sap/ui/qunit/QUnitUtils.js"></script>
+		<script>
 
 			jQuery.sap.require("sap.ui.qunit.qunit-coverage");
-		
+
 			jQuery.sap.require("sap.ui.dt.ControlObserver");
 
 			QUnit.module("Given that a Button is observed", {
@@ -40,23 +39,13 @@
 			QUnit.test("when the property of the Button is changed", function(assert) {
 				var done = assert.async();
 
-				this.oControlObserver.attachDomChanged(function(oEvent) {
+				this.oControlObserver.attachAfterRendering(function(oEvent) {
 					assert.ok(oEvent, 'DomChanged event is fired');
 					done();
 				});
 
 				this.oButton.rerender();
 				sap.ui.getCore().applyChanges();
-			});
-
-			QUnit.test("when window is resized", function(assert) {
-				var done = assert.async();
-
-				this.oControlObserver.attachDomChanged(function(oEvent) {
-					assert.ok(oEvent, 'DomChanged event is fired');
-					done();
-				});
-				jQuery(window).trigger("resize");
 			});
 
 			QUnit.test("when the property of the Button is modified", function(assert) {
@@ -66,9 +55,27 @@
 					assert.ok(oEvent, 'then a "Changed" event is fired because of the property change');
 					done();
 				});
-				
+
 				this.oButton.setText("test");
 				sap.ui.getCore().applyChanges();
+			});
+
+
+			QUnit.module("Given that a label is observed", {
+				beforeEach : function() {
+					this.oLabel = new sap.m.Label({
+						text : "initial text"
+					});
+					this.oControlObserver = new sap.ui.dt.ControlObserver({
+						target : this.oLabel
+					});
+					this.oLabel.placeAt("content");
+					sap.ui.getCore().applyChanges();
+				},
+				afterEach : function() {
+					this.oControlObserver.destroy();
+					this.oLabel.destroy();
+				}
 			});
 
 		</script>

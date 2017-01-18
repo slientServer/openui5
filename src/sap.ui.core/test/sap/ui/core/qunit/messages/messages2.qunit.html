@@ -1,14 +1,16 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-<meta http-equiv="X-UA-Compatible" content="IE=edge" />
-<meta http-equiv="Content-Type" content="text/html;charset=UTF-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta charset="utf-8">
+
+<title>QUnit tests: Messaging</title>
 
 <!-- Initialization -->
-<script id="sap-ui-bootstrap" type="text/javascript"
+<script src="../../shared-config.js"></script>
+<script id="sap-ui-bootstrap"
 	src="../../../../../../resources/sap-ui-core.js"
 	data-sap-ui-libs="sap.m,sap.ui.layout"
-	data-sap-ui-theme="sap_bluecrystal"
 	data-sap-ui-bindingSyntax='complex'
 	data-sap-ui-language='en'>
 </script>
@@ -16,18 +18,26 @@
 <link rel="stylesheet"
 	href="../../../../../../resources/sap/ui/thirdparty/qunit.css" type="text/css"
 	media="screen" />
-<script type="text/javascript"
+<script
 	src="../../../../../../resources/sap/ui/thirdparty/qunit.js"></script>
-<script type="text/javascript"
+<script
 	src="../../../../../../resources/sap/ui/qunit/qunit-junit.js"></script>
-<script type="text/javascript"
+<script
 	src="../../../../../../resources/sap/ui/qunit/QUnitUtils.js"></script>
+<script
+	src="../../../../../../resources/sap/ui/thirdparty/sinon.js"></script>
+<!--[if IE]>
+	<script
+		src="../../../../../../resources/sap/ui/thirdparty/sinon-ie.js"></script>
+<![endif]-->
+<script
+	src="../../../../../../resources/sap/ui/thirdparty/sinon-qunit.js"></script>
 
 <!-- Test functions -->
-<script language="javascript" charset="utf-8"> // IE needs this :-/
-	
+<script charset="utf-8"> // IE needs this :-/
+
 	var oModel;
-	
+
 	function spyDataState(oControl, fnTest) {
 		if (oControl.refreshDataState) {
 			var fnRefresh = oControl.refreshDataState;
@@ -38,7 +48,7 @@
 			}
 		}
 	};
-	//create some components for testing 
+	//create some components for testing
 	sap.ui.localResources("components");
 	var oCompCont = new sap.ui.core.ComponentContainer("CompCont", {
 		name: "components",
@@ -54,11 +64,11 @@
 		id: "myMessageTest3",
 		handleValidation: true
 	});
-	
+
 	oCompCont.placeAt("content");
 	oCompCont2.placeAt("content");
 	oCompCont3.placeAt("content");
-	
+
 	var initModel = function(sType) {
 		if (sType === "json") {
 			oModel = new sap.ui.model.json.JSONModel();
@@ -77,9 +87,9 @@
 	}
 	module("MessageManager components", {
 		setup : function() {
-			initModel("json");	
+			initModel("json");
 		},
-		
+
 		teardown : function() {
 			oModel.destroy();
 		}
@@ -89,7 +99,7 @@
 		var oMessageManager = sap.ui.getCore().getMessageManager();
 		var oMessageModel = oMessageManager.getMessageModel();
 		var oCompZip = sap.ui.getCore().byId("zip_enabled");
-		
+
 		spyDataState(oCompZip, function(sName, oDataState) {
 			ok(oDataState.getMessages().length == 1, 'Format Message created');
 			ok(oCompZip.getValueState() === sap.ui.core.ValueState.Error, 'Input: ValueState set correctly')
@@ -100,7 +110,7 @@
 		};
 		sap.ui.getCore().attachValidationError(oCoreValHandler);
 		oCompZip.setValue('123456');
-		
+
 		jQuery.sap.delayedCall(0, this, function() {
 			spyDataState(oCompZip, function(sName, oDataState) {
 				ok(oDataState.getMessages().length == 0, 'Validation Message deleted');
@@ -111,14 +121,14 @@
 			oCompZip.setValue('12345');
 			sap.ui.getCore().detachValidationError(oCoreValHandler);
 		});
-				
+
 	});
-	
+
 	test("componentDisabled", function() {
 		var oMessageManager = sap.ui.getCore().getMessageManager();
 		var oMessageModel = oMessageManager.getMessageModel();
 		var oCompZip = sap.ui.getCore().byId("zip_disabled");
-		
+
 		var oValHandler = function(oEvent) {
 			if (oEvent.getParameter("dataState").getMessages() && oEvent.getParameter("dataState").getMessages().length > 0) {
 				ok(false,"should never be called");
@@ -130,7 +140,7 @@
 		ok(jQuery.isPlainObject(oMessageModel.getObject('/')) || oMessageModel.getObject('/').length == 0, 'No Messages in Model');
 		sap.ui.getCore().detachValidationError(oValHandler);
 	});
-	
+
 	test("component handle validation undefined", function() {
 		var oMessageManager = sap.ui.getCore().getMessageManager();
 		var oMessageModel = oMessageManager.getMessageModel();
@@ -149,15 +159,218 @@
 		oCompZip.setValue('123456');
 		ok(jQuery.isPlainObject(oMessageModel.getObject('/')) || oMessageModel.getObject('/').length == 0, 'No Messages in Model');
 	});
+
+	module("Component: handleValidation / registerObject");
+
+	test("Metadata: n/a, instance: n/a", function() {
+		var sComponentName = "sap.ui.test.handlevalidation.na.na";
+		var oMessageManager = sap.ui.getCore().getMessageManager();
+		var oRegisterObjectSpy = this.spy(oMessageManager, "registerObject");
+
+		jQuery.sap.declare(sComponentName + ".Component");
+		sap.ui.core.UIComponent.extend(sComponentName + ".Component", {
+			metadata: {}
+		});
+
+		var oComponent = sap.ui.component({
+			name: sComponentName
+		});
+
+		sinon.assert.callCount(oRegisterObjectSpy, 0);
+
+	});
+
+	test("Metadata: n/a, instance: false", function() {
+		var sComponentName = "sap.ui.test.handlevalidation.na.false";
+		var oMessageManager = sap.ui.getCore().getMessageManager();
+		var oRegisterObjectSpy = this.spy(oMessageManager, "registerObject");
+
+		jQuery.sap.declare(sComponentName + ".Component");
+		sap.ui.core.UIComponent.extend(sComponentName + ".Component", {
+			metadata: {}
+		});
+
+		var oComponent = sap.ui.component({
+			name: sComponentName,
+			handleValidation: false
+		});
+
+		sinon.assert.callCount(oRegisterObjectSpy, 0);
+
+	});
+
+	test("Metadata: n/a, instance: true", function() {
+		var sComponentName = "sap.ui.test.handlevalidation.na.true";
+		var oMessageManager = sap.ui.getCore().getMessageManager();
+		var oRegisterObjectSpy = this.spy(oMessageManager, "registerObject");
+
+		jQuery.sap.declare(sComponentName + ".Component");
+		sap.ui.core.UIComponent.extend(sComponentName + ".Component", {
+			metadata: {}
+		});
+
+		var oComponent = sap.ui.component({
+			name: sComponentName,
+			handleValidation: true
+		});
+
+		sinon.assert.callCount(oRegisterObjectSpy, 1);
+		sinon.assert.calledWithExactly(oRegisterObjectSpy, oComponent, true);
+
+	});
+
+	test("Metadata: false, instance: false", function() {
+		var sComponentName = "sap.ui.test.handlevalidation.false.false";
+		var oMessageManager = sap.ui.getCore().getMessageManager();
+		var oRegisterObjectSpy = this.spy(oMessageManager, "registerObject");
+
+		jQuery.sap.declare(sComponentName + ".Component");
+		sap.ui.core.UIComponent.extend(sComponentName + ".Component", {
+			metadata: {
+				handleValidation: false
+			}
+		});
+
+		var oComponent = sap.ui.component({
+			name: sComponentName,
+			handleValidation: false
+		});
+
+		sinon.assert.callCount(oRegisterObjectSpy, 1);
+		sinon.assert.calledWithExactly(oRegisterObjectSpy, oComponent, false);
+
+	});
+
+	test("Metadata: false, instance: n/a", function() {
+		var sComponentName = "sap.ui.test.handlevalidation.false.na";
+		var oMessageManager = sap.ui.getCore().getMessageManager();
+		var oRegisterObjectSpy = this.spy(oMessageManager, "registerObject");
+
+		jQuery.sap.declare(sComponentName + ".Component");
+		sap.ui.core.UIComponent.extend(sComponentName + ".Component", {
+			metadata: {
+				handleValidation: false
+			}
+		});
+
+		var oComponent = sap.ui.component({
+			name: sComponentName
+		});
+
+		sinon.assert.callCount(oRegisterObjectSpy, 1);
+		sinon.assert.calledWithExactly(oRegisterObjectSpy, oComponent, false);
+
+	});
+
+	test("Metadata: false, instance: true", function() {
+		var sComponentName = "sap.ui.test.handlevalidation.false.true";
+		var oMessageManager = sap.ui.getCore().getMessageManager();
+		var oRegisterObjectSpy = this.spy(oMessageManager, "registerObject");
+
+		jQuery.sap.declare(sComponentName + ".Component");
+		sap.ui.core.UIComponent.extend(sComponentName + ".Component", {
+			metadata: {
+				handleValidation: false
+			}
+		});
+
+		var oComponent = sap.ui.component({
+			name: sComponentName,
+			handleValidation: true
+		});
+
+		sinon.assert.callCount(oRegisterObjectSpy, 1);
+		sinon.assert.calledWithExactly(oRegisterObjectSpy, oComponent, false);
+
+	});
+
+	test("Metadata: true, instance: true", function() {
+		var sComponentName = "sap.ui.test.handlevalidation.true.true";
+		var oMessageManager = sap.ui.getCore().getMessageManager();
+		var oRegisterObjectSpy = this.spy(oMessageManager, "registerObject");
+
+		jQuery.sap.declare(sComponentName + ".Component");
+		sap.ui.core.UIComponent.extend(sComponentName + ".Component", {
+			metadata: {
+				handleValidation: true
+			}
+		});
+
+		var oComponent = sap.ui.component({
+			name: sComponentName,
+			handleValidation: true
+		});
+
+		sinon.assert.callCount(oRegisterObjectSpy, 1);
+		sinon.assert.calledWithExactly(oRegisterObjectSpy, oComponent, true);
+
+	});
+
+	test("Metadata: true, instance: n/a", function() {
+		var sComponentName = "sap.ui.test.handlevalidation.true.na";
+		var oMessageManager = sap.ui.getCore().getMessageManager();
+		var oRegisterObjectSpy = this.spy(oMessageManager, "registerObject");
+
+		jQuery.sap.declare(sComponentName + ".Component");
+		sap.ui.core.UIComponent.extend(sComponentName + ".Component", {
+			metadata: {
+				handleValidation: true
+			}
+		});
+
+		var oComponent = sap.ui.component({
+			name: sComponentName
+		});
+
+		sinon.assert.callCount(oRegisterObjectSpy, 1);
+		sinon.assert.calledWithExactly(oRegisterObjectSpy, oComponent, true);
+
+	});
+
+	test("Metadata: true, instance: false", function() {
+		var sComponentName = "sap.ui.test.handlevalidation.true.false";
+		var oMessageManager = sap.ui.getCore().getMessageManager();
+		var oRegisterObjectSpy = this.spy(oMessageManager, "registerObject");
+
+		jQuery.sap.declare(sComponentName + ".Component");
+		sap.ui.core.UIComponent.extend(sComponentName + ".Component", {
+			metadata: {
+				handleValidation: true
+			}
+		});
+
+		var oComponent = sap.ui.component({
+			name: sComponentName,
+			handleValidation: false
+		});
+
+		sinon.assert.callCount(oRegisterObjectSpy, 1);
+		sinon.assert.calledWithExactly(oRegisterObjectSpy, oComponent, true);
+
+	});
+
+	test("Model: checkMessages", function() {
+		var oCheckMessagesSpy = sinon.spy(sap.ui.model.Model.prototype, "checkMessages");
+		var oModel = new sap.ui.model.Model();
+		var mMessages = {"foo": {"key1": "value1"}};
+
+		oModel.mMessages = mMessages
+		oModel.setMessages(mMessages);
+		equals(oCheckMessagesSpy.callCount, 0, "No changes detected - Skip check messages");
+		
+		oModel.setMessages({"foo": {"key2": "value2"}});
+		equals(oCheckMessagesSpy.callCount, 1, "Changes detected - Check messages");
+
+		oModel.setMessages();
+		equals(oCheckMessagesSpy.callCount, 2, "Changes detected - Check messages");
+		deepEqual(oModel.mMessages, {}, "Model messages cleared");
+	});
+
 </script>
 
 </head>
 <body>
-<h1 id="qunit-header">QUnit tests: Messaging</h1>
-<h2 id="qunit-banner"></h2>
-<h2 id="qunit-userAgent"></h2>
-<div id="qunit-testrunner-toolbar"></div>
-<ol id="qunit-tests"></ol>
+<div id="qunit"></div>
 <br>
 <div id="content"></div>
 </body>

@@ -1,9 +1,9 @@
 sap.ui.controller("example.mvc.test", {
-	
+
 
 	onInit: function() {
 		ok(true, "onInit is called now");
-		window.onInitCalled = true;
+		window.onInitCalled = this;
 		if(this.getView().getViewData()) {
 			window.dataOnInit = this.getView().getViewData().test;
 		}
@@ -12,28 +12,28 @@ sap.ui.controller("example.mvc.test", {
 		}));
 	},
 
-	
+
 	onBeforeRendering: function() {
-		window.onBeforeRenderingCalled = true;
+		window.onBeforeRenderingCalled = this;
 		if(this.getView().getViewData()) {
 			window.dataBeforeRendering = this.getView().getViewData().test;
 		}
 	},
-	
-	
+
+
 	onAfterRendering: function() {
 		ok(true, "onAfterRendering is called now");
-		window.onAfterRenderingCalled = true;
+		window.onAfterRenderingCalled = this;
 		if(this.getView().getViewData()) {
 			window.dataAfterRendering = this.getView().getViewData().test;
 		}
 	},
-	
-	
+
+
 	onExit: function() {
-		window.onExitCalled = true;
+		window.onExitCalled = this;
 	},
-	
+
 	doIt: function(oEvent) {
 		ok(true, "Event of "+ oEvent.getSource().getId()+" executed in controller");
 		var controller = this;
@@ -42,9 +42,16 @@ sap.ui.controller("example.mvc.test", {
 			window.dataEventHandler = this.getView().getViewData().test;
 		}
 	},
-	
+
 	valueFormatter: function(oValue) {
 		return "formatted-" + oValue;
+	},
+
+	sap: {
+		doIt: function(oEvent) {
+			ok(true, "Event of "+ oEvent.getSource().getId()+" executed in controller");
+			ok(this instanceof sap.ui.core.mvc.Controller, "context for event handling must be instanceof sap.ui.core.mvc.Controller");
+		}
 	}
 
 });

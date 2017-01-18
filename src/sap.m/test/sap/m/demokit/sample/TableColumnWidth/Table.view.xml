@@ -4,26 +4,26 @@
 	xmlns:mvc="sap.ui.core.mvc"
 	xmlns="sap.m">
 	<MessageStrip
-		text="Do not try to give percent width to all columns even it reaches 100% total column width. Leave the most important column's width empty that it takes much space as it can."
-		type="Information"
-		showIcon="true">
-	</MessageStrip>
+		text="Leave the most important column's width empty(or set it to auto) that it takes much space as it can."
+		type="Success"
+		class="sapUiSmallMargin"
+		showIcon="true"/>
 	<Table
 		mode="MultiSelect"
 		items="{
 			path: 'products>/ProductCollection'
 		}"
 		columns="{
-			path: 'columns>/'
+			path: 'clone>/'
 		}">
 		<headerToolbar>
 			<Toolbar>
-				<Title text="Products Original" level="H2"/>
+				<Title text="Products (Correct Usage)" level="H2"/>
 			</Toolbar>
 		</headerToolbar>
 		<columns>
-			<Column width="{columns>width}" styleClass="{columns>styleClass}" demandPopin="{columns>demandPopin}" minScreenWidth="{columns>minScreenWidth}" popinDisplay="WithoutHeader">
-				<Input value="{columns>width}" description="{columns>header}"/>
+			<Column width="{clone>width}" styleClass="{clone>styleClass}" demandPopin="{clone>demandPopin}" minScreenWidth="{clone>minScreenWidth}" popinDisplay="WithoutHeader">
+				<Input value="{clone>width}" description="{clone>header}"/>
 			</Column>
 		</columns>
 		<items>
@@ -36,22 +36,27 @@
 			</ColumnListItem>
 		</items>
 	</Table>
+	<MessageStrip
+		text="Do not try to give percent width to all columns even it reaches 100% total column width when columns need to be shown as pop-in."
+		type="Error"
+		class="sapUiLargeMarginTop sapUiSmallMargin"
+		showIcon="true"/>
 	<Table
 		mode="MultiSelect"
 		items="{
 			path: 'products>/ProductCollection'
 		}"
 		columns="{
-			path: 'clone>/'
+			path: 'columns>/'
 		}">
 		<headerToolbar>
 			<Toolbar>
-				<Title text="Products Clone" level="H2"/>
+				<Title text="Products (Wrong Usage)" level="H2"/>
 			</Toolbar>
 		</headerToolbar>
 		<columns>
-			<Column width="{clone>width}" styleClass="{clone>styleClass}" demandPopin="{clone>demandPopin}" minScreenWidth="{clone>minScreenWidth}" popinDisplay="WithoutHeader">
-				<Input value="{clone>width}" description="{clone>header}"/>
+			<Column width="{columns>width}" styleClass="{columns>styleClass}" demandPopin="{columns>demandPopin}" minScreenWidth="{columns>minScreenWidth}" popinDisplay="WithoutHeader">
+				<Input value="{columns>width}" description="{columns>header}"/>
 			</Column>
 		</columns>
 		<items>

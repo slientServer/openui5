@@ -1,23 +1,36 @@
 sap.ui.define([
 		'sap/ui/test/Opa5',
 		'sap/ui/test/matchers/AggregationFilled',
-		'sap/ui/test/matchers/PropertyStrictEquals',
-		'sap/ui/test/matchers/AggregationContainsPropertyEqual'
-	], function (Opa5, AggregationFilled, PropertyStrictEquals, AggregationContainsPropertyEqual) {
+		'sap/ui/test/matchers/AggregationEmpty',
+		'sap/ui/test/matchers/Properties',
+		'sap/ui/test/matchers/AggregationContainsPropertyEqual',
+		'sap/ui/test/matchers/AggregationLengthEquals',
+		'sap/ui/test/matchers/BindingPath',
+		'sap/ui/test/matchers/Ancestor',
+		'sap/ui/test/actions/Press',
+		'sap/ui/test/actions/EnterText'
+	], function (Opa5,
+				 AggregationFilled,
+				 AggregationEmpty,
+				 Properties,
+				 AggregationContainsPropertyEqual,
+				 AggregationLengthEquals,
+				 BindingPath,
+				 Ancestor,
+				 Press,
+				 EnterText) {
 
 		Opa5.createPageObjects({
 			onTheCart : {
+				viewName : "Cart",
 
 				actions : {
 
 					iPressOnTheEditButton : function () {
 						return this.waitFor({
-							viewName : "Cart",
 							controlType : "sap.m.Button",
-							matchers : new PropertyStrictEquals({name : "icon", value : "sap-icon://edit"}),
-							success : function (aButtons) {
-								aButtons[0].$().trigger("tap");
-							},
+							matchers : new Properties({ icon : "sap-icon://edit"}),
+							actions : new Press(),
 							errorMessage : "The edit button could not be pressed"
 						});
 					},
@@ -25,9 +38,8 @@ sap.ui.define([
 					iPressOnTheDeleteButton : function () {
 						return this.waitFor({
 							id : "entryList",
-							viewName : "Cart",
-							matchers : new PropertyStrictEquals({name : "mode", value : "Delete"}),
-							success : function (oList) {
+							matchers : new Properties({ mode : "Delete"}),
+							actions : function (oList) {
 								oList.fireDelete({listItem : oList.getItems()[0]});
 							},
 							errorMessage : "The delete button could not be pressed"
@@ -36,13 +48,76 @@ sap.ui.define([
 
 					iPressOnTheAcceptButton : function () {
 						return this.waitFor({
-							viewName : "Cart",
 							controlType : "sap.m.Button",
-							matchers : new PropertyStrictEquals({name : "icon", value : "sap-icon://accept"}),
-							success : function (aButtons) {
-								aButtons[0].$().trigger("tap");
-							},
+							matchers : new Properties({ icon : "sap-icon://accept"}),
+							actions : new Press(),
 							errorMessage : "The accept button could not be pressed"
+						});
+					},
+
+					iPressOnTheProceedButton : function () {
+						return this.waitFor({
+							id : "proceedButton",
+							actions : new sap.ui.test.actions.Press()
+						});
+					},
+
+					iFillTheForm : function () {
+						this.waitFor({
+							viewName : "Order",
+							id: "inputName",
+							actions: new EnterText({ text: "MyName" })
+						});
+						this.waitFor({
+							viewName : "Order",
+							id: "inputAddress",
+							actions: new EnterText({ text: "MyAddress" })
+						});
+						this.waitFor({
+							viewName : "Order",
+							id: "inputMail",
+							actions: new EnterText({ text: "me@example.com" })
+						});
+						return this.waitFor({
+							viewName : "Order",
+							id: "inputNumber",
+							actions: new EnterText({ text: "1234567891234" })
+						});
+					},
+
+					iPressOrderNow : function () {
+						return this.waitFor({
+							controlType : "sap.m.Button",
+							matchers: new Properties({ text: "Order Now" }),
+							actions : new Press(),
+							errorMessage : "Did not find the Order Now button"
+						});
+					},
+
+					iPressOnSaveForLaterForTheFirstProduct : function () {
+						return this.waitFor({
+							controlType : "sap.m.ObjectAttribute",
+							matchers : new BindingPath({path : "/cartEntries/HT-1254", modelName: "cartProducts"}),
+							success: function (aObjectAttributes) {
+								this.waitFor({
+									controlType : "sap.m.Text",
+									matchers: new Ancestor(aObjectAttributes[0], true),
+									actions : new Press()
+								});
+							}
+						});
+					},
+					iPressOnAddBackToBasketForTheFirstProduct : function () {
+						return this.waitFor({
+							controlType : "sap.m.ObjectAttribute",
+							matchers : new BindingPath({path : "/savedForLaterEntries/HT-1254", modelName: "cartProducts"}),
+							success: function (aObjectAttributes) {
+								this.waitFor({
+									controlType : "sap.m.Text",
+									matchers: new Ancestor(aObjectAttributes[0], true),
+									actions : new Press()
+								});
+							}
 						});
 					}
 				},
@@ -52,31 +127,52 @@ sap.ui.define([
 					iShouldSeeTheProductInMyCart : function () {
 						return this.waitFor({
 							id : "entryList",
-							viewName : "Cart",
 							matchers : new AggregationFilled({name : "items"}),
-							success : function (oList) {
-								Opa5.assert.ok(
-									oList.getItems().length > 0,
-									"The cart has entries"
-								);
+							success : function () {
+								Opa5.assert.ok(true, "The cart has entries");
 							},
 							errorMessage : "The cart does not contain any entries"
 						});
 					},
 
-					theEditButtonHelper  : function (bState) {
+					iShouldNotSeeASaveForLaterFooter : function () {
+						return this.waitFor({
+							id : "entryList",
+							success : function (oList) {
+								Opa5.assert.strictEqual("", oList.getFooterText(), "The footer is not visible");
+							},
+							errorMessage : "The footer is still visible"
+						});
+					},
+
+					iShouldSeeAnEmptyCart : function () {
+						return this.waitFor({
+							id : "entryList",
+							matchers : new AggregationLengthEquals({name : "items", length: 0}),
+							success : function () {
+								Opa5.assert.ok(true, "The cart has no entries");
+							},
+							errorMessage : "The cart does not contain any entries"
+						});
+					},
+
+					theEditButtonHelper  : function (bIsEnabled) {
 						var sErrorMessage = "The edit button is enabled";
 						var sSuccessMessage = "The edit button is disabled";
-						if (bState) {
+						if (bIsEnabled) {
 							sErrorMessage = "The edit button is disabled";
 							sSuccessMessage = "The edit button is enabled";
 						}
 						return this.waitFor({
 							controlType : "sap.m.Button",
-							matchers : new PropertyStrictEquals({name : "icon", value : "sap-icon://edit"}),
+							autoWait: bIsEnabled,
+							matchers : new Properties({
+								icon : "sap-icon://edit",
+								enabled: bIsEnabled
+							}),
 							success : function (aButtons) {
 								Opa5.assert.strictEqual(
-									aButtons[0].getEnabled(), bState, sSuccessMessage
+									aButtons[0].getEnabled(), bIsEnabled, sSuccessMessage
 								);
 							},
 							errorMessage : sErrorMessage
@@ -94,7 +190,7 @@ sap.ui.define([
 					iShouldSeeTheDeleteButton : function () {
 						return this.waitFor({
 							controlType : "sap.m.List",
-							matchers : new PropertyStrictEquals({name : "mode", value : "Delete"}),
+							matchers : new Properties({ mode : "Delete"}),
 							success : function (aLists) {
 								Opa5.assert.ok(
 									aLists[0],
@@ -108,8 +204,7 @@ sap.ui.define([
 					iShouldNotSeeTheDeletedItemInTheCart : function () {
 						return this.waitFor({
 							id : "entryList",
-							viewName : "Cart",
-							check : function (oList) {
+							matchers : function (oList) {
 								var bExist =  new AggregationContainsPropertyEqual({
 									aggregationName : "items",
 									propertyName : "title",
@@ -131,7 +226,6 @@ sap.ui.define([
 					iShouldBeTakenToTheCart : function () {
 						return this.waitFor({
 							id : "entryList",
-							viewName : "Cart",
 							success : function (oList) {
 								Opa5.assert.ok(
 									oList,
@@ -140,7 +234,27 @@ sap.ui.define([
 							},
 							errorMessage : "The cart was not found"
 						});
-					}
+					},
+
+					iShouldSeeOneProductInMySaveForLaterList: function () {
+						return this.waitFor({
+							id : "saveForLaterList",
+							success : function (oList) {
+								Opa5.assert.strictEqual(oList.getItems().length, 1, "Product saved for later");
+							}
+						});
+					},
+
+					iShouldSeeAnEmptySaveForLaterList : function () {
+						return this.waitFor({
+							id : "saveForLaterList",
+							matchers: new AggregationEmpty({ name : "items" }),
+							success : function (oList) {
+								Opa5.assert.ok(true, "The savelist was empty");
+							},
+							errorMessage : "The savelist still has entries"
+						});
+					},
 				}
 
 			}

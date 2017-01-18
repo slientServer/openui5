@@ -13,8 +13,6 @@
 
 .sapUiUx3TP.sapUiShd {
 	box-shadow: @sapUiUx3ToolPopupShadow;
-	-webkit-box-shadow: @sapUiUx3ToolPopupShadow;
-	-moz-box-shadow: @sapUiUx3ToolPopupShadow;
 }
 
 .sapUiUx3TP.sapUiUx3TPNoTitle {
@@ -66,15 +64,12 @@
 	overflow: hidden;
 
 	height: 26px;
-	background-image: none;
 }
 
 .sapUiUx3TPArrow>.sapUiUx3TPArrowBorder {
 	background: @sapUiDarkBorder;
 
 	-webkit-transform: rotate(45deg);
-	-moz-transform: rotate(45deg);
-	-ms-transform: rotate(45deg);
 	transform: rotate(45deg);
 
 	position: relative;
@@ -94,8 +89,8 @@
 
 .sapUiUx3TPArrow.sapUiUx3TPArrowUp,
 .sapUiUx3TPArrow.sapUiUx3TPArrowDown {
-	height: 13px;
-	width: 26px;
+	height: @sapUiUx3ToolPopupArrowWidth;
+	width: @sapUiUx3ToolPopupArrowHeight;
 }
 .sapUiUx3TPArrowUp>.sapUiUx3TPArrowBorder {
 	top: 3px;

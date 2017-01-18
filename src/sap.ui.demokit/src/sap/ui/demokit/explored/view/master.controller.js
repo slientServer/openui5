@@ -3,33 +3,22 @@
  */
 
 sap.ui.define([
-	"sap/ui/core/mvc/Controller",
-	"jquery.sap.storage"
-], function (Controller, jQuery) {
+	"sap/ui/Device", "sap/ui/core/Component", "sap/ui/core/Fragment", "sap/ui/core/UIComponent", "sap/ui/core/mvc/Controller",
+	"sap/ui/model/Filter", "sap/ui/model/Sorter",
+	"sap/m/GroupHeaderListItem",
+	"../util/ToggleFullScreenHandler",
+	"jquery.sap.storage",
+	"sap/ui/demokit/explored/view/base.controller"
+	], function (Device, Component, Fragment, UIComponent, Controller, Filter, Sorter, GroupHeaderListItem, ToggleFullScreenHandler, jQuery, Base) {
 	"use strict";
 
-	return Controller.extend("sap.ui.demokit.explored.view.master", {
+	return Base.extend("sap.ui.demokit.explored.view.master", {
 
 		//========= members =======================================================================
 
 		_bIsViewUpdatedAtLeastOnce: false,
 
 		_oVSDialog: null, // set on demand
-
-		_oViewSettings: null, // set on init
-
-		_oStorage: jQuery.sap.storage(jQuery.sap.storage.Type.local),
-
-		_sStorageKey: "UI5_EXPLORED_VIEW_SETTINGS",
-
-		_oDefaultSettings: {
-			filter: {},
-			groupProperty: "category",
-			groupDescending: false,
-			compactOn: false,
-			themeActive: "sap_bluecrystal",
-			rtl: false
-		},
 
 		_mGroupFunctions: {
 			"name": function (oContext) {
@@ -49,11 +38,11 @@ sap.ui.define([
 
 		onInit : function () {
 			// subscribe to routing
-			this.router = sap.ui.core.UIComponent.getRouterFor(this);
+			this.router = UIComponent.getRouterFor(this);
 			this.router.attachRoutePatternMatched(this.onRouteMatched, this);
 
 			// subscribe to app events
-			this._component = sap.ui.core.Component.getOwnerComponentFor(this.getView());
+			this._component = Component.getOwnerComponentFor(this.getView());
 			this._component.getEventBus().subscribe("app", "selectEntity", this.onSelectEntity, this);
 
 			// set the group to the default used in the view
@@ -81,7 +70,7 @@ sap.ui.define([
 				if (oView) {
 					var oToggleFullScreenBtn = oView.byId("toggleFullScreenBtn");
 					if (oToggleFullScreenBtn) {
-						sap.ui.demokit.explored.util.ToggleFullScreenHandler.updateControl(oToggleFullScreenBtn, oView);
+						ToggleFullScreenHandler.updateControl(oToggleFullScreenBtn, oView);
 					}
 				}
 				return;
@@ -139,7 +128,8 @@ sap.ui.define([
 
 			if (!this._oBusyDialog) {
 				jQuery.sap.require("sap.m.BusyDialog");
-				this._oBusyDialog = new sap.m.BusyDialog();
+				var BusyDialog = sap.ui.require("sap/m/BusyDialog");
+				this._oBusyDialog = new BusyDialog();
 				this.getView().addDependent(this._oBusyDialog);
 			}
 			var bCompact = sap.ui.getCore().byId('CompactModeButtons').getState();
@@ -158,6 +148,7 @@ sap.ui.define([
 			this._oViewSettings.compactOn = bCompact;
 			this._oViewSettings.themeActive = sTheme;
 			this._oViewSettings.rtl = bRTL;
+			this._oViewSettings.version = this._oDefaultSettings.version;
 			var s = JSON.stringify(this._oViewSettings);
 			this._oStorage.put(this._sStorageKey, s);
 
@@ -274,7 +265,7 @@ sap.ui.define([
 			var oItem = (oItemParam) ? oItemParam : oEvt.getSource();
 			var sPath = oItem.getBindingContext("entity").getPath();
 			var oEnt = this.getView().getModel("entity").getProperty(sPath);
-			var bReplace = !sap.ui.Device.system.phone;
+			var bReplace = !Device.system.phone;
 			this.router.navTo("entity", {
 				id: oEnt.id,
 				part: "samples"
@@ -287,20 +278,7 @@ sap.ui.define([
 		 * Makes sure the view settings are initialized and updates the filter bar dispay and list binding
 		 */
 		_updateView: function () {
-
-			if (!this._oViewSettings) {
-
-				// init the view settings
-				this._initViewSettings();
-
-				// apply app settings
-				this._component.getEventBus().publish("app", "applyAppConfiguration", {
-					themeActive: this._oViewSettings.themeActive,
-					compactOn: this._oViewSettings.compactOn
-				});
-
-			}
-
+			this._applyViewConfigurations();
 
 			// update the filter bar
 			this._updateFilterBarDisplay();
@@ -355,16 +333,16 @@ sap.ui.define([
 			var sQuery = oSearchField.getValue().trim();
 
 			bFilterChanged = true;
-			aFilters.push(new sap.ui.model.Filter("searchTags", "Contains", sQuery));
+			aFilters.push(new Filter("searchTags", "Contains", sQuery));
 
 			// add filters for view settings
 			jQuery.each(this._oViewSettings.filter, function (sProperty, aValues) {
 				var aPropertyFilters = [];
 				jQuery.each(aValues, function (i, aValue) {
 					var sOperator = (sProperty === "formFactors") ? "Contains" : "EQ";
-					aPropertyFilters.push(new sap.ui.model.Filter(sProperty, sOperator, aValue));
+					aPropertyFilters.push(new Filter(sProperty, sOperator, aValue));
 				});
-				var oFilter = new sap.ui.model.Filter(aPropertyFilters, false); // second parameter stands for "or"
+				var oFilter = new Filter(aPropertyFilters, false); // second parameter stands for "or"
 				bFilterChanged = true;
 				aFilters.push(oFilter);
 			});
@@ -373,7 +351,7 @@ sap.ui.define([
 			if (bFilterChanged && aFilters.length === 0) {
 				oBinding.filter(aFilters, "Application");
 			} else if (bFilterChanged && aFilters.length > 0) {
-				var oFilter = new sap.ui.model.Filter(aFilters, true); // second parameter stands for "and"
+				var oFilter = new Filter(aFilters, true); // second parameter stands for "and"
 				oBinding.filter(oFilter, "Application");
 			}
 
@@ -385,12 +363,12 @@ sap.ui.define([
 
 			// group
 			if (bGroupChanged) {
-				var oSorter = new sap.ui.model.Sorter(
+				var oSorter = new Sorter(
 					this._oViewSettings.groupProperty,
 					this._oViewSettings.groupDescending,
 					this._mGroupFunctions[this._oViewSettings.groupProperty]);
 				aSorters.push(oSorter);
-				aSorters.push(new sap.ui.model.Sorter("name", false));
+				aSorters.push(new Sorter("name", false));
 				oBinding.sort(aSorters);
 			}
 
@@ -401,92 +379,8 @@ sap.ui.define([
 			this._bIsViewUpdatedAtLeastOnce = true;
 		},
 
-		/**
-		 * Inits the view settings. At first local storage is checked. If this is empty defaults are applied.
-		 */
-		_initViewSettings: function () {
-
-			var sJson = this._oStorage.get(this._sStorageKey);
-			if (!sJson) {
-
-				// local storage is empty, apply defaults
-				this._oViewSettings = this._oDefaultSettings;
-
-			} else {
-				// parse
-				this._oViewSettings = JSON.parse(sJson);
-
-				// clean filter and remove values that do not exist any longer in the data model
-				// (the cleaned filter are not written back to local storage, this only happens on changing the view settings)
-				var oFilterData = this.getView().getModel("filter").getData();
-				var oCleanFilter = {};
-				jQuery.each(this._oViewSettings.filter, function (sProperty, aValues) {
-					var aNewValues = [];
-					jQuery.each(aValues, function (i, aValue) {
-						var bValueIsClean = false;
-						jQuery.each(oFilterData[sProperty], function (i, oValue) {
-							if (oValue.id === aValue) {
-								bValueIsClean = true;
-								return false;
-							}
-						});
-						if (bValueIsClean) {
-							aNewValues.push(aValue);
-						}
-					});
-					if (aNewValues.length > 0) {
-						oCleanFilter[sProperty] = aNewValues;
-					}
-				});
-				this._oViewSettings.filter = oCleanFilter;
-
-				// handling data stored with an older explored versions
-				if (!this._oViewSettings.hasOwnProperty("compactOn")) { // compactOn was introduced later
-					this._oViewSettings.compactOn = false;
-				}
-
-				if (!this._oViewSettings.hasOwnProperty("themeActive")) { // themeActive was introduced later
-					this._oViewSettings.themeActive = "sap_bluecrystal";
-				}
-
-				if (!this._oViewSettings.hasOwnProperty("rtl")) { // rtl was introduced later
-					this._oViewSettings.rtl = false;
-				}
-
-				// handle RTL-on in settings as this need a reload
-				if (this._oViewSettings.rtl && !jQuery.sap.getUriParameters().get('sap-ui-rtl')) {
-					this._handleRTL(true);
-				}
-			}
-		},
-
-		// trigger reload w/o URL-Parameter;
-		_handleRTL: function (bSwitch) {
-
-			jQuery.sap.require("sap.ui.core.routing.HashChanger");
-			var oHashChanger = new sap.ui.core.routing.HashChanger();
-			var sHash = oHashChanger.getHash();
-			var oUri = window.location;
-
-			// TODO: remove this fix when microsoft fix this under IE11 on Win 10
-			if (!window.location.origin) {
-				window.location.origin = window.location.protocol + "//" +
-					window.location.hostname +
-					(window.location.port ? ':' + window.location.port : '');
-			}
-
-			if (bSwitch) {
-				// add the parameter
-				window.location = oUri.origin + oUri.pathname + "?sap-ui-rtl=true#" + sHash;
-			} else {
-				// or remove it
-				window.location = oUri.origin + oUri.pathname + "#/" + sHash;
-			}
-
-		},
-
 		getGroupHeader: function (oGroup) {
-			return new sap.m.GroupHeaderListItem({
+			return new GroupHeaderListItem({
 				title: oGroup.key,
 				upperCase: false
 			});

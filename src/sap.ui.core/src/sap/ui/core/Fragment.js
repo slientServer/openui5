@@ -43,29 +43,38 @@ sap.ui.define(['jquery.sap.global', '../base/ManagedObject', './Element', './Dec
 	var Fragment = ManagedObject.extend("sap.ui.core.Fragment", {
 		metadata: {
 			properties: {
+
+				/*
+				 * The Fragment type. Types "XML", "HTML" and JS" are built-in and always available.
+				 */
 				type: "string"
 			},
 			specialSettings: {
+
 				/*
 				 * Name of the fragment to load
 				 */
-				fragmentName : true,
+				fragmentName : 'string',
+
 				/*
 				 * Content of the fragment
 				 */
-				fragmentContent : true,
+				fragmentContent : 'any',
+
 				/*
 				 * An enclosing view that contains this instance of the fragment (optional)
 				 */
-				containingView : true,
+				containingView : { type: 'sap.ui.core.mvc.View', visibility: 'hidden' },
+
 				/*
 				 * A controller of a containing View that should be used by this fragment (optional)
 				 */
-				oController : true,
+				oController : { type: 'sap.ui.core.mvc.Controller', visibility: 'hidden' },
+
 				/*
 				 * The ID of this fragment (optional)
 				 */
-				sId : true
+				sId : { type: 'sap.ui.core.ID', visibility: 'hidden' }
 			}
 		},
 
@@ -256,7 +265,7 @@ sap.ui.define(['jquery.sap.global', '../base/ManagedObject', './Element', './Dec
 	 *
 	 * @param {string} sName the Fragment name
 	 * @param {string} sType the Fragment type, e.g. "XML", "JS", or "HTML"
-	 * @param {sap.ui.core.Controller} [oController] the Controller which should be used by the controls in the Fragment. Note that some Fragments may not need a Controller and other may need one - and even rely on certain methods implemented in the Controller.
+	 * @param {sap.ui.core.mvc.Controller} [oController] the Controller which should be used by the controls in the Fragment. Note that some Fragments may not need a Controller and other may need one - and even rely on certain methods implemented in the Controller.
 	 * @public
 	 * @static
 	 * @return {sap.ui.core.Control|sap.ui.core.Control[]} the root Control(s) of the Fragment content
@@ -288,8 +297,9 @@ sap.ui.define(['jquery.sap.global', '../base/ManagedObject', './Element', './Dec
 	 *
 	 * To instantiate a Fragment, call this method as:
 	 *    sap.ui.xmlfragment([sId], sFragmentName, [oController]);
-	 * The Fragment instance ID is optional (generated if not given) and will be used as prefix for the ID of all
-	 * contained controls. The sFragmentName must correspond to an XML Fragment which can be loaded
+	 * The Fragment instance ID is optional and will be used as prefix for the ID of all
+	 * contained controls. If no ID is passed, controls will not be prefixed.
+	 * The sFragmentName must correspond to an XML Fragment which can be loaded
 	 * via the module system (fragmentName + ".fragment.xml") and which defines the Fragment.
 	 * If oController is given, the methods referenced in the Fragment will be called on this controller.
 	 * Note that Fragments may require a Controller to be given and certain methods to be available.
@@ -399,8 +409,9 @@ sap.ui.define(['jquery.sap.global', '../base/ManagedObject', './Element', './Dec
 	 *
 	 * To instantiate a Fragment, call this method as:
 	 *    sap.ui.htmlfragment([sId], sFragmentName, [oController]);
-	 * The Fragment instance ID is optional (generated if not given) and will be used as prefix for the ID of all
-	 * contained controls. The sFragmentName must correspond to an HTML Fragment which can be loaded
+	 * The Fragment instance ID is optional and will be used as prefix for the ID of all
+	 * contained controls. If no ID is passed, controls will not be prefixed.
+	 * The sFragmentName must correspond to an HTML Fragment which can be loaded
 	 * via the module system (fragmentName + ".fragment.html") and which defines the Fragment.
 	 * If oController is given, the methods referenced in the Fragment will be called on this controller.
 	 * Note that Fragments may require a Controller to be given and certain methods to be available.

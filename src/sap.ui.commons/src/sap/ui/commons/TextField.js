@@ -23,6 +23,7 @@ sap.ui.define(['jquery.sap.global', './library', 'sap/ui/core/Control', 'sap/ui/
 	 *
 	 * @constructor
 	 * @public
+	 * @deprecated Since version 1.38. Instead, use the <code>sap.m.Input</code> control.
 	 * @alias sap.ui.commons.TextField
 	 * @ui5-metamodel This control/element also will be described in the UI5 (legacy) designtime metamodel
 	 */
@@ -118,7 +119,7 @@ sap.ui.define(['jquery.sap.global', './library', 'sap/ui/core/Control', 'sap/ui/
 			/**
 			 * Association to controls / IDs which describe this control (see WAI-ARIA attribute aria-describedby).
 			 */
-			ariaDescribedBy : {type : "sap.ui.core.Control", multiple : true, singularName : "ariaDescribedBy"}, 
+			ariaDescribedBy : {type : "sap.ui.core.Control", multiple : true, singularName : "ariaDescribedBy"},
 
 			/**
 			 * Association to controls / IDs which label this control (see WAI-ARIA attribute aria-labelledby).
@@ -694,17 +695,20 @@ sap.ui.define(['jquery.sap.global', './library', 'sap/ui/core/Control', 'sap/ui/
 
 	};
 
-	/**
+	/*
 	 * Applies the focus info
-	 * overwrite of the Element method because in IE8 on rerendering focus is lost
+	 * overwrite of the Element method to set the just typed in text again
+	 * and restore the cursor position and selection.
 	 * @param {object} oFocusInfo Focus information
 	 * @return {object} reference to this
 	 * @protected
 	 */
 	TextField.prototype.applyFocusInfo = function (oFocusInfo) {
+
 		this.focus();
 		this._restoreUnsavedUserInput(oFocusInfo.userinput);
 		return this;
+
 	};
 
 	/**
@@ -789,26 +793,58 @@ sap.ui.define(['jquery.sap.global', './library', 'sap/ui/core/Control', 'sap/ui/
 
 
 	TextField.prototype._getUnsavedUserInputInfo = function() {
+
 		var $tf = this.$();
 		if ($tf.length && $tf.hasClass("sapUiTfFoc") && !$tf.hasClass("sapUiTfPlace") && this.getEnabled() && this.getEditable()){
-			var sVal = jQuery(this.getInputDomRef()).val();
+			var $DomRef = jQuery(this.getInputDomRef());
+			var sVal = $DomRef.val();
 			var sValue = this.getValue();
-			if (sVal != sValue){
-				return {userinput: sVal, value: sValue};
+			var iSelStart = 0;
+			var iSelEnd = 0;
+			if (typeof ($DomRef.get(0).selectionStart) === "number") { // current browsers should know this
+				iSelStart = $DomRef.get(0).selectionStart;
+				iSelEnd = $DomRef.get(0).selectionEnd;
 			}
+
+			return {userinput: sVal, value: sValue, cursorPos: $DomRef.cursorPos(), selStart: iSelStart, selEnd: iSelEnd};
 		}
 		return null;
+
 	};
 
 	TextField.prototype._restoreUnsavedUserInput = function(oUnsavedUserInputInfo) {
+
 		if (oUnsavedUserInputInfo && this.getEnabled() && this.getEditable() && this.getValue() == oUnsavedUserInputInfo.value){
 			var sVal = oUnsavedUserInputInfo.userinput;
 			if ( sVal && sVal.length > this.getMaxLength() && this.getMaxLength() > 0) {
 				sVal = sVal.substring(0,this.getMaxLength());
 			}
 
-			jQuery(this.getInputDomRef()).val(sVal);
+			var $DomRef = jQuery(this.getInputDomRef());
+			if (sVal != oUnsavedUserInputInfo.value) {
+				$DomRef.val(sVal);
+			}
+			$DomRef.cursorPos(oUnsavedUserInputInfo.cursorPos);
+			if (oUnsavedUserInputInfo.selStart != oUnsavedUserInputInfo.selEnd) {
+				$DomRef.selectText(oUnsavedUserInputInfo.selStart, oUnsavedUserInputInfo.selEnd);
+			}
 		}
+
+	};
+
+	/**
+	 * @see sap.ui.core.Control#getAccessibilityInfo
+	 * @protected
+	 */
+	TextField.prototype.getAccessibilityInfo = function() {
+		return {
+			role: "textbox",
+			type: sap.ui.getCore().getLibraryResourceBundle("sap.ui.commons").getText("ACC_CTR_TYPE_INPUT"),
+			description: this.getValue() || "",
+			focusable: this.getEnabled(),
+			enabled: this.getEnabled(),
+			editable: this.getEnabled() && this.getEditable()
+		};
 	};
 
 

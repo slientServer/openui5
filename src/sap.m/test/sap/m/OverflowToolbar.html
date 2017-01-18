@@ -1,11 +1,12 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
 <title>sap.m.OverflowToolbar</title>
 
+<script src="shared-config.js"></script>
 <script src="../../../resources/sap-ui-core.js"
-	id="sap-ui-bootstrap" data-sap-ui-libs="sap.m" data-sap-ui-theme="sap_bluecrystal">
+	id="sap-ui-bootstrap" data-sap-ui-libs="sap.m, sap.ui.layout">
 </script>
 
 <style type="text/css"></style>
@@ -18,15 +19,8 @@
 	jQuery.sap.require("sap.m.OverflowToolbarLayoutData");
 
 	// for behaviour testing
-	if (oUriParameters.get("noFlex")) {
+	if (oUriParameters.get("oldFlex")) {
 		sap.m.Toolbar.hasNewFlexBoxSupport = false;
-		sap.m.Toolbar.hasFlexBoxSupport = false;
-	} else if (oUriParameters.get("oldFlex")) {
-		sap.m.Toolbar.hasNewFlexBoxSupport = false;
-		sap.m.Toolbar.hasFlexBoxSupport = true;
-	} else if (oUriParameters.get("newFlex")) {
-		sap.m.Toolbar.hasNewFlexBoxSupport = true;
-		sap.m.Toolbar.hasFlexBoxSupport = true;
 	}
 
 	var sAddIconURI = sap.ui.core.IconPool.getIconURI("add");
@@ -36,6 +30,45 @@
 	var sRequestIconURI = sap.ui.core.IconPool.getIconURI("request");
 	var sReceiptIconURI = sap.ui.core.IconPool.getIconURI("receipt");
 
+	var oActionSheet = new sap.m.ActionSheet("actionSheet1", {
+		buttons: [
+			new sap.m.Button({
+				icon: "sap-icon://accept",
+				text: "Close",
+				press: function () {
+					sap.ui.getCore().byId("otb0").closeOverflow();
+				}
+			}),
+			new sap.m.Button({
+				icon: "sap-icon://decline",
+				text: "Do not close"
+			})
+		]
+	});
+
+	var oPopover = new sap.m.ResponsivePopover("popover1", {
+		placement: sap.m.PlacementType.Horizontal,
+		title: "Popover",
+		showHeader: true,
+		content: [
+			new sap.ui.layout.VerticalLayout({
+				content: [
+					new sap.m.Button({
+						icon: "sap-icon://accept",
+						text: "Close",
+						press: function () {
+							sap.ui.getCore().byId("otb0").closeOverflow();
+						}
+					}),
+					new sap.m.Button({
+						icon: "sap-icon://decline",
+						text: "Do not close"
+					})
+				]
+			})
+		]
+	});
+
 	var toolbarContent0 = [
 		new sap.m.Label({
 			text : "Group Toolbar"
@@ -43,13 +76,19 @@
 		new sap.m.ToolbarSpacer(),
 		new sap.m.Button({
 			text : "Always 1",
-			layoutData: new sap.m.OverflowToolbarLayoutData({priority: sap.m.OverflowToolbarPriority.AlwaysOverflow}),
-			width: "125px"
+			layoutData: new sap.m.OverflowToolbarLayoutData({priority: sap.m.OverflowToolbarPriority.AlwaysOverflow, closeOverflowOnInteraction: false}),
+			width: "125px",
+			press: function () {
+				oActionSheet.openBy(this);
+			}
 		}),
 		new sap.m.Button({
 			text : "Always 2",
-			layoutData: new sap.m.OverflowToolbarLayoutData({priority: sap.m.OverflowToolbarPriority.AlwaysOverflow}),
-			width: "125px"
+			layoutData: new sap.m.OverflowToolbarLayoutData({priority: sap.m.OverflowToolbarPriority.AlwaysOverflow, closeOverflowOnInteraction: false}),
+			width: "125px",
+			press: function () {
+				oPopover.openBy(this);
+			}
 		}),
 		new sap.m.Button({
 			text : "G1 High",
@@ -394,8 +433,8 @@
 			placeholder: "Input",
 			width: "150px"
 		}),
-		new sap.m.DateTimeInput({
-			placeholder: "DateTimeInput",
+		new sap.m.DateTimePicker({
+			placeholder: "DateTimePicker",
 			width: "150px"
 		}),
 		new sap.m.CheckBox({
@@ -495,7 +534,7 @@
 	];
 
 
-	var oPage = new sap.m.Page({
+	var oPage = new sap.m.Page("toolbar-page", {
 		title : "Overflow Toolbar - the buttons that do not fit go to an action sheet",
 		enableScrolling : true,
 		subHeader: aAllToolbars[0],
@@ -575,6 +614,19 @@
 	});
 
 	oApp.addPage(oPage).placeAt("content");
+
+	var oB = new sap.m.Button("size_btn", {
+		text : "Change page size to 480px",
+		press : function() { jQuery("#toolbar-page").width("480px"); }
+	});
+
+	var oB2 = new sap.m.Button("size_btn2", {
+		text : "Change page size to 700px",
+		press : function() { jQuery("#toolbar-page").width("700px"); }
+	});
+
+	oB2.placeAt("content");
+	oB.placeAt("content");
 
 </script>
 </head>

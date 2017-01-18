@@ -1,12 +1,13 @@
 <!DOCTYPE HTML>
-<!-- 
+<!--
   Tested control/class: sap.ui.commons.form.GridLayout
   Author: SAP
 -->
 
 <html>
 <head>
-	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<script src="../shared-config.js"></script>
 	<script id="sap-ui-bootstrap"
 		type="text/javascript"
 		src="../../../../../resources/sap-ui-core.js"
@@ -14,12 +15,12 @@
 		data-sap-ui-noConflict="true"
 		data-sap-ui-libs="sap.ui.commons">
 	</script>
-	<link rel="stylesheet" href="../../../../../resources/sap/ui/thirdparty/qunit.css" type="text/css" media="screen" />
-	<script type="text/javascript" src="../../../../../resources/sap/ui/thirdparty/qunit.js"></script>
-	<script type="text/javascript" src="../../../../../resources/sap/ui/qunit/qunit-junit.js"></script>
-	<script type="text/javascript" src="../../../../../resources/sap/ui/qunit/QUnitUtils.js"></script>
+	<link rel="stylesheet" href="../../../../../resources/sap/ui/thirdparty/qunit.css" type="text/css" media="screen">
+	<script src="../../../../../resources/sap/ui/thirdparty/qunit.js"></script>
+	<script src="../../../../../resources/sap/ui/qunit/qunit-junit.js"></script>
+	<script src="../../../../../resources/sap/ui/qunit/QUnitUtils.js"></script>
 
-	<script language="javascript">
+	<script>
 
 		// create Form
 
@@ -411,8 +412,8 @@
 
 		test("Container Full-Size", function() {
 			ok(!jQuery.sap.domById("C1--Exp"), "Container1 no expander is rendered");
-			ok(jQuery('h3:contains("Container1")').get(0), "Title (as text) is renderd");
-			equal(jQuery('h3:contains("Container1")').parent().attr("title"), "Container tooltip", "Container tooltip is renderd");
+			ok(jQuery('h5:contains("Container1")').get(0), "Title (as text) is renderd");
+			equal(jQuery('h5:contains("Container1")').parent().attr("title"), "Container tooltip", "Container tooltip is renderd");
 		});
 
 		test("Element", function() {

@@ -1,8 +1,8 @@
 <html>
 	<head>
 		<title>TestSuite for sap.ui.core: GTP testcase CORE/BOOTSTRAP</title>
-		<script type="text/javascript" src="../../../../../../resources/sap/ui/qunit/qunit-redirect.js"></script>
-		<script language="javascript">
+		<script src="../../../../../../resources/sap/ui/qunit/qunit-redirect.js"></script>
+		<script>
 
 		/**
 		 * Add test pages to this test suite function.
@@ -14,10 +14,11 @@
 			suite.addTestPage(contextPath + "/test-resources/sap/ui/core/qunit/bootstrap/Bootstrap.qunit.html");
 			suite.addTestPage(contextPath + "/test-resources/sap/ui/core/qunit/bootstrap/BootstrapCustomBootTaskPreloadCss.qunit.html");
 			suite.addTestPage(contextPath + "/test-resources/sap/ui/core/qunit/bootstrap/BootstrapLoadAll.qunit.html");
+			suite.addTestPage(contextPath + "/test-resources/sap/ui/core/qunit/bootstrap/BootstrapMinimal.qunit.html");
 			suite.addTestPage(contextPath + "/test-resources/sap/ui/core/qunit/bootstrap/BootstrapPreload.qunit.html");
 			suite.addTestPage(contextPath + "/test-resources/sap/ui/core/qunit/bootstrap/BootstrapPreloadAsync.qunit.html");
 			suite.addTestPage(contextPath + "/test-resources/sap/ui/core/qunit/bootstrap/BootstrapPreloadAuto.qunit.html");
-			suite.addTestPage(contextPath + "/test-resources/sap/ui/core/qunit/bootstrap/BootstrapWithCustomBootTask.qunit.html");
+			suite.addTestPage(contextPath + "/test-resources/sap/ui/core/qunit/bootstrap/Bootstrap.qunit.html");
 			suite.addTestPage(contextPath + "/test-resources/sap/ui/core/qunit/bootstrap/BootstrapWithinBody.qunit.html");
 			suite.addTestPage(contextPath + "/test-resources/sap/ui/core/qunit/bootstrap/BootstrapWithinHead.qunit.html");
 			suite.addTestPage(contextPath + "/test-resources/sap/ui/core/qunit/bootstrap/CfgDefaults.qunit.html");
@@ -27,7 +28,9 @@
 			suite.addTestPage(contextPath + "/test-resources/sap/ui/core/qunit/bootstrap/Configuration.qunit.html");
 			suite.addTestPage(contextPath + "/test-resources/sap/ui/core/qunit/bootstrap/ThemeVersion-off-async.qunit.html");
 			suite.addTestPage(contextPath + "/test-resources/sap/ui/core/qunit/bootstrap/ThemeVersion-off-sync.qunit.html");
+			suite.addTestPage(contextPath + "/test-resources/sap/ui/core/qunit/bootstrap/ThemeVersion-on-async-customcss.qunit.html");
 			suite.addTestPage(contextPath + "/test-resources/sap/ui/core/qunit/bootstrap/ThemeVersion-on-async.qunit.html");
+			suite.addTestPage(contextPath + "/test-resources/sap/ui/core/qunit/bootstrap/ThemeVersion-on-sync-customcss.qunit.html");
 			suite.addTestPage(contextPath + "/test-resources/sap/ui/core/qunit/bootstrap/ThemeVersion-on-sync.qunit.html");
 			suite.addTestPage(contextPath + "/test-resources/sap/ui/core/qunit/bootstrap/PegasusEnvironment.qunit.html");
 			suite.addTestPage(contextPath + "/test-resources/sap/ui/core/qunit/bootstrap/ResourceRoot_ResourcesURL_Standard.qunit.html");

@@ -1,27 +1,27 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<title>ResponsiveContainer - sap.ui.commons</title>
 
+	<script src="../shared-config.js"></script>
 	<script id="sap-ui-bootstrap"
-			type="text/javascript"
 			src="../../../../../resources/sap-ui-core.js"
 			data-sap-ui-theme="sap_bluecrystal"
 			data-sap-ui-noConflict="true"
 			data-sap-ui-libs="sap.ui.commons, sap.m" >
 	</script>
 
-	<link rel="stylesheet" href="../../../../../resources/sap/ui/thirdparty/qunit.css" type="text/css" media="screen" />
-	<script type="text/javascript" src="../../../../../resources/sap/ui/thirdparty/qunit.js"></script>
-	<script type="text/javascript" src="../../../../../resources/sap/ui/qunit/qunit-junit.js"></script>
-	<script type="text/javascript" src="../../../../../resources/sap/ui/qunit/QUnitUtils.js"></script>
-	<script type="text/javascript" src="../../../../../resources/sap/ui/thirdparty/sinon.js"></script>
-	<script type="text/javascript" src="../../../../../resources/sap/ui/thirdparty/sinon-qunit.js"></script>
+	<link rel="stylesheet" href="../../../../../resources/sap/ui/thirdparty/qunit.css" type="text/css" media="screen">
+	<script src="../../../../../resources/sap/ui/thirdparty/qunit.js"></script>
+	<script src="../../../../../resources/sap/ui/qunit/qunit-junit.js"></script>
+	<script src="../../../../../resources/sap/ui/qunit/QUnitUtils.js"></script>
+	<script src="../../../../../resources/sap/ui/thirdparty/sinon.js"></script>
+	<script src="../../../../../resources/sap/ui/thirdparty/sinon-qunit.js"></script>
 
-	<script type="text/javascript">
+	<script>
 	</script>
-	<script language="javascript">
+	<script>
 
 		//Use the sinon fake timers
 		sinon.config.useFakeTimers = true;
@@ -56,6 +56,11 @@
 				this.oRC.destroy();
 				this.oRC = null;
 			}
+		});
+
+		QUnit.test("Inheritance", function (assert) {
+			var oFirstRange = this.oRC.getRanges()[0];
+			assert.strictEqual(oFirstRange.getMetadata().getParent().getName(), "sap.ui.core.Element", "'sap.ui.commons.ResponsiveContainerRange' inherits correctly");
 		});
 
 		QUnit.test("Control is rendered correctly", function (assert){

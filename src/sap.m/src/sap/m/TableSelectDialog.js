@@ -16,10 +16,37 @@ sap.ui.define(['jquery.sap.global', './Button', './Dialog', './SearchField', './
 	 * @param {object} [mSettings] Initial settings for the new control
 	 *
 	 * @class
-	 * TableSelectDialog provides you with an easier way to create a dialog that contains a list with grouping and search functionalities.
-	 * The Table used in a SelectDialog is a Table with Columns. After selecting an item, the dialog is closed and a callback function returns the item being selected.
-	 * @extends sap.ui.core.Control
+	 * A dialog to select items in a table containing multiple values and attributes.
+	 * <h3>Overview</h3>
+	 * The table select dialog helps users select items in a table-like structure with several attributes and values per item. A search fields helps narrow down the results.
+	 * <h3>Structure</h3>
+	 * The table select dialog consists of the following elements:
+	 * <ul>
+	 * <li> Search field - used to search enter search terms for a specific item.</li>
+	 * <li> Infobar (optional) - shows additional information for the current selection (i.e. total number of selected items).</li>
+	 * <li> Content - the table with the items.</li>
+	 * <li> Footer (optional) - a toolbar for actions.</li>
+	 * </ul>
+	 * Table select dialog supports multi-selection when the <code>multiSelect</code> property is set.
 	 *
+	 * The selected items can be stored for later editing when the <code>rememberSelections</code> property is set.
+	 * <b>Note:<b> This property has to be set before the dialog is opened.
+	 * <h3>Usage</h3>
+	 * <h4>When to use:</h4>
+	 * <ul>
+	 * <li>You need to select one or more items from a comprehensive list that contains multiple attributes or values.</li>
+	 * </ul>
+	 * <h4>When not to use:</h4>
+	 * <ul>
+	 * <li>You need to select one item from a predefined set of options that contains only one value. Use a {@link sap.m.Select switch} control instead.</li>
+	 * <li>You need to select items within a query-based range. Use a {@link sap.ui.comp.valuehelpdialog.ValueHelpDialog value help} control instead.</li>
+	 * <li>You need to only filter a set of items. Use a {@link sap.ui.comp.filterbar.FilterBar filter bar} control instead.</li>
+	 * </ul>
+	 * <h3>Responsive Behavior</h3>
+	 * <ul>
+	 * <li>On smaller screens, the columns of the table wrap and build a list that shows all the information.</li>
+	 * </ul>
+	 * @extends sap.ui.core.Control
 	 * @author SAP SE
 	 * @version ${version}
 	 *
@@ -214,6 +241,14 @@ sap.ui.define(['jquery.sap.global', './Button', './Dialog', './SearchField', './
 				}
 			}
 		});
+
+
+		this._oTable.getInfoToolbar().addEventDelegate({
+			onAfterRendering: function () {
+				that._oTable.getInfoToolbar().$().attr('aria-live', 'polite');
+			}
+		});
+
 		this._table = this._oTable; // for downward compatibility
 
 		// store a reference to the busyIndicator to display when data is currently loaded by a service
@@ -413,6 +448,19 @@ sap.ui.define(['jquery.sap.global', './Button', './Dialog', './SearchField', './
 	TableSelectDialog.prototype.setGrowingThreshold = function (iValue) {
 		this._oTable.setGrowingThreshold(iValue);
 		this.setProperty("growingThreshold", iValue, true);
+
+		return this;
+	};
+
+	/**
+	 * Sets the busyIndicatorDelay value to the internal table
+	 * @public
+	 * @param {int} iValue Value for the busyIndicatorDelay.
+	 * @returns {sap.m.TableSelectDialog} this pointer for chaining
+	 */
+	TableSelectDialog.prototype.setBusyIndicatorDelay = function (iValue) {
+		this._oTable.setBusyIndicatorDelay(iValue);
+		this.setProperty("busyIndicatorDelay", iValue, true);
 
 		return this;
 	};
@@ -621,7 +669,7 @@ sap.ui.define(['jquery.sap.global', './Button', './Dialog', './SearchField', './
 	 * @private
 	 * @param {string} sFunctionName The name of the function to be called
 	 * @param {string} sAggregationName The name of the aggregation associated
-	 * @returns {mixed} The return type of the called function
+	 * @returns {any} The return type of the called function
 	 */
 	TableSelectDialog.prototype._callMethodInManagedObject = function (sFunctionName, sAggregationName) {
 		var aArgs = Array.prototype.slice.call(arguments);
@@ -708,7 +756,7 @@ sap.ui.define(['jquery.sap.global', './Button', './Dialog', './SearchField', './
 	};
 
 	TableSelectDialog.prototype.getBindingContext = function (sModelName) {
-		return this._oTable.getBindingContext(sModelName);
+		return this._oTable && this._oTable.getBindingContext(sModelName);
 	};
 
 	/**
@@ -934,10 +982,12 @@ sap.ui.define(['jquery.sap.global', './Button', './Dialog', './SearchField', './
 
 			// fire cancel event
 			that.fireCancel();
-
-			// reset selection
-			that._resetSelection();
 		};
+
+		// reset selection
+		// before was part of the fnAfterClose callback but apparently actions were executed on
+		// a table that does not exist so moving here as fix
+		that._resetSelection();
 
 		// attach the reset function to afterClose to hide the dialog changes from the end user
 		this._oDialog.attachAfterClose(fnAfterClose);
@@ -995,6 +1045,7 @@ sap.ui.define(['jquery.sap.global', './Button', './Dialog', './SearchField', './
 
 		// due to the delayed call (dialog onAfterClose) the control could be already destroyed
 		if (!this.bIsDestroyed) {
+			this._executeSearch("", "search");
 			this._oTable.removeSelections();
 			for (; i < this._aInitiallySelectedItems.length; i++) {
 				this._oTable.setSelectedItem(this._aInitiallySelectedItems[i]);

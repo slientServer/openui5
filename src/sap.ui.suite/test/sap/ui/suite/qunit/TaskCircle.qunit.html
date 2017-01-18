@@ -2,29 +2,27 @@
 
 <!--
   Tested control/class: sap.ui.suite.TaskCircle
-  Author: D030758
 -->
 
 <html>
 	<head>
-		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
-		<title>Test Page for TaskCircle - sap.ui.suite </title>
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<title>Test Page for TaskCircle - sap.ui.suite</title>
 
+	<script src="../shared-config.js"></script>
 	<script id="sap-ui-bootstrap"
-			type="text/javascript"
 			src="../../../../../resources/sap-ui-core.js"
-			data-sap-ui-theme="sap_bluecrystal"
 			data-sap-ui-noConflict="true"
-			data-sap-ui-libs="sap.ui.commons, sap.ui.suite">
+			data-sap-ui-libs="sap.ui.suite">
 		</script>
 
-		<link rel="stylesheet" href="../../../../../resources/sap/ui/thirdparty/qunit.css" type="text/css" media="screen" />
-		<script type="text/javascript" src="../../../../../resources/sap/ui/thirdparty/qunit.js"></script>
-		<script type="text/javascript" src="../../../../../resources/sap/ui/qunit/qunit-junit.js"></script>
-		<script type="text/javascript" src="../../../../../resources/sap/ui/qunit/QUnitUtils.js"></script>
+		<link rel="stylesheet" href="../../../../../resources/sap/ui/thirdparty/qunit.css" type="text/css" media="screen">
+		<script src="../../../../../resources/sap/ui/thirdparty/qunit.js"></script>
+		<script src="../../../../../resources/sap/ui/qunit/qunit-junit.js"></script>
+		<script src="../../../../../resources/sap/ui/qunit/QUnitUtils.js"></script>
 
 		<!-- Control initialization -->
-		<script language="javascript">
+		<script>
 			/****************************************************
 			* PREPARATIONS
 			*****************************************************/
@@ -97,7 +95,7 @@
 				equals(oTaskCircle1.getValue(), 0 , "Default value: ");
 				equals(oTaskCircle1.getMaxValue(), 100 , "Default maximum value: ");
 				equals(oTaskCircle1.getMinValue(), 0 , "Default minimum value: ");
-				equals(oTaskCircle1.getColor(), sap.ui.suite.TaskCircleColor.Gray , "Default color: ");	  	
+				equals(oTaskCircle1.getColor(), sap.ui.suite.TaskCircleColor.Gray , "Default color: ");
 			});
 
 

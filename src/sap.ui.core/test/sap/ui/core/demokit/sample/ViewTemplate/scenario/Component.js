@@ -10,15 +10,61 @@
 sap.ui.define([
 		'jquery.sap.global',
 		'sap/ui/core/mvc/View', // sap.ui.view()
+		'sap/ui/core/mvc/ViewType',
 		'sap/ui/core/sample/common/Component',
 		'sap/ui/core/util/MockServer',
+		'sap/ui/core/util/XMLPreprocessor',
+		'sap/ui/model/odata/ODataModel',
+		'sap/ui/model/odata/v2/ODataModel',
 		'jquery.sap.script'
-	], function (jQuery, View, BaseComponent, MockServer/*, jQuerySapScript*/) {
+	], function (jQuery, View, ViewType, BaseComponent, MockServer, XMLPreprocessor, ODataModel,
+		ODataModel2/*, jQuerySapScript*/) {
 	"use strict";
+
+	/*
+	 * Plug-in a visitor for XMLPreprocessor to replace
+	 * <sap.ui.core.sample.ViewTemplate.scenario:Form binding="..." title="...">
+	 * with
+	 * <sap.ui.layout.form:SimpleForm binding="...">
+	 *   <sap.ui.layout.form:title>
+	 *     <sap.ui.core.Title text="..."/>
+	 *   </sap.ui.layout.form:title>
+	 *   <!-- children -->
+	 * </sap.ui.layout.form:SimpleForm>
+	 *
+	 * @param {Element} oForm
+	 *   The <sap.ui.core.sample.ViewTemplate.scenario:Form> element
+	 * @param {object} oInterface
+	 *   Visitor callbacks
+	 */
+	XMLPreprocessor.plugIn(function (oForm, oInterface) {
+		var sBinding = oForm.getAttribute("binding"),
+			oChild,
+			oDocument = oForm.ownerDocument,
+			oSimpleForm = oDocument.createElementNS("sap.ui.layout.form", "SimpleForm"),
+			oTitle = oDocument.createElementNS("sap.ui.core", "Title"),
+			oTitleAggregation = oDocument.createElementNS("sap.ui.layout.form", "title");
+
+		if (sBinding) {
+			oSimpleForm.setAttribute("binding", sBinding);
+		}
+		oSimpleForm.setAttribute("layout", "ResponsiveGridLayout");
+		oSimpleForm.appendChild(oTitleAggregation);
+		oTitleAggregation.appendChild(oTitle);
+		oTitle.setAttribute("text", oForm.getAttribute("title"));
+		while ((oChild = oForm.firstChild)) {
+			oSimpleForm.appendChild(oChild);
+		}
+
+		oForm.parentNode.insertBefore(oSimpleForm, oForm);
+		oForm.parentNode.removeChild(oForm);
+
+		oInterface.visitNode(oSimpleForm);
+	}, "sap.ui.core.sample.ViewTemplate.scenario", "Form");
 
 	var Component = BaseComponent.extend("sap.ui.core.sample.ViewTemplate.scenario.Component", {
 		metadata : {
-			manifest: "json"
+			manifest : "json"
 		},
 
 		createContent : function () {
@@ -27,11 +73,8 @@ sap.ui.define([
 				sServiceUri,
 				sMockServerBaseUri
 					= "test-resources/sap/ui/core/demokit/sample/ViewTemplate/scenario/data/",
-				oMockServer,
 				oUriParameters = jQuery.sap.getUriParameters(),
-				fnModel = oUriParameters.get("oldOData") === "true"
-					? sap.ui.model.odata.ODataModel
-					: sap.ui.model.odata.v2.ODataModel,
+				fnModel = oUriParameters.get("oldOData") === "true" ? ODataModel : ODataModel2,
 				oModel;
 
 			// GWSAMPLE_BASIC with external annotations
@@ -45,16 +88,15 @@ sap.ui.define([
 				sAnnotationUri2 = this.proxy(sAnnotationUri2);
 				sServiceUri = this.proxy(sServiceUri);
 			} else {
-				jQuery.sap.require("sap.ui.core.util.MockServer");
-
-				oMockServer = new MockServer({rootUri : sServiceUri});
-				oMockServer.simulate(/*TODO sServiceUri?!*/sMockServerBaseUri + "metadata.xml", {
+				this.aMockServers.push(new MockServer({rootUri : sServiceUri}));
+				this.aMockServers[0].simulate(/*TODO sServiceUri?!*/sMockServerBaseUri
+					+ "metadata.xml", {
 					sMockdataBaseUrl : sMockServerBaseUri,
 					bGenerateMissingMockData : true
 				});
-				oMockServer.start();
+				this.aMockServers[0].start();
 				// yet another mock server to handle annotations
-				new MockServer({
+				this.aMockServers.push(new MockServer({
 					requests : [{
 						method : "GET",
 						//TODO have MockServer fixed and pass just the URL!
@@ -72,7 +114,8 @@ sap.ui.define([
 							oXHR.respondFile(200, {}, sMockServerBaseUri + "annotations2.xml");
 						}
 					}]
-				}).start();
+				}));
+				this.aMockServers[1].start();
 			}
 
 			oModel = new fnModel(sServiceUri, {
@@ -83,14 +126,10 @@ sap.ui.define([
 			});
 
 			return sap.ui.view({
-					type : sap.ui.core.mvc.ViewType.XML,
+					type : ViewType.XML,
 					viewName : "sap.ui.core.sample.ViewTemplate.scenario.Main",
 					models : oModel
 				});
-		},
-
-		exit : function () {
-			MockServer.destroyAll();
 		}
 	});
 

@@ -2,15 +2,15 @@
 <html>
 	<head>
 		<meta http-equiv="X-UA-Compatible" content="IE=edge">
-		<meta charset="UTF-8">
+		<meta charset="utf-8">
 		<title>Test Page for sap.m.MessageToast</title>
+		<script src="../shared-config.js"></script>
 		<script id="sap-ui-bootstrap"
 				data-sap-ui-noConflict="true"
-				data-sap-ui-theme="sap_bluecrystal"
 				data-sap-ui-libs="sap.m"
 				src="../../../../resources/sap-ui-core.js">
 		</script>
-		<link rel="stylesheet" href="../../../../resources/sap/ui/thirdparty/qunit.css" type="text/css" media="screen" />
+		<link rel="stylesheet" href="../../../../resources/sap/ui/thirdparty/qunit.css" type="text/css" media="screen">
 		<script src="../../../../resources/sap/ui/thirdparty/qunit.js"></script>
 		<script src="../../../../resources/sap/ui/qunit/qunit-junit.js"></script>
 		<script src="../../../../resources/sap/ui/qunit/qunit-coverage.js"></script>
@@ -55,12 +55,14 @@
 				strictEqual($MessageToast[0].style.width, "15em", "Default MessageToast width is 15em");
 				strictEqual($MessageToast.css("visibility"), "visible", "After calling the sap.m.MessageToast.show(): the MessageToast is visible");
 				strictEqual($MessageToast.css("position"), "absolute", "Position absolute");
-				strictEqual($MessageToast.text(), "message toast");
+				strictEqual($MessageToast.attr("aria-label"), " ", "The aria-labelledby is set");
+				strictEqual($MessageToast.text(), "message toast", "The message toast displays the correct text");
 				strictEqual(getBoxSizing($MessageToast), "border-box", "Is using old box model");
 				strictEqual(typeof $MessageToast.css("box-shadow"), "string", "Is using box shadow");
 				strictEqual($MessageToast.css("text-align"), "center", "The text is centered");
 				strictEqual($MessageToast.css("text-overflow"), "ellipsis", "ellipsis");
 				strictEqual($MessageToast.attr("role"), "alert", "The role is set");
+				strictEqual($MessageToast.css("white-space"), "pre-line", "The message has the correct white-space style for supporting line break");
 			});
 
 			/* =========================================================== */

@@ -2,8 +2,8 @@
  * ${copyright}
  */
 
-sap.ui.define(['sap/ui/core/Control'],
-	function(Control) {
+sap.ui.define(['sap/ui/core/Control', './library'],
+	function(Control, library) {
 		"use strict";
 
 		/**
@@ -40,6 +40,12 @@ sap.ui.define(['sap/ui/core/Control'],
 				 * Defines the alignment of the cell title
 				 */
 				titleAlignment: { type: "sap.ui.core.HorizontalAlign", group: "Appearance", defaultValue: "Begin" },
+
+				/**
+				 * Defines the aria level of the title
+				 * This information is e.g. used by assistive technologies like screenreaders to create a hierarchical site map for faster navigation.
+				 */
+				titleLevel: { type: "sap.ui.core.TitleLevel", group: "Appearance", defaultValue: "Auto"},
 
 				/**
 				 * Defines the width of the cell. Depending on the context of the cell - whether it's in scrollable,

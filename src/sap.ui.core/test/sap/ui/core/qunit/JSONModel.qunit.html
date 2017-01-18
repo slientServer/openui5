@@ -2,14 +2,14 @@
 
 <!--
   Tested sap.ui.model.json.JSONModel
-  Author: d050084
 -->
 
 <html>
 <head>
-<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
 <!-- Initialization -->
-<script id="sap-ui-bootstrap" type="text/javascript"
+<script src="../shared-config.js"></script>
+<script id="sap-ui-bootstrap"
 	src="../../../../../resources/sap-ui-core.js"
 	data-sap-ui-theme="sap_bluecrystal" data-sap-ui-libs="sap.ui.layout,sap.ui.commons">
 	</script>
@@ -17,20 +17,21 @@
 <link rel="stylesheet"
 	href="../../../../../resources/sap/ui/thirdparty/qunit.css" type="text/css"
 	media="screen" />
-<script type="text/javascript"
+<script
 	src="../../../../../resources/sap/ui/thirdparty/qunit.js"></script>
-<script type="text/javascript"
+<script
 	src="../../../../../resources/sap/ui/qunit/qunit-junit.js"></script>
-<script type="text/javascript"
+<script
 	src="../../../../../resources/sap/ui/qunit/QUnitUtils.js"></script>
-<script type="text/javascript" src="../../../../../resources/sap/ui/thirdparty/sinon.js"></script>
+<script src="../../../../../resources/sap/ui/thirdparty/sinon.js"></script>
 <!--[if IE]>
-	<script type="text/javascript" src="../../../../../resources/sap/ui/thirdparty/sinon-ie.js"></script>
+	<script src="../../../../../resources/sap/ui/thirdparty/sinon-ie.js"></script>
 <![endif]-->
-<script type="text/javascript" src="../../../../../resources/sap/ui/thirdparty/sinon-qunit.js"></script>
+<script src="../../../../../resources/sap/ui/thirdparty/sinon-qunit.js"></script>
+<script src="JSONModelFakeService.js"></script>
 
 <!-- Test functions -->
-<script language="javascript">
+<script>
 
 	var testdata = {
   		teamMembers:[
@@ -73,7 +74,7 @@
 	var oLabel = new sap.ui.commons.Label("myLabel");
 	oLabel.setText("testText");
 	oLabel.placeAt("target1");
-	
+
 	test("test model setData", function(){
 		var obj1 = {a:true, b:false, c:false},
 			obj2 = {c:true, d:false},
@@ -95,7 +96,102 @@
 		oModel.setData(arr2, true);
 		deepEqual(oModel.getData(), arrMerged, "setData array with merge");
 	});
-	
+
+	test("test model observation", function() {
+		var oData = {
+			obj: {
+				name1: "value1",
+				name2: "value2",
+				name3: "value3"
+			},
+			arr: [
+				{ name: "value1" },
+				{ name: "value2" },
+				{ name: "value3" },
+			],
+			string: "abc123",
+			number: 123,
+			bool: true,
+			func: function() {},
+			date: new Date()
+		};
+		var oModel = new sap.ui.model.json.JSONModel(oData, true),
+			oString = oModel.bindProperty("/string"),
+			oNumber = oModel.bindProperty("/number"),
+			oBool = oModel.bindProperty("/bool"),
+			oDate = oModel.bindProperty("/date"),
+			oObj = oModel.bindProperty("/obj"),
+			oObjName = oModel.bindProperty("/obj/name1"),
+			oArr = oModel.bindProperty("/arr"),
+			oArrName = oModel.bindProperty("/arr/0/name"),
+			bString = false,
+			bNumber = false,
+			bBool = false,
+			bDate = false,
+			bObj = false,
+			bObjName = false,
+			bArr = false,
+			bArrName = false,
+			iChangeCount = 0;
+
+
+		oString.attachChange(function(){bString = true; iChangeCount++});
+		oNumber.attachChange(function(){bNumber = true; iChangeCount++});
+		oBool.attachChange(function(){bBool = true; iChangeCount++});
+		oDate.attachChange(function(){bDate = true; iChangeCount++});
+		oObj.attachChange(function(){bObj = true; iChangeCount++});
+		oObjName.attachChange(function(){bObjName = true; iChangeCount++});
+		oArr.attachChange(function(){bArr = true; iChangeCount++});
+		oArrName.attachChange(function(){bArrName = true; iChangeCount++});
+
+		equal(typeof oData.obj, "object", "JSON object");
+		equal(jQuery.isArray(oData.arr), true, "JSON array");
+		equal(typeof oData.string, "string", "JSON string");
+		equal(typeof oData.number, "number", "JSON number");
+		equal(typeof oData.bool, "boolean", "JSON boolean");
+		equal(typeof oData.func, "function", "JSON function");
+		equal(oData.date instanceof Date, true, "JSON Date");
+
+		equal(oString.getValue(), "abc123", "String old value");
+		oData.string = "def456";
+		equal(oString.getValue(), "def456", "String new value");
+		ok(bString, "String change event fired");
+
+		equal(oNumber.getValue(), 123, "Number old value");
+		oData.number = 456;
+		equal(oNumber.getValue(), 456, "Number new value");
+		ok(bNumber, "Number change event fired");
+
+		equal(oBool.getValue(), true, "Boolean old value");
+		oData.bool = false;
+		equal(oBool.getValue(), false, "Boolean new value");
+		ok(bBool, "Boolean change event fired");
+
+		equal(oDate.getValue(), oData.date, "Date old value");
+		oData.date = new Date();
+		equal(oDate.getValue(), oData.date, "Date new value");
+		ok(bDate, "Date change event fired");
+
+		equal(oObj.getValue(), oData.obj, "Object old value");
+		equal(oObjName.getValue(), "value1", "Object name old value");
+		oData.obj = { name1 : "other1" };
+		equal(oObj.getValue(), oData.obj, "Object new value");
+		equal(oObjName.getValue(), "other1", "Object name new value");
+		ok(bObj, "Object change event fired");
+		ok(bObjName, "Object name change event fired");
+
+		equal(oArr.getValue(), oData.arr, "Array old value");
+		equal(oArrName.getValue(), "value1", "Array name old value");
+		oData.arr = [{ name : "other1" }];
+		equal(oArr.getValue(), oData.arr, "Array new value");
+		equal(oArrName.getValue(), "other1", "Array name new value");
+		ok(bArr, "Array change event fired");
+		ok(bArrName, "Array name change event fired");
+
+		equal(iChangeCount, 8, "All 8 change handlers have been called once");
+
+	});
+
 	test("test model getProperty", function(){
 		var value = oModel.getProperty("/teamMembers/6/lastName");
 		equal(value, "Wallace", "model value");
@@ -218,7 +314,8 @@
 		var oContext = oModel.createBindingContext("/teamMembers");
 		equal(oModel.getProperty(null, oContext).length, 7, "array of teammembers");
 	});
-
+	
+	
 	test("test createBindingContext with two models", function(){
 		var oContext = oModel.createBindingContext("/teamMembers");
 		oLayout.addContent(oLabel);
@@ -295,31 +392,126 @@
 		oLabel.bindProperty("text", "/pets/0/type");
 		oLayout.addContent(oLabel);
 		ok(oLabel.getBindingContext() == undefined, "context undefined");
-		oContext = oModel.createBindingContext("/pets");
+		oContext = oModelChild.createBindingContext("/pets");
 		oLabel.setBindingContext(oContext);
 		equal(oLabel.getBindingContext().getPath(), "/pets", "context set correctly");
 		oModelChild.setProperty("0/type", "rat",oLabel.getBindingContext());
 		equal(oLabel.getText(), "rat", "new text value from model");
 	});
 
+	test("test JSONModel loadData: sync",function(){
+		var testModel = new sap.ui.model.json.JSONModel();
+		testModel.loadData("testdata.json", null, false);
+		equal(testModel.getProperty("/foo"), "The quick brown fox jumps over the lazy dog.");
+		equal(testModel.getProperty("/bar"), "ABCDEFG");
+		equal(testModel.getProperty("/baz")[1], 97);
+	});
+
 	asyncTest("test JSONModel loadData",function(){
 		var testModel = new sap.ui.model.json.JSONModel();
 		testModel.loadData("testdata.json");
 		testModel.attachRequestCompleted(function() {
-			start();          // resume normal testing
 			equal(testModel.getProperty("/foo"), "The quick brown fox jumps over the lazy dog.");
 			equal(testModel.getProperty("/bar"), "ABCDEFG");
 			equal(testModel.getProperty("/baz")[1], 97);
+			start();          // resume normal testing
+		});
+	});
+
+	asyncTest("test JSONModel loadData: multiple requests - merge",function(){
+		var testModel = new sap.ui.model.json.JSONModel();
+		var loadCount = 0;
+		testModel.loadData("testdata.json");
+		testModel.loadData("testdata2.json",null,true,null,true);
+		testModel.attachRequestCompleted(function() {
+			loadCount++;
+			if (loadCount == 1) {
+				// resume normal testing
+				equal(testModel.getProperty("/foo"), "The quick brown fox jumps over the lazy dog.");
+				equal(testModel.getProperty("/bar"), "ABCDEFG");
+				equal(testModel.getProperty("/baz")[1], 97);
+			} else {
+				equal(testModel.getProperty("/foo"), "The quick brown fox jumps over the lazy dog.");
+				equal(testModel.getProperty("/bar"), "ABCDEFGHIJ");
+				equal(testModel.getProperty("/baz")[1], 97);
+				equal(testModel.getProperty("/merged"), true);
+				start();
+			}
+		});
+	});
+
+	asyncTest("test JSONModel loadData: multiple requests",function(){
+		var testModel = new sap.ui.model.json.JSONModel();
+		var loadCount = 0;
+		testModel.loadData("testdata.json");
+		testModel.loadData("testdata2.json");
+		testModel.attachRequestCompleted(function() {
+			loadCount++;
+			if (loadCount == 1) {
+				// resume normal testing
+				equal(testModel.getProperty("/foo"), "The quick brown fox jumps over the lazy dog.");
+				equal(testModel.getProperty("/bar"), "ABCDEFG");
+				equal(testModel.getProperty("/baz")[1], 97);
+			} else {
+				ok(!testModel.getProperty("/foo"), "deleted as no merge");
+				equal(testModel.getProperty("/bar"), "ABCDEFGHIJ");
+				ok(!testModel.getProperty("/baz"), "deleted as no merge");
+				equal(testModel.getProperty("/merged"), true);
+				start();
+			}
+		});
+	});
+
+	asyncTest("test JSONModel loadData: multiple requests with merge: 1. request slow",function(){
+		var testModel = new sap.ui.model.json.JSONModel();
+		var loadCount = 0;
+		testModel.loadData("/fake/testdata3.json");
+		testModel.loadData("/fake/testdata4.json");
+		testModel.attachRequestCompleted(function(oInfo) {
+			loadCount++;
+			if (loadCount == 1) {
+				ok(oInfo.getParameter("url") == "/fake/testdata3.json", "first request");
+			} else {
+				// resume normal testing
+				ok(oInfo.getParameter("url") == "/fake/testdata4.json", "second request");
+				equal(testModel.getProperty("/foo"), "The quick brown fox jumps over the lazy dog.");
+				equal(testModel.getProperty("/bar"), "ABCDEFGHIJ");
+				equal(testModel.getProperty("/baz")[1], 97);
+				equal(testModel.getProperty("/merged"), true);
+				start();
+			}
+		});
+	});
+	
+	asyncTest("test JSONModel loadData: multiple requests with merge: 1. request slow: 1 throws exception",function(){
+		var testModel = new sap.ui.model.json.JSONModel();
+		var loadCount = 0;
+		testModel.loadData("/fake");
+		testModel.loadData("/fake/testdata4.json");
+		testModel.attachRequestCompleted(function(oInfo) {
+			loadCount++;
+			if (loadCount == 1) {
+				ok(oInfo.getParameter("success") == false, "request fails");
+				throw 'fake';
+			} else {
+				// resume normal testing
+				ok(oInfo.getParameter("url") == "/fake/testdata4.json", "second request");
+				equal(testModel.getProperty("/foo"), "The quick brown fox jumps over the lazy dog.");
+				equal(testModel.getProperty("/bar"), "ABCDEFGHIJ");
+				equal(testModel.getProperty("/baz")[1], 97);
+				equal(testModel.getProperty("/merged"), true);
+				start();
+			}
 		});
 	});
 
 	asyncTest("test JSONModel loadData constructor",function(){
 		var testModel = new sap.ui.model.json.JSONModel("testdata.json");
 		testModel.attachRequestCompleted(function() {
-			start();          // resume normal testing
 			equal(testModel.getProperty("/foo"), "The quick brown fox jumps over the lazy dog.");
 			equal(testModel.getProperty("/bar"), "ABCDEFG");
 			equal(testModel.getProperty("/baz")[1], 97);
+			start();          // resume normal testing
 		});
 	});
 
@@ -481,7 +673,7 @@
 		equal(spy.callCount, 1, "number of requests should be still 1");
 		equal(spy.getCall(0).returnValue.statusText, "abort", "should be abort");
 	});
-	
+
 	test("bind Element", function() {
 		var oContext;
 		oModel.createBindingContext("/additionalData", null, function(context){
@@ -501,7 +693,7 @@
 		equal(oLabel.getText(), "", "text value from model");
 		oLabel.destroy();
 	});
-	
+
 	test("bind Element", function() {
 		var oContext;
 		oModel.createBindingContext("/additionalData", null, function(context){

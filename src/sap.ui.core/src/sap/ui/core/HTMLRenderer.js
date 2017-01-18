@@ -3,18 +3,18 @@
  */
 
 // A renderer for the HTML control
-sap.ui.define(['./library'], function(library) {
+sap.ui.define(['./RenderManager'], function(RenderManager) {
 	"use strict";
 
 
 	// local shortcut
-	var RenderPrefixes = library.RenderPrefixes;
+	var RenderPrefixes = RenderManager.RenderPrefixes;
 
 	var HTMLRenderer = {
-	
+
 		/**
 		 * Renders either the configured content or a dummy div that will be replaced after rendering
-		 * 
+		 *
 		 * @param {sap.ui.core.RenderManager} [oRM] The RenderManager instance
 		 * @param {sap.ui.core.Control} [oControl] The instance of the invisible control
 		 */

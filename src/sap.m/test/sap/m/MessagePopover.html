@@ -11,13 +11,13 @@
 			}
 		</style>
 
+		<script src="shared-config.js"></script>
 		<script id="sap-ui-bootstrap"
 				data-sap-ui-libs="sap.m, sap.ui.layout"
-				src="../../../resources/sap-ui-core.js"
-				data-sap-ui-theme="sap_bluecrystal">
+				src="../../../resources/sap-ui-core.js">
 		</script>
 
-		<script type="text/javascript">
+		<script>
 
 			var range = function (from, to) {
 
@@ -89,6 +89,19 @@
 			jQuery.sap.require("sap.m.MessagePopover");
 
 			sap.m.MessagePopover.setDefaultHandlers({
+
+                // to have all links in the longtextdescription validated by default
+                // use this commented out version of asyncURLHandler instead
+
+                /*
+                asyncURLHandler: function(config) {
+                    config.promise.resolve({
+                        allowed: true,
+                        id: config.id
+                    });
+                }
+                */
+
 				asyncURLHandler: function(config) {
 					// put async validation here
 					setTimeout(function() {
@@ -106,12 +119,15 @@
 				}
 			});
 
+			var headerButton = new sap.m.Button({text: "Clear"});
+
 			//list.bindAggregation("items", "/", oMessageTemplate);
-			var oMessagePopover = new sap.m.MessagePopover({
+			var oMessagePopover = new sap.m.MessagePopover("mPopover", {
 				items: {
 					path: "/messages",
 					template: oMessageTemplate
 				},
+				headerButton: headerButton,
 				beforeOpen: function (oEvt) {
 					console.log("beforeOpen", oEvt.getParameters());
 				},
@@ -134,7 +150,7 @@
 
 			core.setModel(oModel);
 
-			var oMessagePopoverButton = new sap.m.Button({
+			var oMessagePopoverButton = new sap.m.Button("mPopoverButton", {
 				icon: sap.ui.core.IconPool.getIconURI("message-popup"),
 				text: "{/count}",
 				type: sap.m.ButtonType.Emphasized,
@@ -283,7 +299,7 @@
 					content: [
 						new sap.m.ToolbarSpacer(),
 						oMessagePopoverButton,
-						sap.m.CheckBox({
+						sap.m.CheckBox("compactMode", {
 							selected: false,
 							text: "Compact mode",
 							select: function () {

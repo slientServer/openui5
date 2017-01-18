@@ -2,23 +2,23 @@
 <html>
 	<head>
 		<meta http-equiv="X-UA-Compatible" content="IE=edge">
-		<meta charset="UTF-8">
-		<title>Test Page for sap.m.select</title>
+		<meta charset="utf-8">
+		<title>Test Page for sap.m.ListBase</title>
+		<script src="../shared-config.js"></script>
 		<script id="sap-ui-bootstrap"
-			data-sap-ui-theme="sap_bluecrystal"
 			data-sap-ui-noConflict="true"
 			data-sap-ui-libs="sap.m"
 			src="../../../../resources/sap-ui-core.js">
 		</script>
-		<link rel="stylesheet" href="../../../../resources/sap/ui/thirdparty/qunit.css" type="text/css" media="screen" />
+		<link rel="stylesheet" href="../../../../resources/sap/ui/thirdparty/qunit.css" type="text/css" media="screen">
 		<script src="../../../../resources/sap/ui/thirdparty/qunit.js"></script>
-		<script type="text/javascript" src="../../../../resources/sap/ui/qunit/qunit-junit.js"></script>
+		<script src="../../../../resources/sap/ui/qunit/qunit-junit.js"></script>
 		<script src="../../../../resources/sap/ui/qunit/QUnitUtils.js"></script>
 		<script src="../../../../resources/sap/ui/thirdparty/sinon.js"></script>
 		<script src="../../../../resources/sap/ui/thirdparty/sinon-qunit.js"></script>
 
 		<!-- use the sinon faketimers for this test -->
-		<script type="text/javascript">
+		<script>
 			sinon.config.useFakeTimers = true;
 		</script>
 
@@ -142,11 +142,11 @@
 			// bind Aggregation
 			oList.bindAggregation("items", sPath, oItemTemplate);
 		}
-		
+
 		var createListWithBinding = function () {
-			
+
 		};
-		
+
 		function testRemeberSelections(oList, oRenderSpy) {
 			var oSelectionItem,
 			bIncludeItemInSelection,
@@ -164,7 +164,7 @@
 			// add item to page & render
 			oPage.addContent(oList);
 			sap.ui.getCore().applyChanges();
-		
+
 			vSelectionMode = oList.getMode();
 			// call method & do tests
 			if (vSelectionMode == "SingleSelect") {
@@ -177,14 +177,14 @@
 				oList.getItems()[5].setSelected(true);
 				vSelectedItemsNumber = 3;
 			}
-		
+
 			oList.setRememberSelections(true);
 			strictEqual(oList.getRememberSelections(), true, 'The property "rememberSelections" is "true" on ' + oList);
 
 			// TODO: decide if check on internal variables is needed (Cahit)
 			strictEqual(oList.getSelectedContextPaths().length, vSelectedItemsNumber, 'The internal selection array has length of ' + vSelectedItemsNumber + ' on ' + oList);
 			strictEqual(oList.getSelectedItems().length, vSelectedItemsNumber, 'The selection contains ' + vSelectedItemsNumber + ' item ' + oList);
-		
+
 			// filter 2 items ("Title1" and "Title10")
 			oList.getBinding("items").filter([new sap.ui.model.Filter("Title", sap.ui.model.FilterOperator.Contains , "Title1")]);
 			strictEqual(oList.getSelectedItems().length, 1, 'The selection contains 1 item ' + oList);
@@ -192,7 +192,7 @@
 			// reset filter
 			oList.getBinding("items").filter([]);
 			strictEqual(oList.getSelectedItems().length, vSelectedItemsNumber, 'The selection contains ' + vSelectedItemsNumber + 'item ' + oList);
-		
+
 			oList.setRememberSelections(false).removeSelections(true);
 			strictEqual(oList.getRememberSelections(), false, 'The property "rememberSelections" is "false" on ' + oList);
 
@@ -210,12 +210,12 @@
 			// standard setter tests
 			strictEqual(oList.setRememberSelections(), oList, 'Method returns this pointer on ' + oList);
 			strictEqual(oRenderSpy.callCount, 1, "The list should not be rerendered in this method");
-		
+
 			oList.setGrowing(true);
 			strictEqual(oList.getGrowing(), true, 'The property "growing" is "true" on ' + oList);
-			
+
 			oList.setRememberSelections(true);
-			
+
 			bindListData(oList, data4, "/items", createTemplateListItem());
 			// remember the selected items in oListSelected
 			if (vSelectionMode == "SingleSelect") {
@@ -232,18 +232,18 @@
 				oListSelected[2] = oList.getItems()[5].getTitle();
 				oListSelected.sort();
 			}
-			
+
 			var aSelectedContextPaths = oList.getSelectedContextPaths();
-			
+
 			strictEqual(aSelectedContextPaths.length, vSelectedItemsNumber, 'The internal selection array has length of' +vSelectedItemsNumber +' on ' + oList);
 			strictEqual(oList.getSelectedItems().length, vSelectedItemsNumber, 'The selection contains ' +vSelectedItemsNumber+ ' items ' + oList);
-		
+
 			oList.setGrowing(false);
 			strictEqual(oList.getGrowing(), false, 'The property "growing" is "false" on ' + oList);
-		
+
 			// sort ascending
 			oList.getBinding("items").sort([new sap.ui.model.Sorter("Title", false, oSorterAsc) ] );
-		
+
 			if (vSelectionMode == "SingleSelect") {
 				oListSelectedAfterSorting = oList.getSelectedItems()[0].getTitle();
 				strictEqual(oListSelected, oListSelectedAfterSorting, "the same item should be selected after sorting" );
@@ -256,29 +256,29 @@
 				oListSelectedAfterSorting.sort();
 				strictEqual(oListSelected.toString(), oListSelectedAfterSorting.toString(), "the same items should be selected after sorting" );
 			}
-		
+
 			strictEqual(oList.getSelectedContextPaths().length, vSelectedItemsNumber, 'The internal selection array has length of' + vSelectedItemsNumber +' on ' + oList);
 			strictEqual(oList.getSelectedItems().length, vSelectedItemsNumber, 'The selection contains' + vSelectedItemsNumber + 'items ' + oList);
-		
+
 			oList.setRememberSelections(false).removeSelections(true);
 			strictEqual(oList.getSelectedContextPaths().length, 0, 'The internal selection array is empty on ' + oList);
-		
+
 			// sort descending
-			oList.getBinding("items").sort([new sap.ui.model.Sorter("Title", true, oSorterDesc) ] );	
+			oList.getBinding("items").sort([new sap.ui.model.Sorter("Title", true, oSorterDesc) ] );
 			strictEqual(oList.getSelectedContextPaths().length, 0, 'The internal selection array has length of 0 on ' + oList);
 			strictEqual(oList.getSelectedItems().length, 0, 'The selection contains no items ' + oList);
-		
+
 			//rebinding
 			bindListData(oList, data4, "/items", createTemplateListItem());
 			strictEqual(oList.getSelectedItems().length, 0, 'The selection contains no items ' + oList);
-			
+
 			// retain selection after binding
 			oList.setRememberSelections(true);
 			oList.setSelectedContextPaths(aSelectedContextPaths);
-			
+
 			// sort ascending
 			oList.getBinding("items").sort([new sap.ui.model.Sorter("Title", false, oSorterAsc) ] );
-			
+
 			// retest after sorting
 			if (vSelectionMode == "SingleSelect") {
 				oListSelectedAfterSorting = oList.getSelectedItems()[0].getTitle();
@@ -292,12 +292,12 @@
 				oListSelectedAfterSorting.sort();
 				strictEqual(oListSelected.toString(), oListSelectedAfterSorting.toString(), "the same items should be selected after sorting" );
 			}
-		
+
 			// cleanup
 			oPage.removeAllContent();
 			oList.destroy();
 		};
-		
+
 		// app
 		var oRB = sap.ui.getCore().getLibraryResourceBundle("sap.m"),
 			oApp = new sap.m.App("myApp", { initialPage: "myFirstPage" }),
@@ -312,8 +312,8 @@
 		module("Basic Control API checks");
 		/********************************************************************************/
 
-		
-		
+
+
 		test("Properties", function() {
 			var oList = new sap.m.List({}),
 				oProperties = oList.getMetadata().getAllProperties();
@@ -397,7 +397,7 @@
 
 			// TODO: decide if check on internal variables is needed (Cahit)
 			strictEqual(oList.getSelectedContextPaths().length, 0, "Internal selected path array is empty after initialization of " + oList);
-			strictEqual(oList._oGrowingDelegate, null, "Internal growingDelegate is null after initialization of " + oList);
+			strictEqual(oList._oGrowingDelegate, undefined, "Internal growingDelegate is null after initialization of " + oList);
 
 			oList.destroy();
 		});
@@ -472,7 +472,7 @@
 
 			// TODO: decide if check on internal variables is needed (Cahit)
 			strictEqual(oList.getSelectedContextPaths().length, 0, "Internal selected path array is empty after destroying " + oList.getId());
-			strictEqual(oList._oGrowingDelegate, null, "Internal growingDelegate is null after destroying " + oList.getId());
+			strictEqual(oList._oGrowingDelegate, undefined, "Internal growingDelegate is null after destroying " + oList.getId());
 		});
 
 		/********************************************************************************/
@@ -496,7 +496,7 @@
 			ok($list.length, "The HTML div container element exists on " + oList.getId());
 			ok($listUl.length, "The HTML ul element exists on " + oList.getId());
 			strictEqual($listUl[0].getAttribute("id"), oList.getId() + "-listUl", 'The id of the HTML ul element is "' + oList.getId() + '"-listUl" on ' + oList);
-			strictEqual($listUl[0].getAttribute("tabindex"), "0", 'The tabindex is "0" for the HTML ul element on ' + oList);
+			strictEqual($listUl[0].getAttribute("tabindex"), "0", 'The tabindex is "-1" for the HTML ul element on ' + oList);
 			strictEqual($listLi[0].getAttribute("id"), oList.getId() + "-nodata", 'The id of the HTML li no data element is "' + oList.getId() + '"-nodat" on ' + oList);
 
 			// CSS checks
@@ -566,7 +566,7 @@
 			var oListItem = createListItem().setSelected(true),
 				oList = new sap.m.List({
 					mode: sap.m.ListMode.None,
-					
+
 					items: [
 						oListItem
 					]
@@ -769,7 +769,7 @@
 			// TODO: decide if check on internal variables is needed (Cahit)
 			strictEqual(oList._oGrowingDelegate instanceof sap.m.GrowingEnablement, true, 'The growing delegate is initialized');
 			strictEqual(oRenderSpy.callCount, 2, 'The list should be rerendered after setting growing to "true"');
-			
+
 			// TODO: this should fire an exception because type is boolean
 			//throws(function () {
 				oList.setGrowing("WrongType");
@@ -841,7 +841,7 @@
 			// add item to page & render
 			oPage.addContent(oList);
 			sap.ui.getCore().applyChanges();
-			
+
 			// call method & do tests
 			sText = "Test1234567890!\"§$%&/()=?`´@€-_.:,;#'+*~1²³456{[]}\\";
 			strictEqual(oList.setGrowingTriggerText(sText).getGrowingTriggerText(), sText, 'The control property "growingTriggerText" is "' + sText + '" on ' + oList);
@@ -872,7 +872,7 @@
 			oList.placeAt("qunit-fixture");
 			sap.ui.getCore().applyChanges();
 			oRenderSpy = this.spy(oList.getRenderer(), "render");
-			
+
 			oList.setEnableBusyIndicator(false);
 			oList.setEnableBusyIndicator(true);
 			sap.ui.getCore().applyChanges();
@@ -892,7 +892,7 @@
 				}),
 				$list,
 				oRenderSpy = this.spy(oList.getRenderer(), "render");
-			
+
 			// add item to page & render
 			oPage.addContent(oList);
 			sap.ui.getCore().applyChanges();
@@ -1014,7 +1014,7 @@
 			oSelectionItem.ontap({ srcControl: oSelectionItem });
 			strictEqual(oList.getSelectedItem(), oSelectionItem, 'Item "' + oSelectionItem + '" should be selected');
 			oSelectionItem.setSelected(false);
-			
+
 			bIncludeItemInSelection = false;
 			strictEqual(oList.setIncludeItemInSelection(bIncludeItemInSelection).getIncludeItemInSelection(), bIncludeItemInSelection, 'The control property "includeItemInSelection" is "' + bIncludeItemInSelection + '" on ' + oList);
 			sap.ui.getCore().applyChanges();
@@ -1042,8 +1042,8 @@
 			oList.destroy();
 		});
 
-		
-		
+
+
 		test("setRememberSelectionsForMultiSelect", function() {
 			var oListItemTemplate = createListItem().setSelected(true),
 				oList = new sap.m.List({
@@ -1054,7 +1054,7 @@
 					]
 				}),
 				oRenderSpy = this.spy(oList.getRenderer(), "render");
-			
+
 			testRemeberSelections(oList, oRenderSpy);
 		});
 
@@ -1068,12 +1068,12 @@
 					]
 				}),
 				oRenderSpy = this.spy(oList.getRenderer(), "render");
-			
+
 			testRemeberSelections(oList, oRenderSpy);
-				
+
 		});
 
-		
+
 		/* getter */
 
 		test("getId", function() {
@@ -1131,7 +1131,7 @@
 			// no binding
 			iCounter = 0;
 			strictEqual(oList.getMaxItemsCount(), iCounter, 'The item count is ' + iCounter + ' in a static list with ' + iCounter + ' items on ' + oList);
-	
+
 			oList.addItem(createListItem());
 			iCounter++;
 			strictEqual(oList.getMaxItemsCount(), iCounter, 'The item count is ' + iCounter + ' in a static list with ' + iCounter + ' items on ' + oList);
@@ -1147,11 +1147,11 @@
 			bindListData(oList, data1, "/items", createTemplateListItem());
 			iCounter = data1.items.length;
 			strictEqual(oList.getMaxItemsCount(), iCounter, 'The item count is ' + iCounter + ' in a dynamic list with ' + iCounter + ' items on ' + oList);
-	
+
 			bindListData(oList, data2, "/items", createTemplateListItem());
 			iCounter = data2.items.length;
 			strictEqual(oList.getMaxItemsCount(), iCounter, 'The item count is ' + iCounter + ' in a dynamic list with ' + iCounter + ' items on ' + oList);
-	
+
 			bindListData(oList, data3, "/items", createTemplateListItem());
 			iCounter = data3.items.length;
 			strictEqual(oList.getMaxItemsCount(), iCounter, 'The item count is ' + iCounter + ' in a dynamic list with ' + iCounter + ' items on ' + oList);
@@ -1168,11 +1168,11 @@
 		/********************************************************************************/
 		module("Other API methods");
 		/********************************************************************************/
-		
+
 		/********************************************************************************/
 		module("Internal methods");
 		/********************************************************************************/
-		
+
 		test("_isColumnsIncompatible", function() {
 			var oList = new sap.m.List();
 
@@ -1187,9 +1187,115 @@
 			oPage.removeAllContent();
 			oList.destroy();
 		});
-		
+
 		module("KeyboardHandling");
-		
+		test("Basics", function () {
+			var fnDetailPressSpy = this.spy(),
+				fnItemPressSpy = this.spy(),
+				fnDeleteSpy = this.spy(),
+				fnPressSpy = this.spy(),
+				fnSelectionChangeSpy = this.spy(),
+				oInput = new sap.m.Input(),
+				oListItem1 = new sap.m.CustomListItem({
+					content: oInput,
+					type: "Navigation",
+					press: fnPressSpy
+				}),
+				oListItem2 = new sap.m.StandardListItem({
+					type: "Detail",
+					detailPress: fnDetailPressSpy
+				}),
+				oList = new sap.m.List({
+					mode: "MultiSelect",
+					delete: fnDeleteSpy, 
+					itemPress: fnItemPressSpy,
+					selectionChange: fnSelectionChangeSpy
+				}).addItem(oListItem1).addItem(oListItem2);
+
+			oList.placeAt("content");
+			sap.ui.getCore().applyChanges();
+			oList.focus();
+
+			strictEqual(oList.getDomRef("before").getAttribute("tabindex"), "-1", "Before dummy element is not at the tab chain");
+			strictEqual(oList.getNavigationRoot().getAttribute("tabindex"), "0", "Navigation root is at the tab chain");
+			strictEqual(oList.getDomRef("after").getAttribute("tabindex"), "0", "After dummy element is at the tab chain");
+
+			if (!document.hasFocus()) {
+				return;
+			}
+
+			strictEqual(document.activeElement, oListItem1.getFocusDomRef(), "Initial focus is at the first list item");
+
+			sap.ui.test.qunit.triggerKeydown(document.activeElement, "ARROW_LEFT");
+			strictEqual(document.activeElement, oListItem1.getFocusDomRef(), "Left arrow has no effect on focus");
+
+			sap.ui.test.qunit.triggerKeydown(document.activeElement, "ARROW_RIGHT");
+			strictEqual(document.activeElement, oListItem1.getFocusDomRef(), "Right arrow has no effect on focus");
+
+			sap.ui.test.qunit.triggerKeydown(document.activeElement, "ARROW_UP");
+			strictEqual(document.activeElement, oListItem1.getFocusDomRef(), "Focus is still at the first list item");
+
+			sap.ui.test.qunit.triggerKeydown(document.activeElement, "ARROW_DOWN");
+			strictEqual(document.activeElement, oListItem2.getFocusDomRef(), "Focus is moved down to the second list item");
+
+			sap.ui.test.qunit.triggerKeydown(document.activeElement, "ARROW_DOWN");
+			strictEqual(document.activeElement, oListItem2.getFocusDomRef(), "Focus is still at the second list item");
+
+			sap.ui.test.qunit.triggerKeydown(document.activeElement, "ARROW_UP");
+			strictEqual(document.activeElement, oListItem1.getFocusDomRef(), "Focus is now again at the first list item");
+
+			sap.ui.test.qunit.triggerKeydown(document.activeElement, "END");
+			strictEqual(document.activeElement, oListItem2.getFocusDomRef(), "Focus is at the second list item");
+
+			sap.ui.test.qunit.triggerKeydown(document.activeElement, "HOME");
+			strictEqual(document.activeElement, oListItem1.getFocusDomRef(), "Focus is at the first list item");
+
+			sap.ui.test.qunit.triggerKeydown(document.activeElement, "PAGE_DOWN");
+			strictEqual(document.activeElement, oListItem2.getFocusDomRef(), "Focus is at the second list item");
+
+			sap.ui.test.qunit.triggerKeydown(document.activeElement, "PAGE_UP");
+			strictEqual(document.activeElement, oListItem1.getFocusDomRef(), "Focus is at the first list item");
+
+			sap.ui.test.qunit.triggerKeydown(document.activeElement, "SPACE");
+			strictEqual(fnSelectionChangeSpy.callCount, 1, "SelectionChange event is fired when space is pressed while focus is at the item");
+			fnSelectionChangeSpy.reset();
+
+			sap.ui.test.qunit.triggerKeydown(document.activeElement, "ENTER");
+			this.clock.tick(0);
+			strictEqual(fnItemPressSpy.callCount, 1, "ItemPress event is fired async when enter is pressed while focus is at the item");
+			strictEqual(fnPressSpy.callCount, 1, "Press event is fired async when enter is pressed while focus is at the item");
+			fnItemPressSpy.reset();
+			fnPressSpy.reset();
+
+			sap.ui.test.qunit.triggerKeydown(document.activeElement, "F2");
+			strictEqual(fnDetailPressSpy.callCount, 0, "DetailPress event is not called since first item has not Edit type");
+
+			sap.ui.test.qunit.triggerKeydown(document.activeElement, "DELETE");
+			strictEqual(fnDeleteSpy.callCount, 0, "Delete event is not called since List is not in Delete mode");
+
+			oList.setMode("Delete");
+			sap.ui.getCore().applyChanges();
+			oList.focus();
+
+			sap.ui.test.qunit.triggerKeydown(document.activeElement, "DELETE");
+			strictEqual(fnDeleteSpy.callCount, 1, "Delete event is now called because List is in Delete mode");
+
+			oInput.focus();
+			sap.ui.test.qunit.triggerKeydown(document.activeElement, "SPACE");
+			strictEqual(fnSelectionChangeSpy.callCount, 0, "SelectionChange event is not fired when space is pressed while focus is not at the item");
+			
+			sap.ui.test.qunit.triggerKeydown(document.activeElement, "ENTER");
+			this.clock.tick(0);
+			strictEqual(fnItemPressSpy.callCount, 0, "ItemPress event is not fired when enter is pressed while focus is not at the item");
+			strictEqual(fnPressSpy.callCount, 0, "Press event is not fired when enter is pressed while focus is not at the item");
+
+			oListItem2.focus();
+			sap.ui.test.qunit.triggerKeydown(document.activeElement, "F2");
+			strictEqual(fnDetailPressSpy.callCount, 1, "DetailPress event is called since second item has type Edit");
+
+			oList.destroy();
+		});
+
 		test("Test Tab/ShiftTab/F6/ShiftF6 handling", function() {
 			var fnSpy = this.spy();
 			var oPage = new sap.m.Page();
@@ -1205,40 +1311,40 @@
 				mode: "MultiSelect",
 				items : [oListItem]
 			});
-			
+
 			oPage.addContent(oBeforeList);
 			oPage.addContent(oList);
 			oPage.addContent(oAfterList);
 			oPage.placeAt("content");
  			sap.ui.getCore().applyChanges();
  			oList.forwardTab = fnSpy;
-			
+
  			// tab key
 			sap.ui.test.qunit.triggerKeyboardEvent(oInput.getFocusDomRef(), "TAB", false, false, false);
 			strictEqual(fnSpy.callCount, 1, "List is informed to forward tab when tab is pressed while focus is on last tabbable item");
 			strictEqual(fnSpy.args[0][0], true, "Tab Forward is informed");
 			fnSpy.reset();
-			
+
 			// shift-tab key
 			sap.ui.test.qunit.triggerKeyboardEvent(oListItem.getFocusDomRef(), "TAB", true, false, false);
 			strictEqual(fnSpy.callCount, 1, "List is informed to forward tab backwards when tab is pressed while focus is on the row");
 			strictEqual(fnSpy.args[0][0], false, "Backwards tab is informed");
 			fnSpy.reset();
-			
+
 			// shift-F6 key
 			oInput.getFocusDomRef().focus();
 			sap.ui.test.qunit.triggerKeyboardEvent(oInput.getFocusDomRef(), "F6", true, false, false);
 			strictEqual(document.activeElement.id, oBeforeList.getFocusDomRef().id, "Focus is moved correctly after Shift-F6");
-			
+
 			// F6
 			oInput.getFocusDomRef().focus();
 			sap.ui.test.qunit.triggerKeyboardEvent(oInput.getFocusDomRef(), "F6", false, false, false);
 			strictEqual(document.activeElement.id, oAfterList.getFocusDomRef().id, "Focus is moved correctly after F6");
-			
+
 			// cleanup
 			oPage.destroy();
 		});
-		
+
 		// in case of testrunner does not put the focus to the document it is not neccessary to make this test
 		document.hasFocus() && test("Focusing an item in the ListItemBase should change the focus index of item navigation", function() {
 			var oInput = new sap.m.Input();
@@ -1252,10 +1358,10 @@
 			var oList = new sap.m.List({
 				items : [oListItem0, oListItem1, oListItem2]
 			});
-			
+
 			oList.placeAt("content");
 			sap.ui.getCore().applyChanges();
-			
+
 			var oFocusedInput = oListItem1.getTabbables()[0];
 			oFocusedInput.focus();
 			this.clock.tick(1);
@@ -1264,7 +1370,7 @@
 			// cleanup
 			oList.destroy();
 		});
-		
+
 		test("Item visible changes should inform the List", function() {
 			var fnSpy = this.spy();
 			var oListItem = new sap.m.StandardListItem({
@@ -1273,39 +1379,39 @@
 			var oList = new sap.m.List({
 				items : oListItem
 			});
-			
+
 			oPage.addContent(oList);
 			sap.ui.getCore().applyChanges();
-			
+
 			// act
 			oList.onItemDOMUpdate = fnSpy;
-			
+
 			oListItem.setVisible(false);
 			sap.ui.getCore().applyChanges();
-			
+
 			strictEqual(fnSpy.callCount, 1, "List is informed when item visibility is changed from visible to invisible");
 			strictEqual(fnSpy.args[0][0], oListItem, "Correct list item is informed");
 			fnSpy.reset();
-			
+
 			oListItem.setVisible(false);
 			sap.ui.getCore().applyChanges();
-			
+
 			strictEqual(fnSpy.callCount, 0, "Visibility did not changed and list is not informed");
 			fnSpy.reset();
-			
+
 			oListItem.setVisible(true);
 			sap.ui.getCore().applyChanges();
-			
+
 			strictEqual(fnSpy.callCount, 1, "List is informed when item visibility is changed from invisible to visible");
 			strictEqual(fnSpy.args[0][0], oListItem, "Correct list item is informed");
 			strictEqual(fnSpy.args[0][1], true, "Correct visible parameter item is informed");
 			fnSpy.reset();
-			
+
 			// cleanup
 			oPage.removeAllContent();
 			oList.destroy();
 		});
-		
+
 		test("ListItem visibility change should not rerender the list", function() {
 			var oListItem1 = new sap.m.StandardListItem({
 					title: "Title1"
@@ -1316,42 +1422,42 @@
 				oList = new sap.m.List({
 					items : [oListItem1, oListItem2]
 				});
-			
+
 			oList.placeAt("qunit-fixture");
 			sap.ui.getCore().applyChanges();
-			
+
 			var fnRenderSpy = this.spy(oList.getRenderer(), "render");
-			
+
 			oListItem1.setVisible(false);
 			sap.ui.getCore().applyChanges();
-			
+
 			oListItem2.focus();
 			this.clock.tick(1);
-			
+
 			/* make it sure document has focus in case of testrunner */
 			if (document.hasFocus()) {
 				strictEqual(oList.getItemNavigation().getItemDomRefs().length, 1, "Invisible items are not in the item navigation.");
 			}
-			
+
 			oListItem1.setVisible(true);
 			sap.ui.getCore().applyChanges();
-			
+
 			oListItem1.focus();
 			this.clock.tick(1);
-			
+
 			/* make it sure document has focus in case of testrunner */
 			if (document.hasFocus()) {
 				strictEqual(oList.getItemNavigation().getItemDomRefs().length, 2, "Only visible items are in the item navigation.");
 			}
-			
+
 			oListItem1.setVisible(false);
 			sap.ui.getCore().applyChanges();
-			
+
 			strictEqual(fnRenderSpy.callCount, 0, "The list should not be rerendered with item visibility changes");
-			
+
 			oList.destroy();
 		});
-		
+
 		test("Container Padding Classes", function () {
 			// System under Test + Act
 			var oContainer = new sap.m.List(),
@@ -1396,6 +1502,167 @@
 			oContainer.destroy();
 		});
 
+		document.hasFocus() && test("KeybordMode", function () {
+			var fnDetailPressSpy = this.spy(),
+				fnItemPressSpy = this.spy(),
+				fnPressSpy = this.spy(),
+				fnOnAfterRenderingSpy = this.spy(),
+				oInput1 = new sap.m.Input(),
+				oInput2 = new sap.m.Input(),
+				oButton1 = new sap.m.Button(),
+				oButton2 = new sap.m.Button(),
+				oListItem1 = new sap.m.CustomListItem({
+					content: oInput1,
+					type: "Detail",
+					detailPress: fnDetailPressSpy
+				}),
+				oListItem2 = new sap.m.CustomListItem({
+					content: oInput2,
+					type: "Navigation",
+					press: fnPressSpy
+				}),
+				oList = new sap.m.List({
+					mode: "MultiSelect",
+					keyboardMode: "Navigation",
+					itemPress: fnItemPressSpy,
+				}).addItem(oListItem1).addItem(oListItem2),
+				oContainer = new sap.m.VBox({
+					items: [oButton1, oList, oButton2]
+				});
+
+			oContainer.placeAt("content");
+			sap.ui.getCore().applyChanges();
+			oList.focus();
+
+			sap.ui.test.qunit.triggerKeydown(oListItem1.getFocusDomRef(), "TAB", true, false, false);
+			strictEqual(document.activeElement, oList.getDomRef('before'), "Focus is forwarded before the table");
+
+			oInput1.focus();
+			sap.ui.test.qunit.triggerKeydown(document.activeElement, "TAB");
+			strictEqual(document.activeElement, oList.getDomRef("after"), "Focus is forwarded after the table");
+
+			oInput1.focus();
+			sap.ui.test.qunit.triggerKeydown(document.activeElement, "ARROW_UP");
+			strictEqual(document.activeElement, oInput1.getFocusDomRef(), "Arrow up has no effect");
+
+			oInput1.focus();
+			sap.ui.test.qunit.triggerKeydown(document.activeElement, "ARROW_DOWN");
+			strictEqual(document.activeElement, oInput1.getFocusDomRef(), "Arrow up has no effect");
+
+			oInput1.focus();
+			sap.ui.test.qunit.triggerKeydown(document.activeElement, "ENTER");
+			strictEqual(fnPressSpy.callCount, 0, "Enter has no effect");
+
+			oList.addEventDelegate({
+				onAfterRendering: fnOnAfterRenderingSpy
+			});
+			oList.setKeyboardMode("Edit");
+			sap.ui.getCore().applyChanges();
+			strictEqual(fnPressSpy.callCount, 0, "Mode change did not rerender!");
+
+			oListItem1.focus();
+			sap.ui.test.qunit.triggerKeydown(document.activeElement, "F2");
+			strictEqual(fnDetailPressSpy.callCount, 1, "Keyboard mode did not change Detail press event is fired while focus is on the row");
+			strictEqual(oList.getKeyboardMode(), "Edit", "Keyboard mode is still in Edit");
+			fnDetailPressSpy.reset();
+
+			oInput1.focus();
+			sap.ui.test.qunit.triggerKeydown(document.activeElement, "TAB");
+			notStrictEqual(document.activeElement, oList.getDomRef("after"), "Focus is not forwarded after the table");
+
+			oInput1.focus();
+			sap.ui.test.qunit.triggerKeydown(document.activeElement, "F2");
+			strictEqual(fnDetailPressSpy.callCount, 0, "F2 switch keyboard mode and did not fire the detail event");
+			strictEqual(oList.getKeyboardMode(), "Navigation", "Now keyboard mode is navigation");
+			strictEqual(document.activeElement, oListItem1.getFocusDomRef(), "Focus is moved to the row");
+
+			oListItem1.detachDetailPress(fnDetailPressSpy);
+			sap.ui.test.qunit.triggerKeydown(document.activeElement, "F2");
+			strictEqual(oList.getKeyboardMode(), "Edit", "Now keyboard mode is Edit");
+			strictEqual(document.activeElement, oInput1.getFocusDomRef(), "Focus is moved to the Input again");
+
+			sap.ui.test.qunit.triggerKeydown(document.activeElement, "ARROW_DOWN");
+			strictEqual(document.activeElement, oInput2.getFocusDomRef(), "Focus is moved to the second input");
+
+			sap.ui.test.qunit.triggerKeydown(document.activeElement, "ARROW_UP");
+			strictEqual(document.activeElement, oInput1.getFocusDomRef(), "Focus is moved to the first input");
+
+			oInput2.setEnabled(false);
+			sap.ui.getCore().applyChanges();
+			sap.ui.test.qunit.triggerKeydown(document.activeElement, "ARROW_DOWN");
+			strictEqual(document.activeElement, oListItem2.getFocusDomRef(), "Focus is moved to the item since second input is disabled");
+
+			sap.ui.test.qunit.triggerKeydown(document.activeElement, "TAB", true, false, false);
+			notStrictEqual(document.activeElement, oList.getItemsContainerDomRef(), "Focus is not forwarded before the table");
+
+			oInput2.setEnabled(true);
+			sap.ui.getCore().applyChanges();
+			oListItem2.focus();
+			sap.ui.test.qunit.triggerKeydown(document.activeElement, "F7");
+			strictEqual(document.activeElement, oInput2.getFocusDomRef(), "Focus is moved to input but keyboard mode did not change with F7");
+			strictEqual(oList.getKeyboardMode(), "Edit", "keyboard mode is still Edit");
+
+			sap.ui.test.qunit.triggerKeydown(document.activeElement, "ENTER");
+			strictEqual(oList.getKeyboardMode(), "Navigation", "Now keyboard mode is change to Navigation. Exit from edit mode.");
+			strictEqual(fnItemPressSpy.callCount, 0, "Item press event is not called");
+			strictEqual(fnPressSpy.callCount, 0, "Press event is not called");
+
+			oContainer.destroy();
+
+		});
+
+		module("Highlight");
+		test("Highlight should be rendered", function () {
+			var oLI = new sap.m.StandardListItem({
+				highlight: "Error",
+				title: "Error"
+			}).placeAt("content");
+
+			sap.ui.getCore().applyChanges();
+			ok(oLI.getDomRef().firstChild.classList.contains("sapMLIBHighlight"), true, "Highlight is rendered");
+			ok(oLI.getDomRef().firstChild.classList.contains("sapMLIBHighlightError"), true, "Error Highlight is rendered");
+		});
+
+		test("List should respect highlight changes", function () {
+
+			var oListItem1 = new sap.m.StandardListItem({
+					title: "oListItem1",
+				}),
+				oListItem2 = new sap.m.CustomListItem({
+					title: "oListItem1",
+					highlight: "Warning"
+				}),
+				oList = new sap.m.List({
+					items: [oListItem1, oListItem2]
+				});
+
+			oList.placeAt("content");
+			sap.ui.getCore().applyChanges();
+
+			ok(oList.getDomRef("listUl").classList.contains("sapMListHighlight"), "Highlight class is added");
+
+			oListItem2.setHighlight("None");
+			sap.ui.getCore().applyChanges();
+			ok(!oList.getDomRef("listUl").classList.contains("sapMListHighlight"), "Highlight class is removed");
+
+			oListItem1.setHighlight("Information");
+			sap.ui.getCore().applyChanges();
+			ok(oList.getDomRef("listUl").classList.contains("sapMListHighlight"), "Highlight class is added");
+
+			oListItem1.setVisible(false);
+			sap.ui.getCore().applyChanges();
+			ok(!oList.getDomRef("listUl").classList.contains("sapMListHighlight"), "Highlight class is removed");
+
+			oListItem1.setVisible(true);
+			sap.ui.getCore().applyChanges();
+			ok(oList.getDomRef("listUl").classList.contains("sapMListHighlight"), "Highlight class is removed");
+
+			oListItem1.destroy();
+			sap.ui.getCore().applyChanges();
+			ok(!oList.getDomRef("listUl").classList.contains("sapMListHighlight"), "Highlight class is removed");
+
+			oList.destroy();
+		});
 </script>
 
 </head>

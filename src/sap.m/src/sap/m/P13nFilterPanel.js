@@ -10,7 +10,7 @@ sap.ui.define([
 
 	/**
 	 * Constructor for a new P13nFilterPanel.
-	 * 
+	 *
 	 * @param {string} [sId] ID for the new control, generated automatically if no ID is given
 	 * @param {object} [mSettings] initial settings for the new control
 	 * @class The P13nFilterPanel control is used to define filter-specific settings for table personalization.
@@ -18,6 +18,7 @@ sap.ui.define([
 	 * @version ${version}
 	 * @constructor
 	 * @public
+	 * @since 1.26.0
 	 * @alias sap.m.P13nFilterPanel
 	 * @ui5-metamodel This control/element also will be described in the UI5 (legacy) designtime metamodel
 	 */
@@ -30,8 +31,6 @@ sap.ui.define([
 
 				/**
 				 * Defines the maximum number of include filters.
-				 * 
-				 * @since 1.26
 				 */
 				maxIncludes: {
 					type: "string",
@@ -41,8 +40,6 @@ sap.ui.define([
 
 				/**
 				 * Defines the maximum number of exclude filters.
-				 * 
-				 * @since 1.26
 				 */
 				maxExcludes: {
 					type: "string",
@@ -53,8 +50,6 @@ sap.ui.define([
 				/**
 				 * Defines if the <code>mediaQuery</code> or a <code>ContainerResize</code> is used for layout update. If the
 				 * <code>ConditionPanel</code> is used in a dialog, the property must be set to <code>true</code>.
-				 * 
-				 * @since 1.26
 				 */
 				containerQuery: {
 					type: "boolean",
@@ -65,8 +60,6 @@ sap.ui.define([
 				/**
 				 * Can be used to control the layout behavior. Default is "" which will automatically change the layout. With "Desktop", "Table"
 				 * or"Phone" you can set a fixed layout.
-				 * 
-				 * @since 1.26
 				 */
 				layoutMode: {
 					type: "string",
@@ -88,8 +81,6 @@ sap.ui.define([
 
 				/**
 				 * Defines filter items.
-				 * 
-				 * @since 1.26
 				 */
 				filterItems: {
 					type: "sap.m.P13nFilterItem",
@@ -102,25 +93,46 @@ sap.ui.define([
 
 				/**
 				 * Event raised if a filter item has been added.
-				 * 
-				 * @since 1.26
 				 */
 				addFilterItem: {},
 
 				/**
-				 * Removes a filter item.
-				 * 
-				 * @since 1.26
+				 * Event raised if a filter item has been removed.
 				 */
 				removeFilterItem: {},
 
 				/**
-				 * Updates a filter item.
-				 * 
-				 * @since 1.26
+				 * Event raised if a filter item has been updated.
 				 */
 				updateFilterItem: {}
 			}
+		},
+		renderer: function(oRm, oControl) {
+			// start ConditionPanel
+			oRm.write("<section");
+			oRm.writeControlData(oControl);
+			oRm.addClass("sapMFilterPanel");
+			// oRm.addStyle("width", oControl.getWidth());
+			// oRm.addStyle("height", oControl.getHeight());
+			oRm.writeClasses();
+			oRm.writeStyles();
+			oRm.write(">");
+
+			// render content
+			oRm.write("<div");
+			oRm.addClass("sapMFilterPanelContent");
+			oRm.addClass("sapMFilterPanelBG");
+
+			oRm.writeClasses();
+			oRm.write(">");
+			var aChildren = oControl.getAggregation("content");
+			var iLength = aChildren.length;
+			for (var i = 0; i < iLength; i++) {
+				oRm.renderControl(aChildren[i]);
+			}
+			oRm.write("</div>");
+
+			oRm.write("</section>");
 		}
 	});
 
@@ -128,10 +140,10 @@ sap.ui.define([
 
 	/**
 	 * Sets the array of conditions.
-	 * 
+	 *
 	 * @public
-	 * @since 1.26
 	 * @param {object[]} aConditions the complete list of conditions
+	 * @returns {sap.m.P13nFilterPanel} this for chaining
 	 */
 	P13nFilterPanel.prototype.setConditions = function(aConditions) {
 		var aIConditions = [];
@@ -153,13 +165,13 @@ sap.ui.define([
 		if (aEConditions.length > 0) {
 			this._oExcludePanel.setExpanded(true);
 		}
+		return this;
 	};
 
 	/**
 	 * Returns the array of conditions.
-	 * 
+	 *
 	 * @public
-	 * @since 1.26
 	 */
 	P13nFilterPanel.prototype.getConditions = function() {
 		var aIConditions = this._oIncludeFilterPanel.getConditions();
@@ -173,6 +185,7 @@ sap.ui.define([
 
 		this._oIncludeFilterPanel.setContainerQuery(bContainerQuery);
 		this._oExcludeFilterPanel.setContainerQuery(bContainerQuery);
+		return this;
 	};
 
 	P13nFilterPanel.prototype.setLayoutMode = function(sMode) {
@@ -180,14 +193,14 @@ sap.ui.define([
 
 		this._oIncludeFilterPanel.setLayoutMode(sMode);
 		this._oExcludeFilterPanel.setLayoutMode(sMode);
+		return this;
 	};
 
 	/**
 	 * Checks if the entered and modified conditions are correct, marks invalid fields in yellow (warning).
-	 * 
+	 *
 	 * @public
-	 * @since 1.26
-	 * @returns {boolean} <code>false</code>, if there is an invalid condition
+	 * @returns {boolean} <code>True</code> if all conditions are valid, <code>false</code> otherwise.
 	 */
 	P13nFilterPanel.prototype.validateConditions = function() {
 		return this._oIncludeFilterPanel.validateConditions() && this._oExcludeFilterPanel.validateConditions();
@@ -195,7 +208,7 @@ sap.ui.define([
 
 	/**
 	 * Removes all invalid conditions.
-	 * 
+	 *
 	 * @public
 	 * @since 1.28
 	 */
@@ -206,7 +219,7 @@ sap.ui.define([
 
 	/**
 	 * Removes all errors and warnings states from of all filter conditions.
-	 * 
+	 *
 	 * @public
 	 * @since 1.28
 	 */
@@ -225,9 +238,8 @@ sap.ui.define([
 
 	/**
 	 * Setter for the supported Include operations array.
-	 * 
+	 *
 	 * @public
-	 * @since 1.26
 	 * @param {sap.m.P13nConditionOperation[]} array of operations [<code>sap.m.P13nConditionOperation.BT</code>,
 	 *        <code>sap.m.P13nConditionOperation.EQ</code>]
 	 * @param {string} the type for which the operations are defined
@@ -243,9 +255,8 @@ sap.ui.define([
 
 	/**
 	 * Getter for the include operations.
-	 * 
+	 *
 	 * @public
-	 * @since 1.26
 	 * @param {string} the type for which the operations are defined
 	 * @returns {sap.m.P13nConditionOperation} array of operations [<code>sap.m.P13nConditionOperation.BT</code>,
 	 *          <code>sap.m.P13nConditionOperation.EQ</code>]
@@ -258,9 +269,8 @@ sap.ui.define([
 
 	/**
 	 * Setter for the supported exclude operations array.
-	 * 
+	 *
 	 * @public
-	 * @since 1.26
 	 * @param {sap.m.P13nConditionOperation[]} array of operations [<code>sap.m.P13nConditionOperation.BT</code>,
 	 *        <code>sap.m.P13nConditionOperation.EQ</code>]
 	 * @param {string} the type for which the operations are defined
@@ -276,9 +286,8 @@ sap.ui.define([
 
 	/**
 	 * Getter for the exclude operations.
-	 * 
+	 *
 	 * @public
-	 * @since 1.26
 	 * @param {string} the type for which the operations are defined
 	 * @returns {sap.m.P13nConditionOperation[]} array of operations [<code>sap.m.P13nConditionOperation.BT</code>,
 	 *          <code>sap.m.P13nConditionOperation.EQ</code>]
@@ -291,9 +300,8 @@ sap.ui.define([
 
 	/**
 	 * Setter for a KeyFields array.
-	 * 
+	 *
 	 * @private
-	 * @since 1.26
 	 * @deprecated Since 1.34. This method does not work anymore - you should use the Items aggregation
 	 * @param {array} array of KeyFields [{key: "CompanyCode", text: "ID"}, {key:"CompanyName", text : "Name"}]
 	 */
@@ -320,6 +328,7 @@ sap.ui.define([
 			this._oIncludeFilterPanel.setMaxConditions(sMax);
 		}
 		this._updatePanel();
+		return this;
 	};
 
 	P13nFilterPanel.prototype.setMaxExcludes = function(sMax) {
@@ -329,6 +338,7 @@ sap.ui.define([
 			this._oExcludeFilterPanel.setMaxConditions(sMax);
 		}
 		this._updatePanel();
+		return this;
 	};
 
 	P13nFilterPanel.prototype._updatePanel = function() {
@@ -353,12 +363,10 @@ sap.ui.define([
 
 	};
 
-	/**
-	 * Initialize the control
-	 * 
-	 * @private
-	 */
 	P13nFilterPanel.prototype.init = function() {
+		this.setType(sap.m.P13nPanelType.filter);
+		this.setTitle(sap.ui.getCore().getLibraryResourceBundle("sap.m").getText("FILTERPANEL_TITLE"));
+
 		sap.ui.getCore().loadLibrary("sap.ui.layout");
 		jQuery.sap.require("sap.ui.layout.Grid");
 
@@ -374,7 +382,7 @@ sap.ui.define([
 
 		if (!this._aIncludeOperations["default"]) {
 			this.setIncludeOperations([
-				sap.m.P13nConditionOperation.Contains, sap.m.P13nConditionOperation.EQ, sap.m.P13nConditionOperation.BT, sap.m.P13nConditionOperation.StartsWith, sap.m.P13nConditionOperation.EndsWith, sap.m.P13nConditionOperation.LT, sap.m.P13nConditionOperation.LE, sap.m.P13nConditionOperation.GT, sap.m.P13nConditionOperation.GE
+				sap.m.P13nConditionOperation.EQ, sap.m.P13nConditionOperation.BT, sap.m.P13nConditionOperation.LT, sap.m.P13nConditionOperation.LE, sap.m.P13nConditionOperation.GT, sap.m.P13nConditionOperation.GE
 			]);
 		}
 
@@ -388,6 +396,11 @@ sap.ui.define([
 				sap.m.P13nConditionOperation.EQ, sap.m.P13nConditionOperation.BT, sap.m.P13nConditionOperation.LT, sap.m.P13nConditionOperation.LE, sap.m.P13nConditionOperation.GT, sap.m.P13nConditionOperation.GE
 			], "date");
 		}
+		if (!this._aIncludeOperations["time"]) {
+			this.setIncludeOperations([
+				sap.m.P13nConditionOperation.EQ, sap.m.P13nConditionOperation.BT, sap.m.P13nConditionOperation.LT, sap.m.P13nConditionOperation.LE, sap.m.P13nConditionOperation.GT, sap.m.P13nConditionOperation.GE
+			], "time");
+		}
 		if (!this._aIncludeOperations["numeric"]) {
 			this.setIncludeOperations([
 				sap.m.P13nConditionOperation.EQ, sap.m.P13nConditionOperation.BT, sap.m.P13nConditionOperation.LT, sap.m.P13nConditionOperation.LE, sap.m.P13nConditionOperation.GT, sap.m.P13nConditionOperation.GE
@@ -395,10 +408,9 @@ sap.ui.define([
 		}
 		if (!this._aIncludeOperations["boolean"]) {
 			this.setIncludeOperations([
-			    sap.m.P13nConditionOperation.EQ, sap.m.P13nConditionOperation.Empty, sap.m.P13nConditionOperation.NotEmpty
+				sap.m.P13nConditionOperation.EQ
 			], "boolean");
 		}
-		
 
 		this._aExcludeOperations = {};
 
@@ -417,11 +429,11 @@ sap.ui.define([
 
 		this._oIncludeFilterPanel = new P13nConditionPanel({
 			maxConditions: this.getMaxIncludes(),
-			autoAddNewRow: true,
 			alwaysShowAddIcon: false,
 			layoutMode: this.getLayoutMode(),
 			dataChange: this._handleDataChange()
 		});
+		this._oIncludeFilterPanel._sAddRemoveIconTooltipKey = "FILTER";
 
 		for ( var sType in this._aIncludeOperations) {
 			this._oIncludeFilterPanel.setOperations(this._aIncludeOperations[sType], sType);
@@ -441,11 +453,11 @@ sap.ui.define([
 		this._oExcludeFilterPanel = new P13nConditionPanel({
 			exclude: true,
 			maxConditions: this.getMaxExcludes(),
-			autoAddNewRow: true,
 			alwaysShowAddIcon: false,
 			layoutMode: this.getLayoutMode(),
 			dataChange: this._handleDataChange()
 		});
+		this._oExcludeFilterPanel._sAddRemoveIconTooltipKey = "FILTER";
 
 		for ( var sType in this._aExcludeOperations) {
 			this._oExcludeFilterPanel.setOperations(this._aExcludeOperations[sType], sType);
@@ -504,8 +516,16 @@ sap.ui.define([
 					precision: fGetValueOfProperty("precision", oContext, oItem_),
 					scale: fGetValueOfProperty("scale", oContext, oItem_),
 					isDefault: fGetValueOfProperty("isDefault", oContext, oItem_),
-					values: fGetValueOfProperty("values", oContext, oItem_) //oItem_.getValues()  
+					values: fGetValueOfProperty("values", oContext, oItem_)
 				});
+
+				// check if maxLength is 1 and remove contains, start and ends with operations
+				var n = aKeyFields.length;
+				if (aKeyFields[n - 1].maxLength === 1 || aKeyFields[n - 1].maxLength === "1") {
+					aKeyFields[n - 1].operations = [
+						sap.m.P13nConditionOperation.EQ, sap.m.P13nConditionOperation.BT, sap.m.P13nConditionOperation.LT, sap.m.P13nConditionOperation.LE, sap.m.P13nConditionOperation.GT, sap.m.P13nConditionOperation.GE
+					];
+				}
 			});
 			this.setKeyFields(aKeyFields);
 
@@ -540,12 +560,16 @@ sap.ui.define([
 		if (!this._bIgnoreBindCalls) {
 			this._bUpdateRequired = true;
 		}
+
+		return this;
 	};
 
 	P13nFilterPanel.prototype.removeItem = function(oItem) {
-		P13nPanel.prototype.removeItem.apply(this, arguments);
+		var oRemoved = P13nPanel.prototype.removeItem.apply(this, arguments);
 
 		this._bUpdateRequired = true;
+
+		return oRemoved;
 	};
 
 	P13nFilterPanel.prototype.destroyItems = function() {
@@ -558,15 +582,17 @@ sap.ui.define([
 	};
 
 	P13nFilterPanel.prototype.addFilterItem = function(oFilterItem) {
-		this.addAggregation("filterItems", oFilterItem);
+		this.addAggregation("filterItems", oFilterItem, true);
 
 		if (!this._bIgnoreBindCalls) {
 			this._bUpdateRequired = true;
 		}
+
+		return this;
 	};
 
-	P13nFilterPanel.prototype.insertFilterItem = function(oFilterItem) {
-		this.insertAggregation("filterItems", oFilterItem);
+	P13nFilterPanel.prototype.insertFilterItem = function(oFilterItem, iIndex) {
+		this.insertAggregation("filterItems", oFilterItem, iIndex, true);
 
 		if (!this._bIgnoreBindCalls) {
 			this._bUpdateRequired = true;
@@ -584,7 +610,7 @@ sap.ui.define([
 	};
 
 	P13nFilterPanel.prototype.removeFilterItem = function(oFilterItem) {
-		oFilterItem = this.removeAggregation("filterItems", oFilterItem);
+		oFilterItem = this.removeAggregation("filterItems", oFilterItem, true);
 
 		if (!this._bIgnoreBindCalls) {
 			this._bUpdateRequired = true;
@@ -594,7 +620,7 @@ sap.ui.define([
 	};
 
 	P13nFilterPanel.prototype.removeAllFilterItems = function() {
-		var aFilterItems = this.removeAllAggregation("filterItems");
+		var aFilterItems = this.removeAllAggregation("filterItems", true);
 
 		if (!this._bIgnoreBindCalls) {
 			this._bUpdateRequired = true;
@@ -638,7 +664,7 @@ sap.ui.define([
 // that.getFilterItems().forEach(function(oItem, i) {
 // window.console.log(i+ " Items: " + oItem.getValue1());
 // }, this);
-//			
+//
 // var oData = that.getModel().getData();
 // oData.persistentData.filter.filterItems.forEach(function(oItem, i) {
 // window.console.log(i+ " model: " + oItem.value1);
@@ -658,6 +684,7 @@ sap.ui.define([
 					index: iIndex,
 					filterItemData: oFilterItem
 				});
+				that._notifyChange();
 			}
 			if (sOperation === "add") {
 				if (iConditionIndex >= 0) {
@@ -679,6 +706,7 @@ sap.ui.define([
 					filterItemData: oFilterItem
 				});
 				that._bIgnoreBindCalls = false;
+				that._notifyChange();
 			}
 			if (sOperation === "remove") {
 				that._bIgnoreBindCalls = true;
@@ -687,18 +715,26 @@ sap.ui.define([
 					index: iIndex
 				});
 				that._bIgnoreBindCalls = false;
+				that._notifyChange();
 			}
 
 // that.getFilterItems().forEach(function(oItem, i) {
 // window.console.log(i+ " Items: " + oItem.getValue1());
 // }, this);
-//			
+//
 // var oData = that.getModel().getData();
 // oData.persistentData.filter.filterItems.forEach(function(oItem, i) {
 // window.console.log(i+ " model: " + oItem.value1);
 // });
 
 		};
+	};
+
+	P13nFilterPanel.prototype._notifyChange = function() {
+		var fListener = this.getChangeNotifier();
+		if (fListener) {
+			fListener(this);
+		}
 	};
 
 	return P13nFilterPanel;

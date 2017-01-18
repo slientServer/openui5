@@ -25,6 +25,7 @@ sap.ui.define(['jquery.sap.global', './library', 'sap/ui/core/Control', 'sap/ui/
 	 *
 	 * @constructor
 	 * @public
+	 * @deprecated Since version 1.38. Instead, use the <code>sap.m.Slider</code> control.
 	 * @alias sap.ui.commons.Slider
 	 * @ui5-metamodel This control/element also will be described in the UI5 (legacy) designtime metamodel
 	 */
@@ -108,7 +109,7 @@ sap.ui.define(['jquery.sap.global', './library', 'sap/ui/core/Control', 'sap/ui/
 			/**
 			 * Association to controls / IDs which describe this control (see WAI-ARIA attribute aria-describedby).
 			 */
-			ariaDescribedBy : {type : "sap.ui.core.Control", multiple : true, singularName : "ariaDescribedBy"}, 
+			ariaDescribedBy : {type : "sap.ui.core.Control", multiple : true, singularName : "ariaDescribedBy"},
 
 			/**
 			 * Association to controls / IDs which label this control (see WAI-ARIA attribute aria-labelledby).
@@ -1250,12 +1251,12 @@ sap.ui.define(['jquery.sap.global', './library', 'sap/ui/core/Control', 'sap/ui/
 			if (bEditable) {
 				jQuery(this.oDomRef).removeClass('sapUiSliRo').addClass('sapUiSliStd');
 				if (this.bAcc) {
-					jQuery(this.oGrip).attr('aria-disabled', false);
+					jQuery(this.oGrip).attr('aria-disabled', false).attr('aria-readonly', false);
 				}
 			} else {
 				jQuery(this.oDomRef).removeClass('sapUiSliStd').addClass('sapUiSliRo');
 				if (this.bAcc) {
-					jQuery(this.oGrip).attr('aria-disabled', true);
+					jQuery(this.oGrip).attr('aria-disabled', true).attr('aria-readonly', true);
 				}
 			}
 		}
@@ -1330,47 +1331,44 @@ sap.ui.define(['jquery.sap.global', './library', 'sap/ui/core/Control', 'sap/ui/
 	 * @public
 	 */
 	Slider.prototype.setValue = function(fValue) {
+		var iNewPos, fMin, fMax, fBarWidth, bIsVertical,
+			fNewValue = parseFloat(fValue);
 
 		this.setProperty('value', fValue, true); // No re-rendering
-
 		this._lastValue = fValue;
 
-		// Check for number -> if NaN -> no change
-		if ( isNaN(fValue) ) {
+		if (!this.oBar || isNaN(fValue)) {
 			return this;
 		}
 
-		if (!this.oBar) {
-			// Not already rendered -> return and render
-			return this;
-		}
+		fMin = this.getMin();
+		fMax = this.getMax();
+		fBarWidth = this.getBarWidth();
+		bIsVertical = this.getVertical();
 
-		var fNewValue = parseFloat( fValue );
-		var iNewPos;
-
-		if ( fNewValue >= this.getMax() ) {
-			fNewValue   = this.getMax();
-			if (this.getVertical()) {
+		if (fNewValue >= fMax) {
+			fNewValue = fMax;
+			if (bIsVertical) {
 				iNewPos = 0;
 			} else {
-				iNewPos = this.getBarWidth();
+				iNewPos = fBarWidth;
 			}
-		} else if ( fNewValue <= this.getMin() ) {
-			fNewValue   = this.getMin();
-			if (this.getVertical()) {
-				iNewPos = this.getBarWidth();
+		} else if (fNewValue <= fMin) {
+			fNewValue = fMin;
+			if (bIsVertical) {
+				iNewPos = fBarWidth;
 			} else {
 				iNewPos = 0;
 			}
 		} else {
-			iNewPos = ( fNewValue - this.getMin() ) / ( this.getMax() - this.getMin() ) * this.getBarWidth();
+			iNewPos = (( fNewValue - fMin ) / ( fMax - fMin )) * fBarWidth;
 		}
 
-		if (this.bRtl && !this.getVertical()) {
-			iNewPos = this.getBarWidth() - iNewPos;
+		if (this.bRtl || bIsVertical) {
+			iNewPos = fBarWidth - iNewPos;
 		}
 
-		this.changeGrip( fNewValue, iNewPos, this.oGrip );
+		this.changeGrip(fNewValue, iNewPos, this.oGrip);
 		this._lastValue = fNewValue;
 
 		return this;
@@ -1496,7 +1494,7 @@ sap.ui.define(['jquery.sap.global', './library', 'sap/ui/core/Control', 'sap/ui/
 	 * @private
 	 * @param {int} iOffset Offset relative to Bar
 	 * @returns {Element} DOM-Ref of grip
-	 * 
+	 *
 	 */
 	Slider.prototype.getNearestGrip = function(iOffset) {
 		return this.oGrip;

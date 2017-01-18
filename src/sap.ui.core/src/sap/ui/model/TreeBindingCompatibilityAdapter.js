@@ -3,8 +3,8 @@
  */
 
 // Provides class sap.ui.model.odata.TreeBindingAdapter
-sap.ui.define(['jquery.sap.global', 'sap/ui/model/TreeBinding', 'sap/ui/model/ClientTreeBinding', 'sap/ui/table/TreeAutoExpandMode', 'sap/ui/model/ChangeReason', 'sap/ui/model/TreeBindingUtils'],
-	function(jQuery, TreeBinding, ClientTreeBinding, TreeAutoExpandMode, ChangeReason, TreeBindingUtils) {
+sap.ui.define(['jquery.sap.global', 'sap/ui/model/TreeBinding', 'sap/ui/model/ClientTreeBinding', 'sap/ui/model/ChangeReason', 'sap/ui/model/TreeBindingUtils'],
+	function(jQuery, TreeBinding, ClientTreeBinding, ChangeReason, TreeBindingUtils) {
 		"use strict";
 
 		/**
@@ -34,7 +34,7 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/model/TreeBinding', 'sap/ui/model/Cl
 
 				_initContexts: function(bSkipFirstLevelLoad) {
 					// load the root contexts and create the context info map entry (if missing)
-					this.aContexts = this.getRootContexts();
+					this.aContexts = this.getRootContexts(0, Number.MAX_VALUE);
 					for (var i = 0, l = this.aContexts.length; i < l; i++) {
 						var oldContextInfo = this._getContextInfo(this.aContexts[i]);
 						this._setContextInfo({
@@ -91,7 +91,7 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/model/TreeBinding', 'sap/ui/model/Cl
 				_loadChildContexts: function(oContext) {
 					var oContextInfo = this._getContextInfo(oContext);
 					var iIndex = jQuery.inArray(oContext, this.aContexts);
-					var aNodeContexts = this.getNodeContexts(oContext);
+					var aNodeContexts = this.getNodeContexts(oContext, 0, Number.MAX_VALUE);
 					for (var i = 0, l = aNodeContexts.length; i < l; i++) {
 						this.aContexts.splice(iIndex + i + 1, 0, aNodeContexts[i]);
 						var oldContextInfo = this._getContextInfo(aNodeContexts[i]);
@@ -117,6 +117,32 @@ sap.ui.define(['jquery.sap.global', 'sap/ui/model/TreeBinding', 'sap/ui/model/Cl
 				},
 				getContexts: function(iStartIndex, iLength) {
 					return this.aContexts.slice(iStartIndex, iStartIndex + iLength);
+				},
+				getNodes: function(iStartIndex, iLength) {
+					var aContexts = this.getContexts(iStartIndex, iStartIndex + iLength);
+					//wrap contexts into node objects
+					var aNodes = [];
+					for (var i = 0; i < aContexts.length; i++) {
+						var oContextInfo = this._getContextInfo(aContexts[i]) || {}; //empty object to make sure this does not break
+						var oContext = aContexts[i];
+						aNodes.push({
+							context: oContext,
+							level: oContextInfo.iLevel,
+							parent: oContextInfo.oParentContext,
+							nodeState: {
+								expanded: oContextInfo.bExpanded,
+								collapsed: !oContextInfo.bExpanded,
+								selected: false //default should be false, correct value is given via the selection model
+							}
+						});
+					}
+					return aNodes;
+				},
+				hasChildren: function() {
+					return true;
+				},
+				nodeHasChildren: function() {
+					return true;
 				},
 				getContextByIndex: function (iRowIndex) {
 					return this.aContexts[iRowIndex];

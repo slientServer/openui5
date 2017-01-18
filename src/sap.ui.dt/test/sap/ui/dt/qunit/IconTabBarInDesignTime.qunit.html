@@ -1,7 +1,7 @@
 <!DOCTYPE HTML>
 <html>
 	<head>
-		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
 		<title>Test Page for sap.ui.dt.DesignTime and IconTabBar</title>
 
 		<style>
@@ -16,22 +16,21 @@
 			}
 		</style>
 
+		<script src="../shared-config.js"></script>
 		<script id="sap-ui-bootstrap"
-				data-sap-ui-theme="sap_bluecrystal"
-				type="text/javascript"
 				data-sap-ui-noConflict="true"
 				data-sap-ui-resourceroots='{"dt.view": "testdata/designtime/"}'
-				data-sap-ui-libs="sap.ui.dt,sap.m,sap.ui.commons,sap.ui.layout"
+				data-sap-ui-libs="sap.ui.dt,sap.m,sap.ui.layout"
 				src="../../../../../resources/sap-ui-core.js">
 		</script>
-		<link rel="stylesheet" href="../../../../../resources/sap/ui/thirdparty/qunit.css" type="text/css" media="screen" />
-		<script type="text/javascript" src="../../../../../resources/sap/ui/thirdparty/qunit.js"></script>
-		<script type="text/javascript" src="../../../../../resources/sap/ui/qunit/qunit-junit.js"></script>
-		<script type="text/javascript" src="../../../../../resources/sap/ui/qunit/QUnitUtils.js"></script>
-		<script type="text/javascript">
+		<link rel="stylesheet" href="../../../../../resources/sap/ui/thirdparty/qunit.css" type="text/css" media="screen">
+		<script src="../../../../../resources/sap/ui/thirdparty/qunit.js"></script>
+		<script src="../../../../../resources/sap/ui/qunit/qunit-junit.js"></script>
+		<script src="../../../../../resources/sap/ui/qunit/QUnitUtils.js"></script>
+		<script>
 
 			jQuery.sap.require("sap.ui.qunit.qunit-coverage");
-		
+
 			jQuery.sap.require("sap.ui.dt.DesignTime");
 			jQuery.sap.require("sap.ui.dt.OverlayRegistry");
 			var OverlayRegistry = sap.ui.dt.OverlayRegistry;
@@ -39,7 +38,7 @@
 			QUnit.module("Given the IconTabBar is created with 3 filters and different content..", {
 				beforeEach : function() {
 					this.oList = new sap.m.List({
-						items : [ 
+						items : [
 							new sap.m.StandardListItem({
 								title : "List Item 1"
 							}),
@@ -48,7 +47,7 @@
 							}),
 							new sap.m.StandardListItem({
 								title : "List Item 3"
-							}) 
+							})
 						]
 					});
 					this.oButton = new sap.m.Button({text : "Text"});
@@ -82,16 +81,27 @@
 						]
 					}).placeAt("content");
 
-					this.oFormDesignTime = new sap.ui.dt.DesignTime({
+					var done = assert.async();
+
+					this.oDesignTime = new sap.ui.dt.DesignTime({
 						rootElements : [this.oIconTabBar]
 					});
+					var that = this;
+					this.oIconTabBar.addEventDelegate({
+						onAfterRendering : function() {
+							that.oDesignTime.attachEventOnce("synced", function() {
+								sap.ui.getCore().applyChanges();
+								done();
+							});
+						}
+					})
 
-					sap.ui.getCore().applyChanges();
+					
 				},
 				afterEach : function() {
 					this.oList.destroy();
 					this.oIconTabBar.destroy();
-					this.oFormDesignTime.destroy();
+					this.oDesignTime.destroy();
 				}
 			});
 

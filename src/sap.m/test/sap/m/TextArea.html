@@ -1,11 +1,12 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
 <title>sap.m.TextArea</title>
 
+<script src="shared-config.js"></script>
 <script src="../../../resources/sap-ui-core.js"
-	id="sap-ui-bootstrap" data-sap-ui-libs="sap.m" data-sap-ui-theme="sap_bluecrystal">
+	id="sap-ui-bootstrap" data-sap-ui-libs="sap.m">
 </script>
 
 <script>
@@ -31,8 +32,8 @@
 		content : [taComment = new sap.m.TextArea({
 			placeholder : "Please add your comment",
 			rows : 6,
+			growing: true,
 			value: lorem,
-			maxLength: 255,
 			width: "100%"
 		})],
 		leftButton : new sap.m.Button({
@@ -105,11 +106,18 @@
 				placeholder : "Max Length : 5",
 				maxLength : 5,
 				rows : 2
+			}),
+			ta8 = new sap.m.TextArea({
+				value : "Growing TextArea:\n\n" + lorem + lorem,
+				width : "100%",
+				growing : true,
+				//growingMaxLines : 5
 			})
 		]
 	});
 
 	new sap.m.App().addPage(page).placeAt("body");
+
 </script>
 </head>
 <body id="body" class="sapUiBody">

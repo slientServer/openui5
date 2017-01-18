@@ -7,19 +7,18 @@
 <html>
 <head>
 
-	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
-	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta charset="utf-8">
 
 	<title>QUnit tests: Support Tool</title>
 
+	<script src="../../shared-config.js"></script>
 	<script id="sap-ui-bootstrap"
-		type="text/javascript"
 		src="../../../../../../resources/sap-ui-core.js"
-		data-sap-ui-theme="sap_bluecrystal"
 		data-sap-ui-noConflict="true">
 	</script>
 
-	<link rel="stylesheet" href="../../../../../../resources/sap/ui/thirdparty/qunit.css" type="text/css" media="screen" />
+	<link rel="stylesheet" href="../../../../../../resources/sap/ui/thirdparty/qunit.css" type="text/css" media="screen">
 
 	<script>
 
@@ -40,7 +39,22 @@
 		QUnit.test("Load Support module and check App plugins", function(assert) {
 
 			// save plugin module names which will be replaced with the actual instances
-			var aPluginModuleNames = Support.APP_SIDE_PLUGINS.slice();
+			var mLibs = sap.ui.getCore().getLoadedLibraries(),
+				aPluginModuleNames = [];
+			for (var n in mLibs) {
+				var oLib = mLibs[n],
+					aLibPlugins = [];
+				if (oLib.extensions && oLib.extensions["sap.ui.support"] && oLib.extensions["sap.ui.support"].diagnosticPlugins) {
+					aLibPlugins = oLib.extensions["sap.ui.support"].diagnosticPlugins;
+				}
+				if (aLibPlugins && Array.isArray(aLibPlugins)) {
+					for (var i = 0; i < aLibPlugins.length; i++) {
+						if (typeof aLibPlugins[i] === 'string' && aPluginModuleNames.indexOf(aLibPlugins[i]) === -1) {
+							aPluginModuleNames.push(aLibPlugins[i]);
+						}
+					}
+				}
+			}
 
 			var oSupport = Support.getStub();
 			assert.equal(oSupport.getType(), Support.StubType.APPLICATION, "Support stub type equals APPLICATION");
@@ -48,14 +62,25 @@
 			// Unable to open real window here as this causes problems in test execution (popup-blocker, ...)
 			//oSupport.openSupportTool();
 
-			// Fake SETUP event which will be fired from the popup window
-			oSupport.fireEvent("sapUiSupportSetup");
+			// Load plugins directly
+			return Support.initPlugins(oSupport, false).then(function() {
+				// Check if all App plugins could be loaded
+				var aPlugins = Support.getAppPlugins();
+				for (var i = 0; i < aPlugins.length; i++) {
+					assert.equal(aPlugins[i].isActive(), true, "Plugin '" + aPlugins[i].getMetadata().getName() + "' successfully loaded");
+				}
+			}).then(function() {
 
-			// check if all App plugins could be loaded
-			for (var i = 0; i < aPluginModuleNames.length; i++) {
-				assert.equal(Support.APP_SIDE_PLUGINS[i].getMetadata().getName(), aPluginModuleNames[i], "Plugin '" + aPluginModuleNames[i] + "' loaded successfully");
-			}
+				// Unload plugins directly
+				Support.exitPlugins(oSupport, false);
 
+				// Check if all App plugins could be unloaded
+				var aPlugins = Support.getAppPlugins();
+				for (var i = 0; i < aPlugins.length; i++) {
+					assert.equal(aPlugins[i].isActive(), false, "Plugin '" + aPlugins[i].getMetadata().getName() + "' successfully unloaded");
+				}
+
+			});
 		});
 
 	});

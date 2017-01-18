@@ -3,8 +3,8 @@
  */
 
 // Provides control sap.m.Link.
-sap.ui.define(['jquery.sap.global', './library', 'sap/ui/core/Control', 'sap/ui/core/InvisibleText', 'sap/ui/core/EnabledPropagator'],
-	function(jQuery, library, Control, InvisibleText, EnabledPropagator) {
+sap.ui.define(['jquery.sap.global', './library', 'sap/ui/core/Control', 'sap/ui/core/InvisibleText', 'sap/ui/core/EnabledPropagator', 'sap/ui/core/LabelEnablement'],
+	function(jQuery, library, Control, InvisibleText, EnabledPropagator, LabelEnablement) {
 	"use strict";
 
 
@@ -117,6 +117,19 @@ sap.ui.define(['jquery.sap.global', './library', 'sap/ui/core/Control', 'sap/ui/
 	EnabledPropagator.call(Link.prototype); // inherit "disabled" state from parent controls
 
 	/**
+	 * Required adaptations before rendering.
+	 *
+	 * @private
+	 */
+	Link.prototype.onBeforeRendering = function() {
+		// add/remove self reference for aria-labelledby  to fix reading issues
+		this.removeAssociation("ariaLabelledBy", this.getId(), true);
+		if (this.getAriaLabelledBy().length > 0 || LabelEnablement.getReferencingLabels(this).length > 0) {
+			this.addAssociation("ariaLabelledBy", this.getId(), true);
+		}
+	};
+
+	/**
 	 * Triggers link activation when space key is pressed on the focused control.
 	 *
 	 * @param {jQuery.Event} oEvent
@@ -181,9 +194,15 @@ sap.ui.define(['jquery.sap.global', './library', 'sap/ui/core/Control', 'sap/ui/
 	/* override standard setters with direct DOM manipulation */
 
 	Link.prototype.setText = function(sText){
+		var $this = this.$();
 		this.setProperty("text", sText, true);
 		sText = this.getProperty("text");
-		this.$().text(sText);
+		$this.text(sText);
+		if (sText) {
+			$this.attr("tabindex", "0");
+		} else {
+			$this.attr("tabindex", "-1");
+		}
 		return this;
 	};
 
@@ -251,7 +270,11 @@ sap.ui.define(['jquery.sap.global', './library', 'sap/ui/core/Control', 'sap/ui/
 			$this.toggleClass("sapMLnkDsbl", !bEnabled);
 			if (bEnabled) {
 				$this.attr("disabled", false);
-				$this.attr("tabindex", "0");
+				if (this.getText()) {
+					$this.attr("tabindex", "0");
+				} else {
+					$this.attr("tabindex", "-1");
+				}
 				$this.removeAttr("aria-disabled");
 				if (this.getHref()) {
 					$this.attr("href", this.getHref());
@@ -260,9 +283,7 @@ sap.ui.define(['jquery.sap.global', './library', 'sap/ui/core/Control', 'sap/ui/
 				$this.attr("disabled", true);
 				$this.attr("tabindex", "-1");
 				$this.attr("aria-disabled", true);
-				/*eslint-disable no-script-url */
-				$this.attr("href", "javascript:void(0);");
-				/*eslint-disable no-script-url */
+				$this.attr("href", "#");
 			}
 		}
 		return this;
@@ -344,6 +365,20 @@ sap.ui.define(['jquery.sap.global', './library', 'sap/ui/core/Control', 'sap/ui/
 				$oLink.removeAttr("aria-describedby"); //  Remove the aria-describedby attribute, as it`s not needed
 			}
 		}
+	};
+
+	/**
+	 * @see sap.ui.core.Control#getAccessibilityInfo
+	 * @protected
+	 */
+	Link.prototype.getAccessibilityInfo = function() {
+		return {
+			role: "link",
+			type: sap.ui.getCore().getLibraryResourceBundle("sap.m").getText("ACC_CTR_TYPE_LINK"),
+			description: this.getText() || this.getHref() || "",
+			focusable: this.getEnabled(),
+			enabled: this.getEnabled()
+		};
 	};
 
 	return Link;

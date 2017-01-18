@@ -1,70 +1,70 @@
 <!DOCTYPE HTML>
 <html>
 
-<!-- 
+<!--
   Tested class: sap.ui.layout.HorizontalLayout
   Author: SAP
 -->
 
 	<head>
-		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
 		<title>qUnit Page for sap.ui.layout.HorizontalLayout</title>
 
-		<script id="sap-ui-bootstrap" 
-			type="text/javascript"
+		<script src="../shared-config.js"></script>
+		<script id="sap-ui-bootstrap"
 			src="../../../../../resources/sap-ui-core.js"
-			data-sap-ui-theme="sap_bluecrystal"
 			data-sap-ui-noConflict="true"
+			data-sap-ui-theme="sap_bluecrystal"
 			data-sap-ui-libs="sap.ui.layout,sap.ui.commons">
 		</script>
-    
-		<link rel="stylesheet" href="../../../../../resources/sap/ui/thirdparty/qunit.css" type="text/css" media="screen" />
-		<script type="text/javascript" src="../../../../../resources/sap/ui/thirdparty/qunit.js"></script>
-		<script type="text/javascript" src="../../../../../resources/sap/ui/qunit/qunit-junit.js"></script>
-		<script type="text/javascript" src="../../../../../resources/sap/ui/qunit/QUnitUtils.js"></script>
+
+		<link rel="stylesheet" href="../../../../../resources/sap/ui/thirdparty/qunit.css" type="text/css" media="screen">
+		<script src="../../../../../resources/sap/ui/thirdparty/qunit.js"></script>
+		<script src="../../../../../resources/sap/ui/qunit/qunit-junit.js"></script>
+		<script src="../../../../../resources/sap/ui/qunit/QUnitUtils.js"></script>
 
 		<script language="javascript">
-			
+
 		var oLayout1 = new sap.ui.layout.HorizontalLayout("Layout1", {
 			content: [new sap.ui.commons.Button("B1",{text:"X", tooltip:"Button tooltip"}),
 			          new sap.ui.commons.TextField("TF1",{value:"Test",width:"50px"}),
 			          new sap.ui.commons.Button("B2",{text:"Y", tooltip:"Button tooltip"})]
 		});
 		oLayout1.placeAt("uiArea1");
-		
-		
+
+
 		test("Children Rendered", function() {
 			ok(jQuery.sap.domById('B1'), "Button should be rendered");
 			ok(jQuery.sap.domById('TF1'), "TextField should be rendered");
 			ok(jQuery.sap.domById('B2'), "Second button should be rendered");
 		});
-		
+
 		test("Layout", function() {
 			var oButton = jQuery.sap.byId('B1');
 			var oText = jQuery.sap.byId('TF1');
 			var oImage = jQuery.sap.byId('B2');
 			ok(oButton.offset().left < oText.offset().left, "Left offset of Button < TextField");
 			ok(oText.offset().left < oImage.offset().left, "Left offset of TextField < Second button");
-			
+
 			// offset() returns fractional numbers on Firefox Mac, so use offsetLeft instead
 			equal(oText[0].offsetLeft, oButton[0].offsetLeft + oButton[0].offsetWidth, "TextField should be exactly right of Button");
 		});
-		
+
 		test("NoWrap", function() {
 			sap.ui.getCore().byId("TF1").setWidth("5000px");
 			sap.ui.getCore().applyChanges();
-			
+
 			var oButton = jQuery.sap.byId('B1');
 			var oText = jQuery.sap.byId('TF1');
 			var oImage = jQuery.sap.byId('B2');
 			ok(oButton.offset().left < oText.offset().left, "Left offset of Button < TextField");
 			ok(oText.offset().left < oImage.offset().left, "Left offset of TextField < Second button");
 		});
-		
+
 		test("Wrapping", function() {
 			oLayout1.setAllowWrapping(true);
 			sap.ui.getCore().applyChanges();
-			
+
 			var oButton = jQuery.sap.byId('B1');
 			var oText = jQuery.sap.byId('TF1');
 			var oImage = jQuery.sap.byId('B2');
@@ -116,6 +116,28 @@
 			oContainer.destroy();
 		});
 
+		module("Accessibility");
+
+		test("getAccessibilityInfo", function() {
+			var oLayout = new sap.ui.layout.HorizontalLayout({
+				content: [
+					new sap.ui.layout.HorizontalLayout(),
+					new sap.ui.layout.HorizontalLayout()
+				]
+			});
+			ok(!!oLayout.getAccessibilityInfo, "HorizontalLayout has a getAccessibilityInfo function");
+			var oInfo = oLayout.getAccessibilityInfo();
+			ok(!!oInfo, "getAccessibilityInfo returns a info object");
+			ok(oInfo.role === undefined || oInfo.editable === null, "AriaRole");
+			ok(oInfo.type === undefined || oInfo.editable === null, "Type");
+			ok(oInfo.description === undefined || oInfo.editable === null, "Description");
+			ok(oInfo.focusable === undefined || oInfo.editable === null, "Focusable");
+			ok(oInfo.enabled === undefined || oInfo.editable === null, "Enabled");
+			ok(oInfo.editable === undefined || oInfo.editable === null, "Editable");
+			ok(oInfo.children && oInfo.children.length == 2, "Children");
+			oLayout.destroy();
+		});
+
     </script>
 	</head>
 	<body>
@@ -123,9 +145,9 @@
     <h2 id="qunit-banner"></h2>
     <h2 id="qunit-userAgent"></h2>
     <ol id="qunit-tests"></ol>
-    
+
     <hr>
-    
+
     <div id="uiArea1"></div>
 	</body>
 </html>

@@ -526,8 +526,8 @@
 		"sux": "sumeri",
 		"sv": "ruotsi",
 		"sw": "swahili",
+		"sw_CD": "kingwana",
 		"swb": "komori",
-		"swc": "kingwana",
 		"syc": "muinaissyyria",
 		"syr": "syyria",
 		"szl": "sleesia",
@@ -624,6 +624,7 @@
 		"zza": "zaza"
 	},
 	"scripts": {
+		"Adlm": "Adlm",
 		"Afak": "afaka",
 		"Aghb": "kaukasianalbanialainen",
 		"Ahom": "ahom",
@@ -637,6 +638,7 @@
 		"Bass": "bassa",
 		"Batk": "batakilainen",
 		"Beng": "bengalilainen",
+		"Bhks": "Bhks",
 		"Blis": "bliss-symbolit",
 		"Bopo": "bopomofo",
 		"Brah": "brahmi",
@@ -672,6 +674,7 @@
 		"Grek": "kreikkalainen",
 		"Gujr": "gudžaratilainen",
 		"Guru": "gurmukhi",
+		"Hanb": "Hanb",
 		"Hang": "hangul",
 		"Hani": "kiinalainen han",
 		"Hano": "hanunoolainen",
@@ -688,6 +691,7 @@
 		"Hung": "muinaisunkarilainen",
 		"Inds": "induslainen",
 		"Ital": "muinaisitalialainen",
+		"Jamo": "Jamo",
 		"Java": "jaavalainen",
 		"Jpan": "japanilainen",
 		"Jurc": "džurtšen",
@@ -716,6 +720,7 @@
 		"Mahj": "mahajanilainen",
 		"Mand": "mandealainen",
 		"Mani": "manikealainen",
+		"Marc": "Marc",
 		"Maya": "maya-hieroglyfit",
 		"Mend": "mende",
 		"Merc": "meroiittinen kursiivikirjoitus",
@@ -731,6 +736,7 @@
 		"Mymr": "burmalainen",
 		"Narb": "muinaispohjoisarabialainen",
 		"Nbat": "nabatealainen",
+		"Newa": "Newa",
 		"Nkgb": "naxi geba",
 		"Nkoo": "n’ko",
 		"Nshu": "nüshu",
@@ -738,6 +744,7 @@
 		"Olck": "ol chiki",
 		"Orkh": "orkhon",
 		"Orya": "orijalainen",
+		"Osge": "Osge",
 		"Osma": "osmanjalainen",
 		"Palm": "palmyralainen",
 		"Pauc": "zotuallai",
@@ -844,6 +851,7 @@
 		"Yiii": "yiläinen",
 		"Zinh": "peritty",
 		"Zmth": "matemaattinen",
+		"Zsye": "Zsye",
 		"Zsym": "symbolit",
 		"Zxxx": "kirjoittamaton",
 		"Zyyy": "määrittämätön",
@@ -888,7 +896,6 @@
 		"AI": "Anguilla",
 		"AL": "Albania",
 		"AM": "Armenia",
-		"AN": "Alankomaiden Antillit",
 		"AO": "Angola",
 		"AQ": "Antarktis",
 		"AR": "Argentiina",
@@ -2428,11 +2435,431 @@
 			"235": "H"
 		}
 	},
+	"ca-persian": {
+		"dateFormats": {
+			"full": "cccc d. MMMM y G",
+			"long": "d. MMMM y G",
+			"medium": "d.M.y G",
+			"short": "d.M.y GGGGG"
+		},
+		"timeFormats": {
+			"full": "H.mm.ss zzzz",
+			"long": "H.mm.ss z",
+			"medium": "H.mm.ss",
+			"short": "H.mm"
+		},
+		"dateTimeFormats": {
+			"full": "{1} 'klo' {0}",
+			"long": "{1} 'klo' {0}",
+			"medium": "{1} 'klo' {0}",
+			"short": "{1} {0}",
+			"availableFormats": {
+				"d": "d",
+				"E": "ccc",
+				"Ed": "E d.",
+				"Ehm": "E h:mm a",
+				"EHm": "E HH:mm",
+				"Ehms": "E h:mm:ss a",
+				"EHms": "E HH:mm:ss",
+				"Gy": "y G",
+				"GyMMM": "LLL y G",
+				"GyMMMd": "d. MMM y G",
+				"GyMMMEd": "E d. MMM y G",
+				"h": "h a",
+				"H": "H",
+				"hm": "h.mm a",
+				"Hm": "H.mm",
+				"hms": "h.mm.ss a",
+				"Hms": "H.mm.ss",
+				"M": "L",
+				"Md": "d.M.",
+				"MEd": "E d.M.",
+				"MMM": "LLL",
+				"MMMd": "d. MMM",
+				"MMMEd": "ccc d. MMM",
+				"MMMMd": "d. MMMM",
+				"ms": "mm.ss",
+				"y": "y G",
+				"yyyy": "y G",
+				"yyyyM": "L.y G",
+				"yyyyMd": "d.M.y G",
+				"yyyyMEd": "E d.M.y G",
+				"yyyyMM": "M.y G",
+				"yyyyMMM": "LLL y G",
+				"yyyyMMMd": "d. MMM y G",
+				"yyyyMMMEd": "E d. MMM y G",
+				"yyyyMMMM": "LLLL y G",
+				"yyyyMMMMccccd": "cccc d. MMMM y G",
+				"yyyyQQQ": "QQQ y G",
+				"yyyyQQQQ": "QQQQ y G"
+			},
+			"appendItems": {
+				"Day": "{0} ({2}: {1})",
+				"Day-Of-Week": "{0} {1}",
+				"Era": "{1} {0}",
+				"Hour": "{0} ({2}: {1})",
+				"Minute": "{0} ({2}: {1})",
+				"Month": "{0} ({2}: {1})",
+				"Quarter": "{0} ({2}: {1})",
+				"Second": "{0} ({2}: {1})",
+				"Timezone": "{0} {1}",
+				"Week": "{0} ({2}: {1})",
+				"Year": "{1} {0}"
+			},
+			"intervalFormats": {
+				"intervalFormatFallback": "{0}–{1}",
+				"d": {
+					"d": "d.–d."
+				},
+				"h": {
+					"a": "h a – h a",
+					"h": "h–h a"
+				},
+				"H": {
+					"H": "H–H"
+				},
+				"hm": {
+					"a": "h.mm a – h.mm a",
+					"h": "h.mm–h.mm a",
+					"m": "h.mm–h.mm a"
+				},
+				"Hm": {
+					"H": "H.mm–H.mm",
+					"m": "H.mm–H.mm"
+				},
+				"hmv": {
+					"a": "h.mm a – h.mm a v",
+					"h": "h.mm–h.mm a v",
+					"m": "h.mm–h.mm a v"
+				},
+				"Hmv": {
+					"H": "H.mm–H.mm v",
+					"m": "H.mm–H.mm v"
+				},
+				"hv": {
+					"a": "h a – h a v",
+					"h": "h–h a v"
+				},
+				"Hv": {
+					"H": "H–H v"
+				},
+				"M": {
+					"M": "L.–L."
+				},
+				"Md": {
+					"d": "d.–d.M.",
+					"M": "d.M.–d.M."
+				},
+				"MEd": {
+					"d": "E d. – E d.M.",
+					"M": "E d.M. – E d.M."
+				},
+				"MMM": {
+					"M": "LLL–LLLL"
+				},
+				"MMMd": {
+					"d": "d.–d. MMMM",
+					"M": "d. MMMM – d. MMMM"
+				},
+				"MMMEd": {
+					"d": "E d. – E d. MMMM",
+					"M": "E d. MMMM – E d. MMMM"
+				},
+				"MMMM": {
+					"M": "LLL–LLLL"
+				},
+				"y": {
+					"y": "y–y G"
+				},
+				"yM": {
+					"M": "LLL–LLLL y G",
+					"y": "LLLL y – LLLL y G"
+				},
+				"yMd": {
+					"d": "d.–d.M.y G",
+					"M": "d.M.–d.M.y G",
+					"y": "d.M.y–d.M.y G"
+				},
+				"yMEd": {
+					"d": "E d.M.y – E d.M.y G",
+					"M": "E d.M.y – E d.M.y G",
+					"y": "E d.M.y – E d.M.y G"
+				},
+				"yMMM": {
+					"M": "LLL–LLLL y G",
+					"y": "LLLL y – LLLL y G"
+				},
+				"yMMMd": {
+					"d": "d.–d. MMMM y G",
+					"M": "d. MMMM – d. MMMM y G",
+					"y": "d. MMMM y – d. MMMM y G"
+				},
+				"yMMMEd": {
+					"d": "E d. – E d. MMMM y G",
+					"M": "E d. MMMM – E d. MMMM y G",
+					"y": "E d. MMMM y – E d. MMMM y G"
+				},
+				"yMMMM": {
+					"M": "LLL–LLLL y G",
+					"y": "LLLL y – LLLL y G"
+				}
+			}
+		},
+		"months": {
+			"format": {
+				"abbreviated": [
+					"Farvardin",
+					"Ordibehesht",
+					"Khordad",
+					"Tir",
+					"Mordad",
+					"Shahrivar",
+					"Mehr",
+					"Aban",
+					"Azar",
+					"Dey",
+					"Bahman",
+					"Esfand"
+				],
+				"narrow": [
+					"1",
+					"2",
+					"3",
+					"4",
+					"5",
+					"6",
+					"7",
+					"8",
+					"9",
+					"10",
+					"11",
+					"12"
+				],
+				"wide": [
+					"Farvardin",
+					"Ordibehesht",
+					"Khordad",
+					"Tir",
+					"Mordad",
+					"Shahrivar",
+					"Mehr",
+					"Aban",
+					"Azar",
+					"Dey",
+					"Bahman",
+					"Esfand"
+				]
+			},
+			"stand-alone": {
+				"abbreviated": [
+					"Farvardin",
+					"Ordibehesht",
+					"Khordad",
+					"Tir",
+					"Mordad",
+					"Shahrivar",
+					"Mehr",
+					"Aban",
+					"Azar",
+					"Dey",
+					"Bahman",
+					"Esfand"
+				],
+				"narrow": [
+					"1",
+					"2",
+					"3",
+					"4",
+					"5",
+					"6",
+					"7",
+					"8",
+					"9",
+					"10",
+					"11",
+					"12"
+				],
+				"wide": [
+					"Farvardin",
+					"Ordibehesht",
+					"Khordad",
+					"Tir",
+					"Mordad",
+					"Shahrivar",
+					"Mehr",
+					"Aban",
+					"Azar",
+					"Dey",
+					"Bahman",
+					"Esfand"
+				]
+			}
+		},
+		"days": {
+			"format": {
+				"abbreviated": [
+					"su",
+					"ma",
+					"ti",
+					"ke",
+					"to",
+					"pe",
+					"la"
+				],
+				"narrow": [
+					"S",
+					"M",
+					"T",
+					"K",
+					"T",
+					"P",
+					"L"
+				],
+				"short": [
+					"su",
+					"ma",
+					"ti",
+					"ke",
+					"to",
+					"pe",
+					"la"
+				],
+				"wide": [
+					"sunnuntaina",
+					"maanantaina",
+					"tiistaina",
+					"keskiviikkona",
+					"torstaina",
+					"perjantaina",
+					"lauantaina"
+				]
+			},
+			"stand-alone": {
+				"abbreviated": [
+					"su",
+					"ma",
+					"ti",
+					"ke",
+					"to",
+					"pe",
+					"la"
+				],
+				"narrow": [
+					"S",
+					"M",
+					"T",
+					"K",
+					"T",
+					"P",
+					"L"
+				],
+				"short": [
+					"su",
+					"ma",
+					"ti",
+					"ke",
+					"to",
+					"pe",
+					"la"
+				],
+				"wide": [
+					"sunnuntai",
+					"maanantai",
+					"tiistai",
+					"keskiviikko",
+					"torstai",
+					"perjantai",
+					"lauantai"
+				]
+			}
+		},
+		"quarters": {
+			"format": {
+				"abbreviated": [
+					"1. nelj.",
+					"2. nelj.",
+					"3. nelj.",
+					"4. nelj."
+				],
+				"narrow": [
+					"1",
+					"2",
+					"3",
+					"4"
+				],
+				"wide": [
+					"1. neljännes",
+					"2. neljännes",
+					"3. neljännes",
+					"4. neljännes"
+				]
+			},
+			"stand-alone": {
+				"abbreviated": [
+					"1. nelj.",
+					"2. nelj.",
+					"3. nelj.",
+					"4. nelj."
+				],
+				"narrow": [
+					"1",
+					"2",
+					"3",
+					"4"
+				],
+				"wide": [
+					"1. neljännes",
+					"2. neljännes",
+					"3. neljännes",
+					"4. neljännes"
+				]
+			}
+		},
+		"dayPeriods": {
+			"format": {
+				"abbreviated": [
+					"ap.",
+					"ip."
+				],
+				"narrow": [
+					"ap.",
+					"ip."
+				],
+				"wide": [
+					"ap.",
+					"ip."
+				]
+			},
+			"stand-alone": {
+				"abbreviated": [
+					"ap.",
+					"ip."
+				],
+				"narrow": [
+					"ap.",
+					"ip."
+				],
+				"wide": [
+					"ap.",
+					"ip."
+				]
+			}
+		},
+		"era-wide": {
+			"0": "AP"
+		},
+		"era-abbreviated": {
+			"0": "AP"
+		},
+		"era-narrow": {
+			"0": "AP"
+		}
+	},
 	"dateFields": {
 		"era": {
 			"displayName": "aikakausi"
 		},
-		"year": {
+		"year-wide": {
 			"displayName": "vuosi",
 			"relative-type--1": "viime vuonna",
 			"relative-type-0": "tänä vuonna",
@@ -2446,7 +2873,35 @@
 				"relativeTimePattern-count-other": "{0} vuotta sitten"
 			}
 		},
-		"quarter": {
+		"year-short": {
+			"displayName": "v",
+			"relative-type--1": "viime v",
+			"relative-type-0": "tänä v",
+			"relative-type-1": "ensi v",
+			"relativeTime-type-future": {
+				"relativeTimePattern-count-one": "{0} v päästä",
+				"relativeTimePattern-count-other": "{0} v päästä"
+			},
+			"relativeTime-type-past": {
+				"relativeTimePattern-count-one": "{0} v sitten",
+				"relativeTimePattern-count-other": "{0} v sitten"
+			}
+		},
+		"year-narrow": {
+			"displayName": "v",
+			"relative-type--1": "viime v",
+			"relative-type-0": "tänä v",
+			"relative-type-1": "ensi v",
+			"relativeTime-type-future": {
+				"relativeTimePattern-count-one": "{0} v päästä",
+				"relativeTimePattern-count-other": "{0} v päästä"
+			},
+			"relativeTime-type-past": {
+				"relativeTimePattern-count-one": "{0} v sitten",
+				"relativeTimePattern-count-other": "{0} v sitten"
+			}
+		},
+		"quarter-wide": {
 			"displayName": "neljännesvuosi",
 			"relative-type--1": "viime neljännesvuonna",
 			"relative-type-0": "tänä neljännesvuonna",
@@ -2460,7 +2915,35 @@
 				"relativeTimePattern-count-other": "{0} neljännesvuotta sitten"
 			}
 		},
-		"month": {
+		"quarter-short": {
+			"displayName": "neljännes",
+			"relative-type--1": "viime neljänneksenä",
+			"relative-type-0": "tänä neljänneksenä",
+			"relative-type-1": "ensi neljänneksenä",
+			"relativeTime-type-future": {
+				"relativeTimePattern-count-one": "{0} neljänneksen päästä",
+				"relativeTimePattern-count-other": "{0} neljänneksen päästä"
+			},
+			"relativeTime-type-past": {
+				"relativeTimePattern-count-one": "{0} neljännes sitten",
+				"relativeTimePattern-count-other": "{0} neljännes sitten"
+			}
+		},
+		"quarter-narrow": {
+			"displayName": "nelj.",
+			"relative-type--1": "viime nelj.",
+			"relative-type-0": "tänä nelj.",
+			"relative-type-1": "ensi nelj.",
+			"relativeTime-type-future": {
+				"relativeTimePattern-count-one": "{0} nelj. päästä",
+				"relativeTimePattern-count-other": "{0} nelj. päästä"
+			},
+			"relativeTime-type-past": {
+				"relativeTimePattern-count-one": "{0} nelj. sitten",
+				"relativeTimePattern-count-other": "{0} nelj. sitten"
+			}
+		},
+		"month-wide": {
 			"displayName": "kuukausi",
 			"relative-type--1": "viime kuussa",
 			"relative-type-0": "tässä kuussa",
@@ -2474,7 +2957,35 @@
 				"relativeTimePattern-count-other": "{0} kuukautta sitten"
 			}
 		},
-		"week": {
+		"month-short": {
+			"displayName": "kk",
+			"relative-type--1": "viime kk",
+			"relative-type-0": "tässä kk",
+			"relative-type-1": "ensi kk",
+			"relativeTime-type-future": {
+				"relativeTimePattern-count-one": "{0} kk päästä",
+				"relativeTimePattern-count-other": "{0} kk päästä"
+			},
+			"relativeTime-type-past": {
+				"relativeTimePattern-count-one": "{0} kk sitten",
+				"relativeTimePattern-count-other": "{0} kk sitten"
+			}
+		},
+		"month-narrow": {
+			"displayName": "kk",
+			"relative-type--1": "viime kk",
+			"relative-type-0": "tässä kk",
+			"relative-type-1": "ensi kk",
+			"relativeTime-type-future": {
+				"relativeTimePattern-count-one": "{0} kk päästä",
+				"relativeTimePattern-count-other": "{0} kk päästä"
+			},
+			"relativeTime-type-past": {
+				"relativeTimePattern-count-one": "{0} kk sitten",
+				"relativeTimePattern-count-other": "{0} kk sitten"
+			}
+		},
+		"week-wide": {
 			"displayName": "viikko",
 			"relative-type--1": "viime viikolla",
 			"relative-type-0": "tällä viikolla",
@@ -2488,7 +2999,35 @@
 				"relativeTimePattern-count-other": "{0} viikkoa sitten"
 			}
 		},
-		"day": {
+		"week-short": {
+			"displayName": "vk",
+			"relative-type--1": "viime vk",
+			"relative-type-0": "tällä vk",
+			"relative-type-1": "ensi vk",
+			"relativeTime-type-future": {
+				"relativeTimePattern-count-one": "{0} vk päästä",
+				"relativeTimePattern-count-other": "{0} vk päästä"
+			},
+			"relativeTime-type-past": {
+				"relativeTimePattern-count-one": "{0} vk sitten",
+				"relativeTimePattern-count-other": "{0} vk sitten"
+			}
+		},
+		"week-narrow": {
+			"displayName": "vk",
+			"relative-type--1": "viime vk",
+			"relative-type-0": "tällä vk",
+			"relative-type-1": "ensi vk",
+			"relativeTime-type-future": {
+				"relativeTimePattern-count-one": "{0} vk päästä",
+				"relativeTimePattern-count-other": "{0} vk päästä"
+			},
+			"relativeTime-type-past": {
+				"relativeTimePattern-count-one": "{0} vk sitten",
+				"relativeTimePattern-count-other": "{0} vk sitten"
+			}
+		},
+		"day-wide": {
 			"displayName": "päivä",
 			"relative-type--2": "toissa päivänä",
 			"relative-type--1": "eilen",
@@ -2504,10 +3043,42 @@
 				"relativeTimePattern-count-other": "{0} päivää sitten"
 			}
 		},
+		"day-short": {
+			"displayName": "pv",
+			"relative-type--2": "toissap.",
+			"relative-type--1": "eilen",
+			"relative-type-0": "tänään",
+			"relative-type-1": "huom.",
+			"relative-type-2": "ylihuom.",
+			"relativeTime-type-future": {
+				"relativeTimePattern-count-one": "{0} pv päästä",
+				"relativeTimePattern-count-other": "{0} pv päästä"
+			},
+			"relativeTime-type-past": {
+				"relativeTimePattern-count-one": "{0} pv sitten",
+				"relativeTimePattern-count-other": "{0} pv sitten"
+			}
+		},
+		"day-narrow": {
+			"displayName": "pv",
+			"relative-type--2": "toissap.",
+			"relative-type--1": "eilen",
+			"relative-type-0": "tänään",
+			"relative-type-1": "huom.",
+			"relative-type-2": "ylihuom.",
+			"relativeTime-type-future": {
+				"relativeTimePattern-count-one": "{0} pv päästä",
+				"relativeTimePattern-count-other": "{0} pv päästä"
+			},
+			"relativeTime-type-past": {
+				"relativeTimePattern-count-one": "{0} pv sitten",
+				"relativeTimePattern-count-other": "{0} pv sitten"
+			}
+		},
 		"weekday": {
 			"displayName": "viikonpäivä"
 		},
-		"hour": {
+		"hour-wide": {
 			"displayName": "tunti",
 			"relativeTime-type-future": {
 				"relativeTimePattern-count-one": "{0} tunnin päästä",
@@ -2518,7 +3089,29 @@
 				"relativeTimePattern-count-other": "{0} tuntia sitten"
 			}
 		},
-		"minute": {
+		"hour-short": {
+			"displayName": "t",
+			"relativeTime-type-future": {
+				"relativeTimePattern-count-one": "{0} t päästä",
+				"relativeTimePattern-count-other": "{0} t päästä"
+			},
+			"relativeTime-type-past": {
+				"relativeTimePattern-count-one": "{0} t sitten",
+				"relativeTimePattern-count-other": "{0} t sitten"
+			}
+		},
+		"hour-narrow": {
+			"displayName": "t",
+			"relativeTime-type-future": {
+				"relativeTimePattern-count-one": "{0} t päästä",
+				"relativeTimePattern-count-other": "{0} t päästä"
+			},
+			"relativeTime-type-past": {
+				"relativeTimePattern-count-one": "{0} t sitten",
+				"relativeTimePattern-count-other": "{0} t sitten"
+			}
+		},
+		"minute-wide": {
 			"displayName": "minuutti",
 			"relativeTime-type-future": {
 				"relativeTimePattern-count-one": "{0} minuutin päästä",
@@ -2529,7 +3122,29 @@
 				"relativeTimePattern-count-other": "{0} minuuttia sitten"
 			}
 		},
-		"second": {
+		"minute-short": {
+			"displayName": "min",
+			"relativeTime-type-future": {
+				"relativeTimePattern-count-one": "{0} min päästä",
+				"relativeTimePattern-count-other": "{0} min päästä"
+			},
+			"relativeTime-type-past": {
+				"relativeTimePattern-count-one": "{0} min sitten",
+				"relativeTimePattern-count-other": "{0} min sitten"
+			}
+		},
+		"minute-narrow": {
+			"displayName": "min",
+			"relativeTime-type-future": {
+				"relativeTimePattern-count-one": "{0} min päästä",
+				"relativeTimePattern-count-other": "{0} min päästä"
+			},
+			"relativeTime-type-past": {
+				"relativeTimePattern-count-one": "{0} min sitten",
+				"relativeTimePattern-count-other": "{0} min sitten"
+			}
+		},
+		"second-wide": {
 			"displayName": "sekunti",
 			"relative-type-0": "nyt",
 			"relativeTime-type-future": {
@@ -2539,6 +3154,30 @@
 			"relativeTime-type-past": {
 				"relativeTimePattern-count-one": "{0} sekunti sitten",
 				"relativeTimePattern-count-other": "{0} sekuntia sitten"
+			}
+		},
+		"second-short": {
+			"displayName": "s",
+			"relative-type-0": "nyt",
+			"relativeTime-type-future": {
+				"relativeTimePattern-count-one": "{0} s päästä",
+				"relativeTimePattern-count-other": "{0} s päästä"
+			},
+			"relativeTime-type-past": {
+				"relativeTimePattern-count-one": "{0} s sitten",
+				"relativeTimePattern-count-other": "{0} s sitten"
+			}
+		},
+		"second-narrow": {
+			"displayName": "s",
+			"relative-type-0": "nyt",
+			"relativeTime-type-future": {
+				"relativeTimePattern-count-one": "{0} s päästä",
+				"relativeTimePattern-count-other": "{0} s päästä"
+			},
+			"relativeTime-type-past": {
+				"relativeTimePattern-count-one": "{0} s sitten",
+				"relativeTimePattern-count-other": "{0} s sitten"
 			}
 		},
 		"zone": {
@@ -2608,7 +3247,19 @@
 	},
 	"currencyFormat": {
 		"standard": "#,##0.00 ¤",
-		"accounting": "#,##0.00 ¤"
+		"accounting": "#,##0.00 ¤",
+		"currencySpacing": {
+			"beforeCurrency": {
+				"currencyMatch": "[:^S:]",
+				"surroundingMatch": "[:digit:]",
+				"insertBetween": " "
+			},
+			"afterCurrency": {
+				"currencyMatch": "[:^S:]",
+				"surroundingMatch": "[:digit:]",
+				"insertBetween": " "
+			}
+		}
 	},
 	"symbols-latn-decimal": ",",
 	"symbols-latn-group": " ",
@@ -2645,13 +3296,13 @@
 		"CLP": 0,
 		"COP": 0,
 		"CRC": 0,
-		"CZK": 2,
+		"CZK": 0,
 		"DEFAULT": 2,
 		"DJF": 0,
 		"ESP": 0,
 		"GNF": 0,
 		"GYD": 0,
-		"HUF": 2,
+		"HUF": 0,
 		"IDR": 0,
 		"IQD": 0,
 		"IRR": 0,
@@ -2685,7 +3336,7 @@
 		"TMM": 0,
 		"TND": 3,
 		"TRL": 0,
-		"TWD": 2,
+		"TWD": 0,
 		"TZS": 0,
 		"UGX": 0,
 		"UYI": 0,
@@ -2718,6 +3369,11 @@
 	"eras-islamic": {
 		"0": {
 			"_start": "622-7-15"
+		}
+	},
+	"eras-persian": {
+		"0": {
+			"_start": "622-01-01"
 		}
 	},
 	"eras-japanese": {

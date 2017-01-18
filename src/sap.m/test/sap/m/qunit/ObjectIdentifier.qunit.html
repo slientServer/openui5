@@ -1,8 +1,8 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-<meta http-equiv="X-UA-Compatible" content="IE=edge" />
-<meta charset="UTF-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta charset="utf-8">
 <title>ObjectIdentifier - sap.m</title>
 
 <link rel="stylesheet"
@@ -10,24 +10,24 @@
 	type="text/css" media="screen" />
 
 <!-- UI5 Bootstrap -->
-<script id="sap-ui-bootstrap" type="text/javascript"
-	src="../../../../resources/sap-ui-core.js"
-	data-sap-ui-theme="sap_bluecrystal" data-sap-ui-libs="sap.m"></script>
+<script src="../shared-config.js"></script>
+<script id="sap-ui-bootstrap"
+	src="../../../../resources/sap-ui-core.js" data-sap-ui-libs="sap.m"></script>
 
 <!-- QUnit libraries -->
 
 <script src="../../../../resources/sap/ui/thirdparty/qunit.js"></script>
-<script type="text/javascript" src="../../../../resources/sap/ui/qunit/qunit-junit.js"></script>
-<script type="text/javascript" src="../../../../resources/sap/ui/qunit/QUnitUtils.js"></script>
+<script src="../../../../resources/sap/ui/qunit/qunit-junit.js"></script>
+<script src="../../../../resources/sap/ui/qunit/QUnitUtils.js"></script>
 <script src="../../../../resources/sap/ui/thirdparty/sinon.js"></script>
 <script src="../../../../resources/sap/ui/thirdparty/sinon-qunit.js"></script>
 
 <!-- use the sinon faketimers for this test -->
-<script type="text/javascript">
+<script>
 	sinon.config.useFakeTimers = true;
 </script>
 
-<script type="text/javascript">
+<script>
 	/***********************************************************************************************************************/
 	module("Control Lifecycle");
 
@@ -52,9 +52,11 @@
 		//Assert
 		ok(jQuery.sap.domById(sut.getId()), "ObjectIdentifier should be rendered.");
 
-		var children = $("#" + sut.getId()).children();
-		equal($(children[0]).text(), sTitle, "Title is rendered.");
-		equal($(children[1]).text(), sText, "Text is rendered.");
+		var childrenTitle = $("#" + sut.getId()+"-title").children();
+		var childrenText = $("#" + sut.getId()+"-text").children();
+		equal($(childrenTitle[0]).text(), sTitle, "Title is rendered.");
+		equal($(childrenTitle[1]).text(), sap.m.ObjectIdentifier.OI_ARIA_ROLE, "Aria is rendered.");
+		equal($(childrenText[0]).text(), sText, "Text is rendered.");
 
 		ok(jQuery.sap.domById(sut.getId() + "-attachments-icon"), "Attachments icon is rendered.");
 		ok(jQuery.sap.domById(sut.getId() + "-notes-icon"), "Notes icon is rendered.");
@@ -103,9 +105,11 @@
 		//Assert
 		ok(jQuery.sap.domById(sut.getId()), "ObjectIdentifier should be rendered.");
 
-		var children = $("#" + sut.getId()).children();
-		equal($(children[0]).text(), sTitle, "Title is rendered.");
-		equal($(children[1]).text(), sText, "Text is rendered.");
+		var childrenTitle = $("#" + sut.getId()+"-title").children();
+		var childrenText = $("#" + sut.getId()+"-text").children();
+
+		equal($(childrenTitle[0]).text(), sTitle, "Title is rendered.");
+		equal($(childrenText[0]).text(), sText, "Text is rendered.");
 
 		ok(jQuery.sap.domById(sut.getId() + "-attachments-icon"), "Attachments icon is rendered.");
 		ok(jQuery.sap.domById(sut.getId() + "-notes-icon"), "Notes icon is rendered.");
@@ -317,7 +321,7 @@
 		sap.ui.getCore().applyChanges();
 
 		//Assert
-		strictEqual(oObjectIdentifier.$("title").children(0).text(), sEmptyTitle, "The title text is empty as expected");
+		strictEqual($(oObjectIdentifier.$("title").children()[0]).text(), sEmptyTitle, "The title text is empty as expected");
 		equal(oObjectIdentifier.$("title").children(0).css("display"), "none", "The title control should not be visible if title is empty initially");
 
 		//Act
@@ -325,7 +329,7 @@
 		sap.ui.getCore().applyChanges();
 
 		//Assert
-		strictEqual(oObjectIdentifier.$("title").children(0).text(), sDummyTitle, "The title text is correctly set");
+		strictEqual($(oObjectIdentifier.$("title").children()[0]).text(), sDummyTitle, "The title text is correctly set");
 		notEqual(oObjectIdentifier.$("title").children(0).css("display"), "none", "The title control should be visible if title is not empty");
 
 		//Act
@@ -333,7 +337,7 @@
 		sap.ui.getCore().applyChanges();
 
 		//Assert
-		strictEqual(oObjectIdentifier.$("title").children(0).text(), sEmptyTitle, "The title text is empty as expected");
+		strictEqual($(oObjectIdentifier.$("title").children()[0]).text(), sEmptyTitle, "The title text is empty as expected");
 		equal(oObjectIdentifier.$("title").children(0).css("display"), "none", "The title control should not be visible if title is empty");
 
 		//Cleanup
@@ -496,7 +500,7 @@
 
 				// act
 			var fnFireSelectSpy = this.spy(oObjectIdentifier, "fireTitlePress");
-			sap.ui.test.qunit.triggerKeydown(oObjectIdentifier.$('title').children(0), oOptions.keyCode);
+			sap.ui.test.qunit.triggerKeydown(oObjectIdentifier.$('title').children()[0], oOptions.keyCode);
 			this.clock.tick(1);
 
 			// assertions
@@ -534,8 +538,8 @@
 		// act
 		var fnFireSelectSpy1 = this.spy(oObjectIdentifier1, "fireTitlePress");
 		var fnFireSelectSpy2 = this.spy(oObjectIdentifier2, "fireTitlePress");
-		sap.ui.test.qunit.triggerKeydown(oObjectIdentifier1.$('title').children(0), jQuery.sap.KeyCodes.ENTER);
-		sap.ui.test.qunit.triggerKeydown(oObjectIdentifier2.$('title').children(0), jQuery.sap.KeyCodes.ENTER);
+		sap.ui.test.qunit.triggerKeydown(oObjectIdentifier1.$('title').children()[0], jQuery.sap.KeyCodes.ENTER);
+		sap.ui.test.qunit.triggerKeydown(oObjectIdentifier2.$('title').children()[0], jQuery.sap.KeyCodes.ENTER);
 		this.clock.tick(1);
 
 		// assertions
@@ -789,6 +793,75 @@
 		oModel.destroy()
 	});
 
+	test("Binding a table cell item after table column has been destroyed", function() {
+
+		//Arrange
+		var oTable = new sap.m.Table({
+			columns: [
+				new sap.m.Column({
+					header: new sap.m.Label({
+						text: "Label1"
+					})
+				}),
+				new sap.m.Column({
+					header: new sap.m.Label({
+						text: "Label2"
+					})
+				})
+			],
+			items: [
+				new sap.m.ColumnListItem("item", {
+					cells: [
+						new sap.m.ObjectIdentifier({
+							title: "title1",
+							text: "text1"
+						}),
+						new sap.m.ObjectIdentifier({
+							title: "title2",
+							text: "text2"
+						})
+					]
+				})
+			]
+		});
+
+		var oModel = new sap.ui.model.json.JSONModel({
+			items:[
+				{ "title": "New Title" }
+			]
+		});
+
+		//System under test
+		oTable.setModel(oModel);
+		oTable.placeAt("qunit-fixture");
+		sap.ui.getCore().applyChanges();
+
+		//Act
+		var oColumn = oTable.getColumns()[0];
+		oTable.removeColumn(0);
+		oColumn.destroy();
+
+		oTable.removeItem(0);
+
+		var oItemTemplate = sap.ui.getCore().byId('item');
+		oItemTemplate.getCells()[0].bindProperty('title', {
+			path:'title'
+		});
+
+		oTable.bindAggregation('items', {
+			path:'/items',
+			template: oItemTemplate
+		});
+		sap.ui.getCore().applyChanges();
+
+		//Assert
+		equal(oTable.getColumns().length, 1, "The table has just one column");
+
+		//Cleanup
+		oTable.destroy();
+		oModel.destroy()
+	});
+
 </script>
 </head>
 
@@ -797,7 +870,6 @@
 	<h2 id="qunit-banner"></h2>
 	<h2 id="qunit-userAgent"></h2>
 	<ol id="qunit-tests"></ol>
-	</div>
 	<div id="content"></div>
 	<div id="qunit-fixture"></div>
 </body>

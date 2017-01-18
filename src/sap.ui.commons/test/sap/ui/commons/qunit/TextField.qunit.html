@@ -4,23 +4,23 @@
 
 <html>
 	<head>
-		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
 
 		<title>Test Page for sap.ui.commons.TextField</title>
 		<link rel="shortcut icon" type="image/x-icon" href="../images/controls/sap.ui.commons.TextField.gif">
+		<script src="../shared-config.js"></script>
 		<script id="sap-ui-bootstrap"
 				data-sap-ui-theme="base"
-				type="text/javascript"
 				data-sap-ui-noConflict="true"
 				data-sap-ui-libs="sap.ui.commons"
 				src="../../../../../resources/sap-ui-core.js">
 		</script>
-		<link rel="stylesheet" href="../../../../../resources/sap/ui/thirdparty/qunit.css" type="text/css" media="screen" />
-		<script type="text/javascript" src="../../../../../resources/sap/ui/thirdparty/qunit.js"></script>
-		<script type="text/javascript" src="../../../../../resources/sap/ui/qunit/qunit-junit.js"></script>
-	
-		<script type="text/javascript" src="../../../../../resources/sap/ui/qunit/QUnitUtils.js"></script>
-		<script type="text/javascript">
+		<link rel="stylesheet" href="../../../../../resources/sap/ui/thirdparty/qunit.css" type="text/css" media="screen">
+		<script src="../../../../../resources/sap/ui/thirdparty/qunit.js"></script>
+		<script src="../../../../../resources/sap/ui/qunit/qunit-junit.js"></script>
+
+		<script src="../../../../../resources/sap/ui/qunit/QUnitUtils.js"></script>
+		<script>
 
 		var sValue = "Hello",
 			sTooltip = "abc",
@@ -105,7 +105,7 @@
 			}
 		});
 
-		// test property accessor methods 
+		// test property accessor methods
 
 		test("ValueOk", function() {
 			strictEqual(t1.getValue(), sValue, "t1.getValue()");
@@ -187,7 +187,7 @@
 			deepEqual(t2.getAriaLabelledBy(), aAriaLabelledBy, "t2.getAriaLabelledBy()");
 		});
 
-		// test event handlers 
+		// test event handlers
 
 		// TODO: event handler using Event parameters
 
@@ -220,12 +220,12 @@
 		});
 
 
-		// test methods 
+		// test methods
 
-		// TODO 
+		// TODO
 
 
-		// test misc (control interaction, metadata, styles, etc.)	
+		// test misc (control interaction, metadata, styles, etc.)
 
 		function isEmpty(oObject) {
 			for(var i in oObject){ return false;}

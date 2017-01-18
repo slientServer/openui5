@@ -24,9 +24,22 @@
 					"sap.ui.table.sample.Resizing",
 					"sap.ui.table.sample.MultiHeader",
 					"sap.ui.table.sample.OData",
-					"sap.ui.table.sample.OData2"
+					"sap.ui.table.sample.OData2",
+					"sap.ui.table.sample.RowAction"
+
 				]
-			}
+			},
+		  	{
+				"id": "sap.ui.table.TreeTable",
+				"name": "Tree Table",
+				"category": "List",
+				"since": "1.36",
+				"samples": [
+			  	    "sap.ui.table.sample.TreeTable.JSONTreeBinding",
+					"sap.ui.table.sample.TreeTable.BasicODataTreeBinding",
+					"sap.ui.table.sample.TreeTable.ODataAnnotationsTreeBinding"
+				]
+		  	}
 		],
 		"samples": [
 			{
@@ -61,7 +74,7 @@
 				"id": "sap.ui.table.sample.Resizing",
 				"name": "Resizing",
 				"description": "Example for column resizing and the different row count modes."
-			},{				
+			},{
 				"id": "sap.ui.table.sample.MultiHeader",
 				"name": "Multi Header",
 				"description": "Example for multi-header of table."
@@ -73,6 +86,22 @@
 				"id": "sap.ui.table.sample.OData2",
 				"name": "OData Metadata",
 				"description": "Shows an example how an oData metadata driven table creation can look like"
+			},{
+				"id": "sap.ui.table.sample.RowAction",
+				"name": "Row Actions",
+				"description": "Shows how row actions can be used."
+			},{
+			  "id": "sap.ui.table.sample.TreeTable.JSONTreeBinding",
+			  "name": "JSONTreeBinding",
+			  "description": "Basic example showing how a TreeTable can be build by using a JSONModel"
+		  	},{
+				"id": "sap.ui.table.sample.TreeTable.BasicODataTreeBinding",
+				"name": "Basic OData TreeBinding",
+				"description": "Illustrates how to bind to data from an OData model without using $metadata annotations or navigation properties. Instead, treeAnnotationProperties is filled for the TreeBinding."
+			},{
+				"id": "sap.ui.table.sample.TreeTable.ODataAnnotationsTreeBinding",
+				"name": "OData Annotations TreeBinding",
+				"description": "Illustrates how to bind to data from an OData model using $metadata annotations."
 			}
 		]
 	}

@@ -1,9 +1,8 @@
 sap.ui.define([
 	"sap/ui/core/UIComponent",
 	"sap/ui/model/json/JSONModel",
-	"sap/ui/demo/wt/controller/HelloDialog",
-	"sap/ui/model/odata/v2/ODataModel"
-], function (UIComponent, JSONModel, HelloDialog, ODataModel) {
+	"sap/ui/demo/wt/controller/HelloDialog"
+], function (UIComponent, JSONModel, HelloDialog) {
 	"use strict";
 
 	return UIComponent.extend("sap.ui.demo.wt.Component", {
@@ -13,7 +12,6 @@ sap.ui.define([
 		},
 
 		init : function () {
-
 			// call the init function of the parent
 			UIComponent.prototype.init.apply(this, arguments);
 
@@ -26,14 +24,17 @@ sap.ui.define([
 			var oModel = new JSONModel(oData);
 			this.setModel(oModel);
 
-			// set invoice model - remote
-			var oConfig = this.getMetadata().getConfig();
-			var oInvoiceModel = new ODataModel(oConfig.invoiceRemote);
-
-			this.setModel(oInvoiceModel, "invoice");
+			// debug code to show an alert for missing destination or CORS issues in the tutorial (see step 26 for details)
+			this.getModel("invoice").attachEventOnce("metadataFailed", function(oEvent) {
+				alert("Request to the OData remote service failed.\nRead the Walkthrough Tutorial Step 26 to understand why you don't see any data here.");
+			});
 
 			// set dialog
-			this.helloDialog = new HelloDialog();
+			this._helloDialog = new HelloDialog(this.getAggregation("rootControl"));
+		},
+		
+		openHelloDialog : function () {
+			this._helloDialog.open();
 		}
 	});
 

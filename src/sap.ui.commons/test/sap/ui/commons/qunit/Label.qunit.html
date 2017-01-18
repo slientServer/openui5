@@ -1,7 +1,7 @@
 <!DOCTYPE HTML>
 <html>
 	<head>
-		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
 
 <!--
   JSUNIT:
@@ -10,19 +10,19 @@
  -->
 
 		<title>Test Page for sap.ui.commons.Label</title>
+		<script src="../shared-config.js"></script>
 		<script id="sap-ui-bootstrap"
 				data-sap-ui-theme="sap_bluecrystal"
-				type="text/javascript"
 				data-sap-ui-noConflict="true"
 				data-sap-ui-libs="sap.ui.commons"
 				src="../../../../../resources/sap-ui-core.js">
 		</script>
-		<link rel="stylesheet" href="../../../../../resources/sap/ui/thirdparty/qunit.css" type="text/css" media="screen" />
-		<script type="text/javascript" src="../../../../../resources/sap/ui/thirdparty/qunit.js"></script>
-		<script type="text/javascript" src="../../../../../resources/sap/ui/qunit/qunit-junit.js"></script>
-		<script type="text/javascript" src="../../../../../resources/sap/ui/thirdparty/sinon.js"></script>
-		<script type="text/javascript" src="../../../../../resources/sap/ui/qunit/QUnitUtils.js"></script>
-		<script type="text/javascript">
+		<link rel="stylesheet" href="../../../../../resources/sap/ui/thirdparty/qunit.css" type="text/css" media="screen">
+		<script src="../../../../../resources/sap/ui/thirdparty/qunit.js"></script>
+		<script src="../../../../../resources/sap/ui/qunit/qunit-junit.js"></script>
+		<script src="../../../../../resources/sap/ui/thirdparty/sinon.js"></script>
+		<script src="../../../../../resources/sap/ui/qunit/QUnitUtils.js"></script>
+		<script>
 
 		var oTextField = new sap.ui.commons.TextField("t1");
 
@@ -192,14 +192,12 @@
 		test("RequiredIndicatorOk", function() {
 			ok(!l1.$().hasClass("sapUiLblReq"), "l1 has no class 'sapUiLblReq'");
 			oTextField.setRequired(true);
-			l1.invalidate(); // can we somehow detect changes in the associated control?
 			sap.ui.getCore().applyChanges();
 			ok(l1.$().hasClass("sapUiLblReq"), "l1 has class 'sapUiLblReq'");
 			l1.setRequired(true);
 			sap.ui.getCore().applyChanges();
 			ok(l1.$().hasClass("sapUiLblReq"), "l1 has class 'sapUiLblReq'");
 			oTextField.setRequired(false);
-			l1.invalidate(); // can we somehow detect changes in the associated control?
 			sap.ui.getCore().applyChanges();
 			ok(l1.$().hasClass("sapUiLblReq"), "l1 has class 'sapUiLblReq'");
 			ok(l1.$().hasClass("sapUiLblReqEnd"), "l1 has class 'sapUiLblReqEnd'");

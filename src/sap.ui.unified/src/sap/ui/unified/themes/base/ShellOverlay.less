@@ -1,10 +1,11 @@
-/* ============================================== */
-/* CSS for sap.ui.unfied.ShellOverlay.control (base)*/
-/* ============================================== */
+/* ============================================ */
+/* CSS for control sap.ui.unified/ShellOverlay  */
+/* Base theme                                   */
+/* ============================================ */
 
 @sapUiUfdShellOvrlyAnimDuration: 525ms;
 
-@sapUiUfdShellOvrlyCntntOpenAnimDuration: @sapUiUfdShellOvrlyAnimDuration / 1.5; 
+@sapUiUfdShellOvrlyCntntOpenAnimDuration: @sapUiUfdShellOvrlyAnimDuration / 1.5;
 @sapUiUfdShellOvrlyCntntOpenAnimDelay: 75ms;
 @sapUiUfdShellOvrlyCntntCloseAnimDuration: @sapUiUfdShellOvrlyAnimDuration / 1.5;
 @sapUiUfdShellOvrlyCntntInnerOpenAnimDuration: @sapUiUfdShellOvrlyAnimDuration / 3;
@@ -25,7 +26,6 @@
 
 .sapUiUfdShellOvrly {
 	position: absolute;
-	-moz-box-sizing: border-box;
 	box-sizing: border-box;
 	text-align: center;
 	width: 100%;
@@ -40,15 +40,14 @@
 	display: inline-block;
 	position: relative;
 	text-align: left;
-	-moz-box-sizing: border-box;
 	box-sizing: border-box;
 }
 
-.sapUiMedia-Std-Tablet .sapUiUfdShellOvrly > div {
+html.sapUiMedia-Std-Tablet .sapUiUfdShellOvrly > div {
 	width: 94%;
 }
 
-.sapUiMedia-Std-Phone .sapUiUfdShellOvrly > div {
+html.sapUiMedia-Std-Phone .sapUiUfdShellOvrly > div {
 	width: 100%;
 }
 
@@ -59,12 +58,12 @@
 	left: 0;
 	right: 0;
 	z-index: 1;
-	-moz-box-sizing: border-box;
 	box-sizing: border-box;
 	overflow: hidden;
 }
 
 .sapUiUfdShellOvrlyBrand {
+	background-color: @sapUiBrand;
 	position: absolute;
 	top: 0;
 	height: @sapUiUfdShellOvrlyBrandHeight;
@@ -86,29 +85,29 @@
 	padding-top: 14px;
 	padding-left: 14px;
 	padding-right: 14px;
-	-moz-box-sizing: border-box;
 	box-sizing: border-box;
 }
 
 .sapUiUfdShellOvrlyHeadClose,
-.sapUiUfdShellOvrlyHeadClose:active,
 .sapUiUfdShellOvrlyHeadClose:hover,
 .sapUiUfdShellOvrlyHeadClose:focus,
 .sapUiUfdShellOvrlyHeadClose:visited {
-	color: @sapUiBaseText;
+	color: @sapUiButtonIconColor;
+}
+
+.sapUiUfdShellOvrlyHeadClose:active {
+	color: @sapUiButtonActiveTextColor;
 }
 
 .sapUiUfdShellOvrlyCntnt {
-	background-color: white;
+	background-color: @sapUiGroupContentBackground;
 	top: 0;
 	bottom: 0;
 	position: absolute;
 	width: 100%;
-	-moz-box-sizing: border-box;
 	box-sizing: border-box;
 	border-top: @sapUiUfdShellOvrlyHeadHeight solid transparent;
-	box-shadow: 0 0 48px rgba(0, 0, 0, 0.3);
-	-webkit-box-shadow: 0 0 48px rgba(0, 0, 0, 0.3);
+	box-shadow: 0 0 48px fade(@sapUiContentShadowColor, 30);
 }
 
 .sapUiUfdShellOvrlyCntnt > div {
@@ -151,7 +150,7 @@
 	text-align: center;
 }
 
-.sapUiMedia-Std-Phone .sapUiUfdShellOvrlyHeadCenter {
+html.sapUiMedia-Std-Phone .sapUiUfdShellOvrlyHeadCenter {
 	left: 5px;
 }
 
@@ -162,7 +161,6 @@
 	max-width: 600px;
 	height: 100%;
 	line-height: @sapUiUfdShellHeaderBarHeight - @sapUiUfdShellHeaderBarHeight/10;
-	-moz-box-sizing: border-box;
 	box-sizing: border-box;
 	text-align: left;
 }
@@ -176,106 +174,112 @@
 .sapUiUfdShellOvrlyAnim.sapUiUfdShellOvrly > div {
 	-webkit-transition-property: width;
 	transition-property: width;
-	-moz-transition-property: width;
 	-webkit-transition-duration: @sapUiUfdShellOvrlyAnimDuration / 3;
 	transition-duration: @sapUiUfdShellOvrlyAnimDuration / 3;
-	-moz-transition-duration: @sapUiUfdShellOvrlyAnimDuration / 3;
 }
 
 .sapUiUfdShellOvrlyAnim.sapUiUfdShellOvrlyOpening .sapUiUfdShellOvrlyCntnt {
 	-webkit-transition-duration: @sapUiUfdShellOvrlyCntntOpenAnimDuration;
 	transition-duration: @sapUiUfdShellOvrlyCntntOpenAnimDuration;
-	-moz-transition-duration: @sapUiUfdShellOvrlyCntntOpenAnimDuration;
 	-webkit-transition-delay: @sapUiUfdShellOvrlyCntntOpenAnimDelay;
 	transition-delay: @sapUiUfdShellOvrlyCntntOpenAnimDelay;
-	-moz-transition-delay: @sapUiUfdShellOvrlyCntntOpenAnimDelay;
 }
 
 .sapUiUfdShellOvrlyAnim.sapUiUfdShellOvrlyClosing .sapUiUfdShellOvrlyCntnt {
 	-webkit-transition-duration: @sapUiUfdShellOvrlyCntntCloseAnimDuration;
 	transition-duration: @sapUiUfdShellOvrlyCntntCloseAnimDuration;
-	-moz-transition-duration: @sapUiUfdShellOvrlyCntntCloseAnimDuration;
 	-webkit-transition-delay: @sapUiUfdShellOvrlyCntntCloseAnimDelay;
 	transition-delay: @sapUiUfdShellOvrlyCntntCloseAnimDelay;
-	-moz-transition-delay: @sapUiUfdShellOvrlyCntntCloseAnimDelay;
 }
 
 .sapUiUfdShellOvrlyAnim.sapUiUfdShellOvrlyOpening .sapUiUfdShellOvrlyCntnt,
 .sapUiUfdShellOvrlyAnim.sapUiUfdShellOvrlyClosing .sapUiUfdShellOvrlyCntnt {
 	-webkit-transition-timing-function: cubic-bezier(0,0,0,1);
 	transition-timing-function: cubic-bezier(0,0,0,1);
-	-moz-transition-timing-function: cubic-bezier(0,0,0,1);
 }
 
 .sapUiUfdShellOvrlyAnim .sapUiUfdShellOvrlyCntnt {
 	-webkit-transition-property: top, bottom;
 	transition-property: top, bottom;
-	-moz-transition-property: top, bottom;
 }
 
 .sapUiUfdShellOvrlyAnim.sapUiUfdShellOvrlyOpening .sapUiUfdShellOvrlyCntnt > div {
 	-webkit-transition-duration: @sapUiUfdShellOvrlyCntntInnerOpenAnimDuration;
 	transition-duration: @sapUiUfdShellOvrlyCntntInnerOpenAnimDuration;
-	-moz-transition-duration: @sapUiUfdShellOvrlyCntntInnerOpenAnimDuration;
 	-webkit-transition-delay: @sapUiUfdShellOvrlyCntntInnerOpenAnimDelay;
 	transition-delay: @sapUiUfdShellOvrlyCntntInnerOpenAnimDelay;
-	-moz-transition-delay: @sapUiUfdShellOvrlyCntntInnerOpenAnimDelay;
 }
 
 .sapUiUfdShellOvrlyAnim.sapUiUfdShellOvrlyClosing .sapUiUfdShellOvrlyCntnt > div {
 	-webkit-transition-duration: @sapUiUfdShellOvrlyCntntInnerCloseAnimDuration;
 	transition-duration: @sapUiUfdShellOvrlyCntntInnerCloseAnimDuration;
-	-moz-transition-duration: @sapUiUfdShellOvrlyCntntInnerCloseAnimDuration;
 	-webkit-transition-delay: @sapUiUfdShellOvrlyCntntInnerCloseAnimDelay;
 	transition-delay: @sapUiUfdShellOvrlyCntntInnerCloseAnimDelay;
-	-moz-transition-delay: @sapUiUfdShellOvrlyCntntInnerCloseAnimDelay;
 }
 
 .sapUiUfdShellOvrlyAnim .sapUiUfdShellOvrlyCntnt > div {
 	-webkit-transition-property: opacity;
 	transition-property: opacity;
-	-moz-transition-property: opacity;
 }
 
 .sapUiUfdShellOvrlyAnim.sapUiUfdShellOvrlyOpening .sapUiUfdShellOvrlySearch {
 	-webkit-transition-duration: @sapUiUfdShellOvrlySearchOpenAnimDuration;
 	transition-duration: @sapUiUfdShellOvrlySearchOpenAnimDuration;
-	-moz-transition-duration: @sapUiUfdShellOvrlySearchOpenAnimDuration;
 	-webkit-transition-timing-function: ease-out;
 	transition-timing-function: ease-out;
-	-moz-transition-timing-function: ease-out;
 }
 
 .sapUiUfdShellOvrlyAnim.sapUiUfdShellOvrlyClosing .sapUiUfdShellOvrlySearch {
 	-webkit-transition-duration: @sapUiUfdShellOvrlySearchCloseAnimDuration;
 	transition-duration: @sapUiUfdShellOvrlySearchCloseAnimDuration;
-	-moz-transition-duration: @sapUiUfdShellOvrlySearchCloseAnimDuration;
 }
 
 .sapUiUfdShellOvrlyAnim .sapUiUfdShellOvrlySearch {
 	-webkit-transition-property: width;
 	transition-property: width;
-	-moz-transition-property: width;
 }
 
 .sapUiUfdShellOvrlyAnim .sapUiUfdShellOvrlyHeadClose {
 	-webkit-transition-property: opacity;
 	transition-property: opacity;
-	-moz-transition-property: opacity;
 	-webkit-transition-duration: @sapUiUfdShellOvrlyAnimDuration;
 	transition-duration: @sapUiUfdShellOvrlyAnimDuration;
-	-moz-transition-duration: @sapUiUfdShellOvrlyAnimDuration;
 }
 
 .sapUiBLy.sapUiUfdShellOvrlyBly {
 	-webkit-transition-property: all;
 	transition-property: all;
-	-moz-transition-property: all;
 	-webkit-transition-duration: @sapUiUfdShellOvrlyBlockLayerAnimDuration;
 	transition-duration: @sapUiUfdShellOvrlyBlockLayerAnimDuration;
-	-moz-transition-duration: @sapUiUfdShellOvrlyBlockLayerAnimDuration;
 }
 
 .sapUiBLy.sapUiUfdShellOvrlyBly.sapUiUfdShellOvrlyBlyTp {
 	background-color: transparent;
+}
+
+.sapUiUfdShellOvrlyHeadClose {
+	right: 0;
+	height: @sapUiUfdShellHeaderBarHeight - 8px;
+	margin: 4px;
+	padding-top: 10px;
+	padding-left: 10px;
+	padding-right: 10px;
+}
+
+.sapUiUfdShellOvrlyHeadClose:before {
+	background-color: @sapUiToolbarSeparatorColor;
+    content: " ";
+    height: 76%;
+    top: 12%;
+    position: absolute;
+    left: -4px;
+    width: 1px;
+}
+
+html.sapUiMedia-Std-Desktop .sapUiUfdShellOvrlyHeadClose:hover {
+	background-color: @sapUiButtonHoverBackground;
+}
+
+html.sapUiMedia-Std-Desktop .sapUiUfdShellOvrlyHeadClose:active:hover {
+	background-color: @sapUiButtonActiveBackground;
 }

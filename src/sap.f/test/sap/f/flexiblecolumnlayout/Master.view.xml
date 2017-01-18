@@ -1,0 +1,144 @@
+<View xmlns="sap.m" displayBlock="true" controllerName="flexiblecolumnlayout.Master" height="100%">
+	<Page id="masterPage" title="Master page" backgroundDesign="Transparent">
+
+		<Table>
+			<columns>
+				<Column><Label text="Master List" /></Column>
+			</columns>
+			<items>
+				<ColumnListItem type="Navigation" vAlign="Middle" press="handleMasterPress">
+					<cells>
+						<Text text="To detail"/>
+					</cells>
+				</ColumnListItem>
+				<ColumnListItem type="Navigation" vAlign="Middle" press="handleMasterPress">
+					<cells>
+						<Text text="To detail"/>
+					</cells>
+				</ColumnListItem>
+				<ColumnListItem type="Navigation" vAlign="Middle" press="handleMasterPress">
+					<cells>
+						<Text text="To detail"/>
+					</cells>
+				</ColumnListItem>
+				<ColumnListItem type="Navigation" vAlign="Middle" press="handleMasterPress">
+					<cells>
+						<Text text="To detail"/>
+					</cells>
+				</ColumnListItem>
+				<ColumnListItem type="Navigation" vAlign="Middle" press="handleMasterPress">
+					<cells>
+						<Text text="To detail"/>
+					</cells>
+				</ColumnListItem>
+				<ColumnListItem type="Navigation" vAlign="Middle" press="handleMasterPress">
+					<cells>
+						<Text text="To detail"/>
+					</cells>
+				</ColumnListItem>
+				<ColumnListItem type="Navigation" vAlign="Middle" press="handleMasterPress">
+					<cells>
+						<Text text="To detail"/>
+					</cells>
+				</ColumnListItem>
+				<ColumnListItem type="Navigation" vAlign="Middle" press="handleMasterPress">
+					<cells>
+						<Text text="To detail"/>
+					</cells>
+				</ColumnListItem>
+				<ColumnListItem type="Navigation" vAlign="Middle" press="handleMasterPress">
+					<cells>
+						<Text text="To detail"/>
+					</cells>
+				</ColumnListItem>
+				<ColumnListItem type="Navigation" vAlign="Middle" press="handleMasterPress">
+					<cells>
+						<Text text="To detail"/>
+					</cells>
+				</ColumnListItem>
+				<ColumnListItem type="Navigation" vAlign="Middle" press="handleMasterPress">
+					<cells>
+						<Text text="To detail"/>
+					</cells>
+				</ColumnListItem>
+				<ColumnListItem type="Navigation" vAlign="Middle" press="handleMasterPress">
+					<cells>
+						<Text text="To detail"/>
+					</cells>
+				</ColumnListItem>
+				<ColumnListItem type="Navigation" vAlign="Middle" press="handleMasterPress">
+					<cells>
+						<Text text="To detail"/>
+					</cells>
+				</ColumnListItem>
+				<ColumnListItem type="Navigation" vAlign="Middle" press="handleMasterPress">
+					<cells>
+						<Text text="To detail"/>
+					</cells>
+				</ColumnListItem>
+				<ColumnListItem type="Navigation" vAlign="Middle" press="handleMasterPress">
+					<cells>
+						<Text text="To detail"/>
+					</cells>
+				</ColumnListItem>
+				<ColumnListItem type="Navigation" vAlign="Middle" press="handleMasterPress">
+					<cells>
+						<Text text="To detail"/>
+					</cells>
+				</ColumnListItem>
+				<ColumnListItem type="Navigation" vAlign="Middle" press="handleMasterPress">
+					<cells>
+						<Text text="To detail"/>
+					</cells>
+				</ColumnListItem>
+				<ColumnListItem type="Navigation" vAlign="Middle" press="handleMasterPress">
+					<cells>
+						<Text text="To detail"/>
+					</cells>
+				</ColumnListItem>
+				<ColumnListItem type="Navigation" vAlign="Middle" press="handleMasterPress">
+					<cells>
+						<Text text="To detail"/>
+					</cells>
+				</ColumnListItem>
+				<ColumnListItem type="Navigation" vAlign="Middle" press="handleMasterPress">
+					<cells>
+						<Text text="To detail"/>
+					</cells>
+				</ColumnListItem>
+				<ColumnListItem type="Navigation" vAlign="Middle" press="handleMasterPress">
+					<cells>
+						<Text text="To detail"/>
+					</cells>
+				</ColumnListItem>
+				<ColumnListItem type="Navigation" vAlign="Middle" press="handleMasterPress">
+					<cells>
+						<Text text="To detail"/>
+					</cells>
+				</ColumnListItem>
+				<ColumnListItem type="Navigation" vAlign="Middle" press="handleMasterPress">
+					<cells>
+						<Text text="To detail"/>
+					</cells>
+				</ColumnListItem>
+				<ColumnListItem type="Navigation" vAlign="Middle" press="handleMasterPress">
+					<cells>
+						<Text text="To detail"/>
+					</cells>
+				</ColumnListItem>
+				<ColumnListItem type="Navigation" vAlign="Middle" press="handleMasterPress">
+					<cells>
+						<Text text="To detail"/>
+					</cells>
+				</ColumnListItem>
+				<ColumnListItem type="Navigation" vAlign="Middle" press="handleMasterPress">
+					<cells>
+						<Text text="To detail"/>
+					</cells>
+				</ColumnListItem>
+			</items>
+		</Table>
+	</Page>
+</View>
+
+

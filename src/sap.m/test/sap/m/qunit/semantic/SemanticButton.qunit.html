@@ -2,23 +2,23 @@
 <html>
 <head>
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<meta charset="UTF-8">
+	<meta charset="utf-8">
 	<title>Test Page for sap.m.semantic.SemanticButton</title>
+	<script src="../../shared-config.js"></script>
 	<script id="sap-ui-bootstrap"
 			data-sap-ui-noConflict="true"
 			src="../../../../../resources/sap-ui-core.js"
-			data-sap-ui-libs="sap.m"
-			data-sap-ui-theme="sap_bluecrystal">
+			data-sap-ui-libs="sap.m">
 	</script>
-	<link rel="stylesheet" href="../../../../../resources/sap/ui/thirdparty/qunit.css" type="text/css" media="screen"/>
+	<link rel="stylesheet" href="../../../../../resources/sap/ui/thirdparty/qunit.css" type="text/css" media="screen">
 	<script src="../../../../../resources/sap/ui/thirdparty/qunit.js"></script>
-	<script type="text/javascript" src="../../../../../resources/sap/ui/qunit/qunit-junit.js"></script>
+	<script src="../../../../../resources/sap/ui/qunit/qunit-junit.js"></script>
 	<script src="../../../../../resources/sap/ui/thirdparty/sinon.js"></script>
 	<script src="../../../../../resources/sap/ui/thirdparty/sinon-qunit.js"></script>
 	<script src="../../../../../resources/sap/ui/qunit/QUnitUtils.js"></script>
 
 	<!-- use the sinon faketimers for this test -->
-	<script type="text/javascript">
+	<script>
 		sinon.config.useFakeTimers = true;
 	</script>
 
@@ -547,7 +547,7 @@
 			// Clean up
 			oSemanticPage.destroy();
 		});
-		
+
 		test("MultiSelectAction enabled property", function() {
 
 			var oStatusModel = new sap.ui.model.json.JSONModel({ master: { multiSelectEnabled: false } });
@@ -563,10 +563,10 @@
 
 			// Assert
 			strictEqual(oMultiSelectAction.getEnabled(), false, "baound value initialized correctly");
-			
+
 			// Act
 			oStatusModel.setData({master: {multiSelectEnabled: true}}, true);
-			
+
 			// Assert
 			strictEqual(oMultiSelectAction.getEnabled(), true, "baound value changed correctly");
 
@@ -574,6 +574,111 @@
 			oSemanticPage.destroy();
 		});
 
+		module("eventDelegate");
+
+		test("add callback", function() {
+
+			var oMultiSelectAction = new sap.m.semantic.MultiSelectAction("multiAction"),
+				callback = sinon.spy();
+
+			var oResult = oMultiSelectAction.addEventDelegate({onAfterRendering: callback});
+			var oSemanticPage = new sap.m.semantic.MasterPage({
+				multiSelectAction: oMultiSelectAction
+			});
+
+			oSemanticPage.placeAt("qunit-fixture-visible");
+			sap.ui.getCore().applyChanges();
+
+			strictEqual(callback.calledOnce, true, "delegate is called");
+
+			oSemanticPage.destroy();
+		});
+
+		test("callback references the semantic object", function() {
+
+			var oMultiSelectAction = new sap.m.semantic.MultiSelectAction("multiAction"),
+					callback = sinon.spy();
+
+			var oResult = oMultiSelectAction.addEventDelegate({onAfterRendering: callback});
+			var oSemanticPage = new sap.m.semantic.MasterPage({
+				multiSelectAction: oMultiSelectAction
+			});
+
+			oSemanticPage.placeAt("qunit-fixture-visible");
+			sap.ui.getCore().applyChanges();
+
+			strictEqual(callback.getCall(0).args[0].srcControl.getId(), "multiAction");
+			strictEqual(oResult.getId(), "multiAction");
+
+			oSemanticPage.destroy();
+		});
+
+		test("addEventDelegate returns the semantic object", function() {
+
+			var oMultiSelectAction = new sap.m.semantic.MultiSelectAction("multiAction"),
+					callback = sinon.spy();
+
+			var oResult = oMultiSelectAction.addEventDelegate({onAfterRendering: callback});
+			var oSemanticPage = new sap.m.semantic.MasterPage({
+				multiSelectAction: oMultiSelectAction
+			});
+
+			oSemanticPage.placeAt("qunit-fixture-visible");
+			sap.ui.getCore().applyChanges();
+
+			strictEqual(oResult.getId(), "multiAction");
+
+			oSemanticPage.destroy();
+		});
+
+		test("remove callback", function() {
+
+			var oMultiSelectAction = new sap.m.semantic.MultiSelectAction("multiAction"),
+					callback = sinon.spy(),
+					oDelegate = {onAfterRendering: callback};
+
+			oMultiSelectAction.addEventDelegate(oDelegate);
+			var oSemanticPage = new sap.m.semantic.MasterPage({
+				multiSelectAction: oMultiSelectAction
+			});
+
+			oSemanticPage.placeAt("qunit-fixture-visible");
+			sap.ui.getCore().applyChanges();
+
+			strictEqual(callback.calledOnce, true, "delegate is called");
+
+			var oResult = oMultiSelectAction.removeEventDelegate(oDelegate);
+
+			oSemanticPage.rerender();
+			sap.ui.getCore().applyChanges();
+
+			strictEqual(callback.calledOnce, true, "delegate is called only once");
+
+			oSemanticPage.destroy();
+		});
+
+		test("removeEventDelegate returns the semantic object", function() {
+
+			var oMultiSelectAction = new sap.m.semantic.MultiSelectAction("multiAction"),
+					callback = sinon.spy(),
+					oDelegate = {onAfterRendering: callback};
+
+			oMultiSelectAction.addEventDelegate(oDelegate);
+			var oSemanticPage = new sap.m.semantic.MasterPage({
+				multiSelectAction: oMultiSelectAction
+			});
+
+			oSemanticPage.placeAt("qunit-fixture-visible");
+			sap.ui.getCore().applyChanges();
+
+			strictEqual(callback.calledOnce, true, "delegate is called");
+
+			var oResult = oMultiSelectAction.removeEventDelegate(oDelegate);
+
+			strictEqual(oResult.getId(), "multiAction");
+
+			oSemanticPage.destroy();
+		});
 
 	</script>
 </head>

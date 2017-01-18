@@ -3,27 +3,25 @@
 
 <!--
   Tested class: sap.m.NavContainer
-  Author: d046011
 -->
 
 	<head>
-		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
 		<title>qUnit Page for sap.m.NavContainer</title>
 
+		<script src="../shared-config.js"></script>
 		<script id="sap-ui-bootstrap"
-			type="text/javascript"
 			src="../../../../resources/sap-ui-core.js"
-			data-sap-ui-theme="sap_bluecrystal"
 			data-sap-ui-noConflict="true"
 			data-sap-ui-libs="sap.m">
 		</script>
 
-		<link rel="stylesheet" href="../../../../resources/sap/ui/thirdparty/qunit.css" type="text/css" media="screen" />
-		<script type="text/javascript" src="../../../../resources/sap/ui/thirdparty/qunit.js"></script>
-		<script type="text/javascript" src="../../../../resources/sap/ui/qunit/qunit-junit.js"></script>
+		<link rel="stylesheet" href="../../../../resources/sap/ui/thirdparty/qunit.css" type="text/css" media="screen">
+		<script src="../../../../resources/sap/ui/thirdparty/qunit.js"></script>
+		<script src="../../../../resources/sap/ui/qunit/qunit-junit.js"></script>
 		<script src="../../../../resources/sap/ui/thirdparty/sinon.js"></script>
 		<script src="../../../../resources/sap/ui/thirdparty/sinon-qunit.js"></script>
-		<script type="text/javascript" src="../../../../resources/sap/ui/qunit/QUnitUtils.js"></script>
+		<script src="../../../../resources/sap/ui/qunit/QUnitUtils.js"></script>
 
 		<script>
 
@@ -224,6 +222,12 @@
 			});
 
 			assert.ok(!this.spy.calledWith(this.pageId));
+		});
+
+		test("Auto focus should't be used when inside a popup", function (assert){
+			var oNavContainer = new sap.m.NavContainer();
+			new sap.m.Popover({content: new sap.m.Page({content: [oNavContainer]})});
+			assert.ok(oNavContainer._isInsideAPopup(), "NavContainer detects that it's nested inside a popup");
 		});
 
 		module("Page change");
@@ -1591,7 +1595,40 @@
 
 		beforeRenderingTestCase("Should pass to data to the page's onBeforeShow when called before rendering", "onBeforeShow");
 		beforeRenderingTestCase("Should pass to data to the page's onBeforeFirstShow when called before rendering", "onBeforeFirstShow");
-		beforeRenderingTestCase("Should pass to data to the page's onAfterShow when called before rendering", "onAfterShow");
+		beforeRenderingTestCase("Should pass to daa to the page's onAfterShow when called before rendering", "onAfterShow");
+
+		asyncTest("Event data on initial page", function() {
+			var oInitialPage = new sap.m.Page(),
+				oSecondPage = new sap.m.Page(),
+				oNavContainer = new sap.m.NavContainer({
+					pages: [
+						oInitialPage, oSecondPage
+					]
+				}),
+				oNavigationData = {
+					foo: "bar"
+				},
+				oBackData = {
+					back: true
+				};
+
+			// Act
+			oNavContainer.to(oInitialPage.getId(), "show", oNavigationData);
+			oNavContainer.to(oSecondPage.getId(), "show");
+			oNavContainer.placeAt("qunit-fixture");
+			sap.ui.getCore().applyChanges();
+
+			oInitialPage.addEventDelegate({
+				onBeforeShow: function(oEvent) {
+					strictEqual(oEvent.data, oNavigationData, "The forward navigation data is passed to the back navigation");
+					strictEqual(oEvent.backData, oBackData, "The back navigation data is passed");
+
+					oNavContainer.destroy();
+					start();
+				}
+			});
+			oNavContainer.backToPage(oInitialPage.getId(), oBackData);
+		});
 
 		module("Lifecycle");
 

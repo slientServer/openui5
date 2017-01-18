@@ -149,10 +149,6 @@ sap.ui.define([
 			afterNavigate: this._afterNavigate.bind(this)
 		};
 
-		if (!sap.ui.Device.system.phone) {
-			oNavConfig.width = this.getWidth();
-		}
-
 		this._oNavContainer = new NavContainer(oNavConfig);
 
 		var that = this;
@@ -160,6 +156,7 @@ sap.ui.define([
 		this._oPopover = new ResponsivePopover(this.getId() + '-quickView', {
 			placement: this.getPlacement(),
 			content: [this._oNavContainer],
+			contentWidth: this.getWidth(),
 			showHeader: false,
 			showCloseButton : false,
 			afterOpen: function (oEvent) {
@@ -218,6 +215,7 @@ sap.ui.define([
 
 		// Update pages only if items aggregation is changed
 		if (this._bItemsChanged) {
+			this._clearContainerHeight();
 			this._initPages();
 
 			// add a close button on phone devices when there are no pages
@@ -237,6 +235,7 @@ sap.ui.define([
 
 		if (this._oPopover) {
 			this._oPopover.destroy();
+			this._oPopover = null;
 		}
 	};
 
@@ -294,6 +293,15 @@ sap.ui.define([
 		this._oNavContainer.addPage(oPage);
 	};
 
+	QuickView.prototype._clearContainerHeight = function() {
+		var oPopupControl = this._oPopover.getAggregation("_popup");
+		var $container = oPopupControl.$().find('.sapMPopoverCont');
+
+		if ($container[0] && $container[0].style.height) {
+			$container[0].style.height = '';
+		}
+	};
+
 	/**
 	 * Adjusts the popup height based on the QuickView's content.
 	 * @private
@@ -313,24 +321,6 @@ sap.ui.define([
 	 */
 	QuickView.prototype._setLinkWidth = function() {
 		this._oPopover.$().find(".sapMLnk").css("width", "auto");
-	};
-
-	QuickView.prototype.setProperty = function (sPropertyName, oValue, bSuppressInvalidate) {
-		switch (sPropertyName) {
-			case "busy":
-			case "busyIndicatorDelay":
-			case "visible":
-			case "fieldGroupIds":
-				if (this._oPopover) {
-					this._oPopover.setProperty(sPropertyName, oValue, bSuppressInvalidate);
-					return sap.ui.core.Control.prototype.setProperty.call(this, sPropertyName, oValue, true);
-				}
-				break;
-			default:
-				break;
-		}
-
-		return sap.ui.core.Control.prototype.setProperty.apply(this, arguments);
 	};
 
 	/**
@@ -372,8 +362,8 @@ sap.ui.define([
 	 * @public
 	 */
 	QuickView.prototype.setWidth = function (sWidth) {
-		if (this._oNavContainer) {
-			this._oNavContainer.setWidth(sWidth);
+		if (this._oPopover) {
+			this._oPopover.setContentWidth(sWidth);
 			this.setProperty('width', sWidth, true);
 		}
 
@@ -387,17 +377,25 @@ sap.ui.define([
 	 * @public
 	 */
 	QuickView.prototype.openBy = function(oControl) {
+		this._bItemsChanged = true;
 		this._oPopover.openBy(oControl);
 
 		return this;
 	};
 
-	["addStyleClass", "removeStyleClass", "toggleStyleClass", "hasStyleClass"].forEach(function(sName){
+	QuickView.prototype.getDomRef = function (sSuffix) {
+		return this._oPopover && this._oPopover.getAggregation("_popup").getDomRef(sSuffix);
+	};
+
+	["addStyleClass", "removeStyleClass", "toggleStyleClass", "hasStyleClass", "getBusyIndicatorDelay",
+	"setBusyIndicatorDelay", "getVisible", "setVisible", "getFieldGroupIds", "setFieldGroupIds", "getBusy", "setBusy",
+	"setTooltip", "getTooltip"].forEach(function(sName){
 		QuickView.prototype[sName] = function() {
 			if (this._oPopover && this._oPopover[sName]) {
-				var res = this._oPopover[sName].apply(this._oPopover, arguments);
-				return res === this._oPopover ? this : res;
+				var res = this._oPopover.getAggregation("_popup")[sName].apply(this._oPopover.getAggregation("_popup"), arguments);
+				return res === this._oPopover.getAggregation("_popup") ? this : res;
 			}
+
 		};
 	});
 
@@ -410,8 +408,14 @@ sap.ui.define([
 				// Marks items aggregation as changed and invalidate popover to trigger rendering
 				this._bItemsChanged = true;
 
-				if (this._bRendered && this._oPopover) {
-					this._oPopover.invalidate();
+				if (this._oPopover) {
+					if (arguments[0] != "pages") {
+						this._oPopover[sFuncName].apply(this._oPopover, arguments);
+					}
+
+					if (this._bRendered) {
+						this._oPopover.invalidate();
+					}
 				}
 
 				if (["removeAggregation", "removeAllAggregation"].indexOf(sFuncName) !== -1) {

@@ -1,7 +1,4 @@
-sap.ui.define([
-	"sap/m/Text",
-	"sap/ui/demo/bulletinboard/model/DateFormatter"
-], function (Text, DateFormatter) {
+sap.ui.define([], function () {
 	"use strict";
 
 	return {
@@ -37,18 +34,8 @@ sap.ui.define([
 			} else {
 				return "Error";
 			}
-		},
-
-		/**
-		 * Creates a human readable date
-		 *
-		 * @public
-		 * @param {date} oDate the date of the property.
-		 * @returns {string} sValue the formatted date
-		 */
-		date: function(oDate) {
-			return new DateFormatter({ now: Date.now }).format(oDate);
 		}
-};
+
+	};
 
 });

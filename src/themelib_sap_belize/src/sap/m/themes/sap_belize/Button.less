@@ -1,0 +1,86 @@
+/* ============================= */
+/* CSS for control sap.m/Button  */
+/* Belize theme                  */
+/* ============================= */
+
+@_sap_m_Button_EmphasizedFocusColor: @sapUiContentFocusColor;
+
+/* ---------------------------------------------------------------------*/
+/* Custom focus outline:                                                */
+/* ---------------------------------------------------------------------*/
+
+html.sap-desktop .sapMBtn:focus > .sapMFocusable {
+	outline:          1px dotted @sapUiContentFocusColor;
+	outline-offset:   -3px;
+}
+
+html.sap-desktop .sapMBtn:focus > .sapMBtnActive.sapMFocusable {
+	outline-color:    @sapUiContentContrastFocusColor;
+}
+
+html.sap-desktop .sapMBtn:focus > .sapMBtnEmphasized.sapMFocusable {
+	outline-color:    @_sap_m_Button_EmphasizedFocusColor;
+}
+
+/* ---------------------------------------------------------------------*/
+/* Custom focus outline for IE and Edge:                                */
+/* ---------------------------------------------------------------------*/
+
+.sapMBtn:focus > .sapMBtnInner.sapMFocusable.sapMIE {
+	outline:          none;
+	position:         relative;
+}
+
+.sapMBtnFocusDiv {
+	box-sizing:       border-box;
+	position:         absolute;
+	left:             1px;
+	top:              1px;
+	right:            1px;
+	bottom:           1px;
+	border-radius:    0;
+}
+
+.sapMBtn:focus .sapMBtnFocusDiv {
+	border:           1px dashed @sapUiContentFocusColor;
+}
+
+.sapMBtn:focus > .sapMBtnActive > .sapMBtnFocusDiv {
+	border-color:    @sapUiContentContrastFocusColor;
+}
+
+.sapMBtn:focus > .sapMBtnEmphasized > .sapMBtnFocusDiv {
+	border-color:    @_sap_m_Button_EmphasizedFocusColor;
+}
+
+/* ---------------------------------------------------------------------*/
+/* Disabled, hover and active states:                                   */
+/* ---------------------------------------------------------------------*/
+
+.sapMBtnDisabled {
+	opacity:          0.5;
+}
+
+/* ------------------------------------------------ */
+/* Buttons in a Bar                                 */
+/* (add separators, remove top/bottom border)       */
+/* ------------------------------------------------ */
+
+.sapMIBar-CTX .sapMBtn:hover > .sapMBtnHoverable:not(.sapMBtnActive) {
+	border-color:     transparent;
+}
+
+//html.sap-desktop .sapMHeader-CTX .sapMBtnInner.sapMBtnAccept,
+html.sap-desktop .sapMFooter-CTX .sapMBtnInner.sapMBtnAccept {
+	border-color: @sapUiButtonAcceptBorderColor;
+}
+
+//html.sap-desktop .sapMHeader-CTX .sapMBtnInner.sapMBtnReject,
+html.sap-desktop .sapMFooter-CTX .sapMBtnInner.sapMBtnReject {
+	border-color: @sapUiButtonRejectBorderColor;
+}
+
+/* Background and text colors for different states */
+.sapMTB-Info-CTX > .sapUiIcon:focus {
+	outline: 1px dotted @sapUiContentContrastFocusColor
+}

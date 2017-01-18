@@ -1,7 +1,7 @@
 <!DOCTYPE HTML>
 <html>
 	<head>
-		<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
 		<title>Dialog - sap.m</title>
 		<style type="text/css">
 			.sapMLabel.specialLabelDialogPage {
@@ -18,16 +18,20 @@
 			}
 
 		</style>
+		<script src="shared-config.js"></script>
 		<script src="../../../resources/sap-ui-core.js"
-				type="text/javascript"
 				id="sap-ui-bootstrap"
 				data-sap-ui-libs="sap.ui.commons,sap.m,sap.ui.layout"
-				data-sap-ui-theme="sap_bluecrystal"
 				data-sap-ui-compatVersion="1.16">
 		</script>
-		<script type="text/javascript">
+		<script>
 			var app = new sap.m.App("myApp", {initialPage: "page1"});
 			var _buttonWidth = "300px";
+			var dynamicContentDialogData = {
+				isVisible : false
+			}
+
+			var model = new sap.ui.model.json.JSONModel(dynamicContentDialogData);
 
 			var oDialog1 = new sap.m.Dialog("dialog1", {
 				title: "World Domination",
@@ -252,7 +256,7 @@
 				})
 			});
 
-			var oButton2 = new sap.m.Button("button2", {
+			var oButton2 = new sap.m.Button("listInDialogButton", {
 				text: "List in Dialog",
 				width: _buttonWidth,
 				press: function () {
@@ -260,11 +264,11 @@
 				}
 			});
 
-			var oTextAreaDialog = new sap.m.Dialog({
+			var oTextAreaDialog = new sap.m.Dialog('textAreaDialog', {
 				title: "Dialog with TextArea",
 				contentWidth: "200px",
 				content: new sap.m.TextArea({cols: 60}),
-				beginButton: new sap.m.Button({
+				beginButton: new sap.m.Button('textareaDialogCloseButton', {
 					text: "Close",
 					press: function () {
 						oTextAreaDialog.close();
@@ -272,7 +276,7 @@
 				})
 			});
 
-			var oButton3 = new sap.m.Button("button3", {
+			var oButton3 = new sap.m.Button("textareaDialogButton", {
 				text: "Textarea in Dialog",
 				width: _buttonWidth,
 				press: function () {
@@ -397,7 +401,7 @@
 				var oLabel2 = new sap.m.Label({text: "label 2"});
 				var oText2 = new sap.m.Text({text: " text2"});
 
-				var oSimpleForm = new sap.ui.commons.form.SimpleForm({
+				var oSimpleForm = new sap.ui.layout.form.SimpleForm({
 					maxContainerCols: 3,
 					editable: false,
 					labelMinWidth: 30,
@@ -439,7 +443,7 @@
 				})
 			});
 
-			var oDialogResize = new sap.m.Dialog({
+			var oDialogResize = new sap.m.Dialog('resizableDialog', {
 				title: "Resizable Dialog",
 				resizable: true,
 				content: [
@@ -456,7 +460,7 @@
 						]
 					})
 				],
-				endButton: new sap.m.Button({
+				endButton: new sap.m.Button('resizeDialogCloseButton', {
 					text: "Cancel", press: function () {
 						oDialogResize.close();
 					}
@@ -477,17 +481,17 @@
 				})
 			});
 
-			var oDialogSimple = new sap.m.Dialog({
+			var oDialogSimple = new sap.m.Dialog('simpleDialog', {
 				title: "Simple Dialog",
 				content: new sap.ui.core.HTML({
 					content: '<div>Lipsum limple text</div>'
 				}),
-				beginButton: new sap.m.Button({
+				beginButton: new sap.m.Button('simpleDialogAcceptButton', {
 					text: "Accept", press: function () {
 						oDialogSimple.close();
 					}
 				}),
-				endButton: new sap.m.Button({
+				endButton: new sap.m.Button('simpleDialogCancelButton', {
 					text: "Cancel", press: function () {
 						oDialogSimple.close();
 					}
@@ -539,7 +543,7 @@
 				})
 			});
 
-			var oDialogNoHeader = new sap.m.Dialog({
+			var oDialogNoHeader = new sap.m.Dialog('noHeaderDialog', {
 				showHeader: false,
 				content: new sap.ui.core.HTML({
 					content: '<div>Lipsum limple text</div>'
@@ -549,7 +553,7 @@
 						oDialogNoHeader.close();
 					}
 				}),
-				endButton: new sap.m.Button({
+				endButton: new sap.m.Button('dialogNoHeaderCancelButton', {
 					text: "Cancel", press: function () {
 						oDialogNoHeader.close();
 					}
@@ -702,9 +706,9 @@
 				visible: false
 			});
 
-			var oDialogWithSubheader = new sap.m.Dialog({
+			var oDialogWithSubheader = new sap.m.Dialog('subheaderDialog', {
 				title: "Dialog with SubHeader",
-				content: new sap.m.Button({
+				content: new sap.m.Button('triggerSubheaderButton', {
 					text: 'trigger',
 					tap: function() {
 						subHeader.setVisible(!subHeader.getVisible());
@@ -716,14 +720,14 @@
 						oDialogWithSubheader.close();
 					}
 				}),
-				endButton: new sap.m.Button({
+				endButton: new sap.m.Button('dialogWithSubheaderCancelButton', {
 					text: "Cancel", press: function () {
 						oDialogWithSubheader.close();
 					}
 				})
 			});
 
-			var oDialogStretched = new sap.m.Dialog({
+			var oDialogStretched = new sap.m.Dialog('stretchedDialog', {
 				title: "Stretched Dialog",
 				stretch: true,
 				content: new sap.ui.core.HTML({
@@ -734,7 +738,7 @@
 						oDialogStretched.close();
 					}
 				}),
-				endButton: new sap.m.Button({
+				endButton: new sap.m.Button('stretchedDialogCloseButton', {
 					text: "Cancel", press: function () {
 						oDialogStretched.close();
 					}
@@ -783,6 +787,44 @@
 					},
 					text: "Close"
 				})
+			});
+
+			var confirmDialog;
+			var oEscapePreventDialog = new sap.m.Dialog({
+				title : "Try closing me with escape",
+				escapeHandler : function(oPromise) {
+					console.log(oPromise);
+					if (!confirmDialog) {
+						confirmDialog = new sap.m.Dialog({
+							icon : sap.ui.core.IconPool.getIconURI("message-information"),
+							title : "Are you sure?",
+							content : [
+								new sap.m.Text({
+									text : "Your unsaved changes will be lost"
+								})
+							],
+							type : sap.m.DialogType.Message,
+							buttons : [
+								new sap.m.Button({
+									text : "Yes",
+									press : function() {
+										confirmDialog.close();
+										oPromise.resolve();
+									}
+								}),
+								new sap.m.Button({
+									text : "No",
+									press : function() {
+										confirmDialog.close();
+										oPromise.reject();
+									}
+								})
+							]
+						});
+					}
+
+					confirmDialog.open();
+				}
 			});
 
 			//=================================================================
@@ -866,12 +908,9 @@
 					orientation: "Vertical",
 					contentAreas: [
 						new sap.m.Table({
-							columns: [new sap.m.Column(),
-								new sap.m.Column()],
-							rows: [
-								new sap.m.ColumnListItem(),
-								new sap.m.ColumnListItem(),
-								new sap.m.ColumnListItem()
+							columns: [
+								new sap.m.Column(),
+								new sap.m.Column()
 							]
 						}),
 						new sap.ui.layout.form.SimpleForm({
@@ -970,6 +1009,124 @@
 				statusLabel.setText(text);
 			}
 
+			var dialogWithOneHundredPercentHeightContent = new sap.m.Dialog('DialogWithTallContent', {
+				title: '100% height content - verticalScrolling: false',
+				content: [
+					new sap.ui.core.HTML({content: '<iframe url="https://w3c.org/" style="height: 100%; width: 100%;"></iframe>'})
+				],
+				contentHeight: "50%",
+				//verticalScrolling should be false so the content will be able to take the heitgt
+				verticalScrolling: false,
+				buttons: [
+					new sap.m.Button({
+						text: "close",
+						press: function() {
+							dialogWithOneHundredPercentHeightContent.close();
+						}
+					})
+				]
+			});
+
+			var resizableDialogWithOneHundredPercentHeightContent = new sap.m.Dialog('resizableDialogWithTallContent', {
+				title: 'Resizable Dialog with 100% height content',
+				resizable: true,
+				content: [
+					new sap.ui.commons.layout.AbsoluteLayout({
+						width : "100%",
+						height : "100%"
+					})
+				],
+				buttons: [
+					new sap.m.Button({
+						text: "close",
+						press: function() {
+							resizableDialogWithOneHundredPercentHeightContent.close();
+						}
+					})
+				]
+			});
+
+			var dynamicContentDialog = new sap.m.Dialog('dynamicContentDialog', {
+				title: 'Dialog with dynamic content',
+				content: [
+					new sap.m.MessageStrip({
+						text: "Strip1",
+						visible: '{/isVisible}'
+					}).setModel(model),
+					new sap.ui.layout.form.SimpleForm({
+						layout: "ResponsiveGridLayout",
+						content: [
+							new sap.m.Label({text: "some label"}),
+							new sap.m.TextArea({
+								cols: 20,
+								maxLength: 16000,
+								rows: 6
+							})
+						]
+					})
+				]
+			});
+
+			var dialogWithTwoSimpleForms = new sap.m.Dialog('twoSimpleFormsDialog', {
+				title : "Contact Support",
+				contentWidth : "29.6rem",
+				leftButton : new sap.m.Button("twoSimpleFormsDialogSendBtn", {
+					text: "Send",
+					enabled: false
+				}),
+				rightButton : new sap.m.Button("twoSimpleFormsDialogCancelBtn", {
+					text: "Cancel",
+					press: function () {
+						dialogWithTwoSimpleForms.close();
+					}
+				}),
+				initialFocus : "textArea",
+				content : [
+					new sap.ui.layout.form.SimpleForm("topForm", {
+						editable: false,
+						content: [
+							new sap.m.TextArea("textArea", {
+								rows: 7,
+								placeholder: "BCP: 1670080757 \nBCP: 1670197927"
+							})
+						]
+					}),
+					new sap.ui.layout.form.SimpleForm("bottomForm", {
+						editable: false,
+						content: [
+							new sap.m.Link({text: "Show technical data"})
+						]
+					})
+				]
+			});
+
+
+			//Added as result of Internal Incident 1570901570
+			var oDialogWithOUTSettedWidthInRTL = new sap.m.Dialog({
+				title: "Title",
+				showHeader: true,
+				type: "Standard",
+				state: "None",
+				stretchOnPhone: false,
+				stretch: false,
+				contentWidth: "",
+				contentHeight: "",
+				horizontalScrolling: false,
+				verticalScrolling: true,
+				resizable: false,
+				draggable: false,
+				content: [
+					new sap.m.Button({
+					text: "Loooooooooooooooooooooooooooooooooooong button text - 600px width",
+					width: "600px"
+				})],
+				endButton: new sap.m.Button({
+					text: "Cancel", press: function () {
+						oDialogWithOUTSettedWidthInRTL.close();
+					}
+				})
+			});
+
 			var dialogWithManyButtons = new sap.m.Dialog('dialogWithManyButtons', {
 				title: 'DialogWithManyButtons',
 				content: [
@@ -995,7 +1152,7 @@
 							_setStatusForDialogWithManyButtons();
 						}
 					}),
-					new sap.ui.core.HTML({content: "<br/>"}),
+					new sap.ui.core.HTML({content: "<br>"}),
 					new sap.m.Button({
 						text: 'Add Begin Button',
 						press: function () {
@@ -1022,7 +1179,7 @@
 							_setStatusForDialogWithManyButtons();
 						}
 					}),
-					new sap.ui.core.HTML({content: "<br/>"}),
+					new sap.ui.core.HTML({content: "<br>"}),
 					statusLabel
 				],
 				buttons: allButtons
@@ -1054,7 +1211,7 @@
 			var page1 = new sap.m.Page("page1", {
 				title: "Mobile Dialog Control",
 				content: [
-					new sap.m.Button({
+					new sap.m.Button('simpleDialogButton', {
 						text: "Simple Dialog",
 						width: _buttonWidth,
 						press: function () {
@@ -1076,7 +1233,7 @@
 						}
 					}),
 
-					new sap.ui.core.HTML({content: "<br/>"}),
+					new sap.ui.core.HTML({content: "<br>"}),
 
 					new sap.m.Button({
 						text: "Dialog No Footer Bar",
@@ -1085,7 +1242,7 @@
 							oDialogNoFooter.open();
 						}
 					}),
-					new sap.m.Button({
+					new sap.m.Button('dialogNoHeaderButton', {
 						text: "Dialog No Header",
 						width: _buttonWidth,
 						press: function () {
@@ -1100,7 +1257,7 @@
 						}
 					}),
 
-					new sap.ui.core.HTML({content: "<br/>"}),
+					new sap.ui.core.HTML({content: "<br>"}),
 
 					new sap.m.Button({
 						text: "Big Content",
@@ -1117,7 +1274,7 @@
 						}
 					}),
 
-					new sap.ui.core.HTML({content: "<br/>"}),
+					new sap.ui.core.HTML({content: "<br>"}),
 
 					new sap.m.Button({
 						text: "Set Height",
@@ -1141,7 +1298,7 @@
 						}
 					}),
 
-					new sap.ui.core.HTML({content: "<br/>"}),
+					new sap.ui.core.HTML({content: "<br>"}),
 
 					new sap.m.Button({
 						text: "Scrolling",
@@ -1159,9 +1316,9 @@
 						}
 					}),
 
-					new sap.ui.core.HTML({content: "<br/>"}),
+					new sap.ui.core.HTML({content: "<br>"}),
 
-					new sap.m.Button({
+					new sap.m.Button('dialogWithSubheaderButton', {
 						text: "With SubHeader",
 						width: _buttonWidth,
 						press: function () {
@@ -1175,7 +1332,7 @@
 							oDialogWithCustomHeader.open();
 						}
 					}),
-					new sap.m.Button({
+					new sap.m.Button('dialogWithStateButton', {
 						text: "With State",
 						width: _buttonWidth,
 						press: function () {
@@ -1183,10 +1340,10 @@
 						}
 					}),
 
-					new sap.ui.core.HTML({content: "<br/>"}),
+					new sap.ui.core.HTML({content: "<br>"}),
 
 
-					new sap.m.Button({
+					new sap.m.Button('stretchedDialogButton', {
 						text: "Stretched",
 						width: _buttonWidth,
 						press: function () {
@@ -1201,7 +1358,7 @@
 						}
 					}),
 					oButton6,
-					new sap.ui.core.HTML({content: "<br/>"}),
+					new sap.ui.core.HTML({content: "<br>"}),
 					oButton3,
 					new sap.m.Button({
 						text: "Full-screen Form in Dialog",
@@ -1211,11 +1368,11 @@
 						}
 					}),
 					oButton,
-					new sap.ui.core.HTML({content: "<br/>"}),
+					new sap.ui.core.HTML({content: "<br>"}),
 					oButton4,
 					oButton5,
 					oButton2,
-					new sap.ui.core.HTML({content: "<br/>"}),
+					new sap.ui.core.HTML({content: "<br>"}),
 					new sap.m.Button({
 						text: "MessageBox as Dialog",
 						width: _buttonWidth,
@@ -1234,7 +1391,7 @@
 							oMessageDialog1.open();
 						}
 					}),
-					new sap.ui.core.HTML({content: "<br/>"}),
+					new sap.ui.core.HTML({content: "<br>"}),
 					new sap.m.Button({
 						text: "Drag Enabled",
 						width: _buttonWidth,
@@ -1242,7 +1399,7 @@
 							oDialogDrag.open();
 						}
 					}),
-					new sap.m.Button({
+					new sap.m.Button('resizeDialogButton', {
 						text: "Resize Enabled",
 						width: _buttonWidth,
 						press: function () {
@@ -1256,7 +1413,7 @@
 							oDialogResizeAndDrag.open();
 						}
 					}),
-					new sap.ui.core.HTML({content: "<br/>"}),
+					new sap.ui.core.HTML({content: "<br>"}),
 					new sap.m.Button({
 						width: _buttonWidth,
 						text: "Compact size",
@@ -1281,6 +1438,13 @@
 							oDialog.open();
 						}
 					}),
+					new sap.m.Button({
+						width: _buttonWidth,
+						text: "Escape Handler",
+						press: function () {
+							oEscapePreventDialog.open();
+						}
+					}),
 					new sap.m.Label({text: "Starting on"}).addStyleClass("specialLabelDialogPage"),
 					new sap.m.DatePicker({
 						width: "150px"
@@ -1291,7 +1455,7 @@
 							oDialog1.open();
 						}
 					}),
-					new sap.ui.core.HTML({content: "<br/>"}),
+					new sap.ui.core.HTML({content: "<br>"}),
 					new sap.ui.core.HTML({content: "<h1>Real use cases</h1>"}),
 					new sap.m.Button({
 						text: "No scrollars with splitter",
@@ -1324,6 +1488,8 @@
 						}
 					}),
 
+					new sap.ui.core.HTML({content: "<br>"}),
+
 					new sap.m.Button({
 						text: "Begin and End buttons with long text",
 						width: _buttonWidth,
@@ -1345,6 +1511,50 @@
 						width: _buttonWidth,
 						press: function () {
 							dragDialogWithMultipleHeaders.open();
+						}
+					}),
+
+					new sap.m.Button({
+						text: "100% Height Content",
+						width: _buttonWidth,
+						press: function () {
+							dialogWithOneHundredPercentHeightContent.open();
+						}
+					}),
+
+					new sap.m.Button({
+						text: "Big width of the content in RTL",
+						width: _buttonWidth,
+						press: function () {
+							oDialogWithOUTSettedWidthInRTL.open();
+						}
+					}),
+
+					new sap.m.Button({
+						text: "Resizable with 100% content height",
+						width: _buttonWidth,
+						press: function () {
+							resizableDialogWithOneHundredPercentHeightContent.open();
+						}
+					}),
+
+					new sap.m.Button({
+						text: "Dialog with dynamic content",
+						width: _buttonWidth,
+						press: function() {
+							dynamicContentDialog.open();
+							setTimeout(function() {
+								dynamicContentDialogData.isVisible = true;
+								model.setData(dynamicContentDialogData);
+							}, 1500);
+						}
+					}),
+
+					new sap.m.Button({
+						text: "Dialog with two simple forms",
+						width: _buttonWidth,
+						press: function() {
+							dialogWithTwoSimpleForms.open();
 						}
 					})
 				]

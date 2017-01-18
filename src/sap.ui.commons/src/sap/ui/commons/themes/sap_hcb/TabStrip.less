@@ -15,14 +15,12 @@
 	height: 18px;
 }
 
-.sapUiTab, 
+.sapUiTab,
 .sapUiTabSel,
 .sapUiTabDsbl {
 	line-height: 18px;
-	-moz-background-origin: padding, padding, content;
 	-webkit-background-origin: padding, padding, content;
 	background-origin: padding-box, padding-box, content-box;
-	-moz-background-size: auto auto, auto auto, 100% 28px;
 	-webkit-background-size: auto auto, auto auto, 100% 28px;
 	background-size: auto auto, auto auto, 100% 28px;
 	background-repeat: no-repeat, no-repeat, no-repeat;
@@ -40,7 +38,7 @@
 
 .sapUiTabSel {
 	background-image:url(img/tabstrip/tab-left-first-sel.png), url(img/tabstrip/tab-right-sel.png),url(img/tabstrip/tab-sel.png);
-	font-weight: bold; 
+	font-weight: bold;
 	margin-left: -9px;
 	padding-left: 25px;
 }
@@ -90,7 +88,48 @@
 	top: 24px;
 }
 
-.sapUiTabDsbl:focus,
-html[data-sap-ui-browser^="ff"] .sapUiTabDsbl:focus{
-	outline: 3px solid @sapUiContentDisabledTextColor;
+.sapUiTabSel:focus,
+.sapUiTab:focus,
+.sapUiTabDsbl:focus {
+  outline: none;
+}
+
+.sapUiTabSel,
+.sapUiTab,
+.sapUiTabDsbl {
+  &:focus::before {
+	border: 0.1875rem solid @sapHCStandardFG;
+	position: absolute;
+	content: "";
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	z-index: 1;
+	pointer-events: none;
+  }
+}
+
+.sapUiTabBar .sapUiTabStripScrollIcon {
+	padding-top: 3px;
+	margin-top: 0;
+	height: 19px;
+}
+
+.sapUiTabDsbl:focus::before {
+  border-color: @sapUiContentDisabledTextColor;
+}
+
+.sapUiTabStripScrollIcon {
+	color: @sapHCStandardFG;
+	background: @sapHCStandardBG;
+	border: 1px solid @sapHCStandardFG;
+}
+
+.sapUiTabStripScrollIcon:hover {
+	background: @sapHCHighlightBG;
+}
+
+.sapUiTabStripScrollIcon:active {
+	background: @sapHCHighlightAltBG;
 }

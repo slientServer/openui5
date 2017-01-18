@@ -2,27 +2,28 @@
 
 <html>
 <head>
-<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
 <title>qUnit Page for sap.ui.core.util.MockServer Class</title>
 
-<script id="sap-ui-bootstrap" type="text/javascript"
+<script src="../shared-config.js"></script>
+<script id="sap-ui-bootstrap"
 	src="../../../../../resources/sap-ui-core.js"
 	data-sap-ui-theme="sap_bluecrystal" data-sap-ui-noConflict="true"
 	data-sap-ui-libs="sap.ui.commons">
-	
+
 </script>
 
 <link rel="stylesheet"
 	href="../../../../../resources/sap/ui/thirdparty/qunit.css"
 	type="text/css" media="screen" />
-<script type="text/javascript"
+<script
 	src="../../../../../resources/sap/ui/thirdparty/qunit.js"></script>
-<script type="text/javascript"
+<script
 	src="../../../../../resources/sap/ui/qunit/qunit-junit.js"></script>
-<script type="text/javascript"
+<script
 	src="../../../../../resources/sap/ui/qunit/QUnitUtils.js"></script>
 
-<script language="javascript">
+<script>
 jQuery.sap.require("sap.ui.core.util.MockServer");
 
 module('GIVEN APF model and data in MockServer', {
@@ -217,9 +218,9 @@ test("POST table GET results on parameter set #111", function () {
     equal(response.statusCode, "200");
     equal(response.data.d.results.length, 3, "many");
 });
-	
-	
-	
+
+
+
 </script>
 </head>
 <body>

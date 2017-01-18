@@ -1,11 +1,11 @@
 <!DOCTYPE HTML>
 <html>
 	<head>
-		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
 
 		<title>Test Page for sap.ui.m.Label</title>
+		<script src="../shared-config.js"></script>
 		<script id="sap-ui-bootstrap"
-				data-sap-ui-theme="sap_bluecrystal"
 				data-sap-ui-libs="sap.m"
 				src="../../../../resources/sap-ui-core.js">
 		</script>
@@ -24,7 +24,6 @@
 			bVisible = true,
 			oTextAlignEnd = sap.ui.core.TextAlign.End,
 			oTextAlignCenter = sap.ui.core.TextAlign.Center,
-			bWrapping = false,
 			oTextDirectionDefault = sap.ui.core.TextDirection.LTR,
 			oTextDirectionRTL = sap.ui.core.TextDirection.RTL,
 			oStandardDesign = sap.m.LabelDesign.Standard,
@@ -43,7 +42,6 @@
 			width : sWidth,
 			textAlign : oTextAlignCenter,
 			textDirection : oTextDirectionRTL,
-			wrapping : bWrapping,
 			design : oBoldDesign
 		});
 		oLabel2.placeAt("uiArea2");
@@ -54,6 +52,17 @@
 			visible: false
 		});
 		oLabel3.placeAt("uiArea3");
+
+		var oLabel4 = new sap.m.Label("l4", {
+			text : sText,
+			width : sWidth,
+			labelFor : "I1"
+		}).placeAt("uiArea4");
+
+		var oInput = new sap.m.Input("I1", {
+			required: true,
+			width : sWidth
+		}).placeAt("uiArea4");
 
 		var l1, l2;
 
@@ -186,6 +195,39 @@
 			oLabel.destroy();
 		});
 
+		test("Label should get required from labeled control", function() {
+
+			ok(oLabel4.$().hasClass("sapMLabelRequired"), "Label is required");
+			oInput.setRequired(false);
+			sap.ui.getCore().applyChanges();
+			ok(!oLabel4.$().hasClass("sapMLabelRequired"), "Label is not required");
+			oInput.setRequired(true);
+			sap.ui.getCore().applyChanges();
+			ok(oLabel4.$().hasClass("sapMLabelRequired"), "Label is required");
+			oLabel4.setLabelFor();
+			sap.ui.getCore().applyChanges();
+			ok(!oLabel4.$().hasClass("sapMLabelRequired"), "Label is not required");
+			oLabel4.setLabelFor("I1");
+			sap.ui.getCore().applyChanges();
+			ok(oLabel4.$().hasClass("sapMLabelRequired"), "Label is required");
+
+		});
+
+		module("Accessibility");
+		
+		test("getAccessibilityInfo", function() {
+			var oControl = new sap.m.Label({text: "Text"});
+			ok(!!oControl.getAccessibilityInfo, "Label has a getAccessibilityInfo function");
+			var oInfo = oControl.getAccessibilityInfo();
+			ok(!!oInfo, "getAccessibilityInfo returns a info object");
+			strictEqual(oInfo.role, undefined, "AriaRole");
+			strictEqual(oInfo.type, undefined, "Type");
+			strictEqual(oInfo.description, "Text", "Description");
+			strictEqual(oInfo.focusable, undefined, "Focusable");
+			strictEqual(oInfo.enabled, undefined, "Enabled");
+			strictEqual(oInfo.editable, undefined, "Editable");
+			oControl.destroy();
+		});
 		</script>
 
 	</head>
@@ -199,6 +241,7 @@
 		<div id="uiArea1"></div>
 		<div id="uiArea2"></div>
 		<div id="uiArea3"></div>
+		<div id="uiArea4"></div>
 
 	</body>
 </html>

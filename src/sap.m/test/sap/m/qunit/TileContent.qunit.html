@@ -1,30 +1,22 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
 <title>Test Page for sap.m.TileContent</title>
 
 <!-- UI5 Bootstrap -->
-<script src="../../../../resources/sap-ui-core.js"
-	type="text/javascript" id="sap-ui-bootstrap"
-	data-sap-ui-libs="sap.m"
-	data-sap-ui-theme="sap_bluecrystal"></script>
-
+<script src="../shared-config.js"></script>
+<script src="../../../../resources/sap-ui-core.js" id="sap-ui-bootstrap"
+	data-sap-ui-libs="sap.m">
+</script>
 <!-- QUnit libraries -->
-<link rel="stylesheet"
-	href="../../../../resources/sap/ui/thirdparty/qunit.css"
-	type="text/css" media="screen" />
-<script type="text/javascript"
-	src="../../../../resources/sap/ui/thirdparty/qunit.js"></script>
-<script type="text/javascript"
-	src="../../../../resources/sap/ui/qunit/qunit-junit.js"></script>
-<script type="text/javascript"
-	src="../../../../resources/sap/ui/qunit/QUnitUtils.js"></script>
+<link rel="stylesheet" href="../../../../resources/sap/ui/thirdparty/qunit.css" type="text/css" media="screen">
+<script src="../../../../resources/sap/ui/thirdparty/qunit.js"></script>
+<script src="../../../../resources/sap/ui/qunit/qunit-junit.js"></script>
+<script src="../../../../resources/sap/ui/qunit/qunit-coverage.js"></script>
+<script src="../../../../resources/sap/ui/qunit/QUnitUtils.js"></script>
 
-<script type="text/javascript">
-	if (!(sap.ui.Device.browser.msie && sap.ui.Device.browser.version <= 8)) {
-		jQuery.sap.require("sap.ui.qunit.qunit-coverage");
-	}
+<script>
 
 	QUnit.module("sap.m.TileContent", {
 		beforeEach : function() {
@@ -55,30 +47,71 @@
 
 	QUnit.module("Functional test", {
 		beforeEach : function() {
-			this.oJamTileContent = new sap.m.TileContent("tc2", {
+			this.oFeedTileContent = new sap.m.TileContent("tc2", {
 				footer : "Current Quarter",
 				unit : "EUR",
 				size : "Auto",
-				content : new sap.m.JamContent("jam", {
+				content : new sap.m.FeedContent("feed", {
 					size : "Auto",
 					contentText : "@@notify Great outcome of the Presentation today. The new functionality and the design was well received. Berlin, Tokyo, Rome, Budapest, New York, Munich, London",
 					subheader : "about 1 minute ago in Computer Market",
 					value : "7"
 				})
 			});
-			this.oJamTileContent.placeAt("qunit-fixture");
+			this.oFeedTileContent.placeAt("qunit-fixture");
 			sap.ui.getCore().applyChanges();
 		},
 		afterEach : function() {
-			this.oJamTileContent.destroy();
+			this.oFeedTileContent.destroy();
 		}
 	});
 
 	QUnit.test("Getting content type.", function(assert) {
 		assert.ok(jQuery.sap.domById("tc2"), "TileContent2 was rendered successfully");
-		assert.ok(jQuery.sap.domById("jam"), "Jam content was rendered successfully");
+		assert.ok(jQuery.sap.domById("feed"), "Feed content was rendered successfully");
 		assert.ok(jQuery.sap.domById("tc2-footer-text"), "TileContent2 footer was rendered successfully");
-		assert.equal(this.oJamTileContent._getContentType(), undefined, "Type was get successfully");
+		assert.equal(this.oFeedTileContent._getContentType(), undefined, "Type was get successfully");
+	});
+
+	QUnit.module("Protected property bRenderFooter", {
+		beforeEach : function() {
+			this.oTileContent = new sap.m.TileContent("tileContent", {
+				footer : "Current Quarter",
+				unit : "EUR"
+			});
+			this.oTileContent.placeAt("qunit-fixture");
+			sap.ui.getCore().applyChanges();
+		},
+		afterEach : function() {
+			this.oTileContent.destroy();
+		}
+	});
+
+	QUnit.test("Default Value _bRenderFooter", function(assert) {
+		assert.ok(this.oTileContent._bRenderFooter, "_bRenderFooter is true");
+	});
+
+	QUnit.test("setRenderFooter change value and returns this", function(assert) {
+		var oReturn = this.oTileContent.setRenderFooter(false);
+		assert.ok(!this.oTileContent._bRenderFooter, "_bRenderFooter is false");
+		assert.deepEqual(oReturn, this.oTileContent, "this returned to allow mthoad chaining")
+	});
+
+	QUnit.test("setRenderFooter does not mark the control as invalidated", function(assert) {
+		var bInvalidated = false;
+		this.oTileContent.invalidate = function () {
+			bInvalidated = true;
+		};
+		this.oTileContent.setRenderFooter(false);
+		assert.ok(!bInvalidated, "invalidate was not called");
+	});
+
+	QUnit.test("Footer is not rendered in case _bRenderFooter is false", function(assert) {
+		assert.ok(jQuery.sap.domById("tileContent-footer-text"), "Footer was rendered successfully");
+		this.oTileContent.setRenderFooter(false);
+		this.oTileContent.invalidate();
+		sap.ui.getCore().applyChanges();
+		assert.ok(!jQuery.sap.domById("tileContent-footer-text"), "Footer was not rendered");
 	});
 </script>
 </head>
